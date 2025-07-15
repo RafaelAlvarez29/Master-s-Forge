@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vista de Jugador</title>
+    <link rel="shortcut icon" href="assets/images/icons/jugadoresM_icon.png" type="image/x-icon">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilos específicos para la vista de jugador */
+        body,
+        html {
+            overflow: hidden;
+            background-color: #1a1a1a;
+        }
+
+        /* Aseguramos que el contenedor del mapa ocupe todo */
+        #mapContainer {
+            width: 100vw;
+            height: 100vh;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Contenido del mapa, movido desde index.html -->
+    <div id="mapContainer">
+        <div class="loading-state">
+            <div class="loading-icon icon-dice-large"></div>
+            <h1>Esperando la Aventura del DM...</h1>
+            <p>Esta ventana se actualizará automáticamente cuando el DM cargue un mapa.</p>
+        </div>
+
+        <div id="mapContentWrapper">
+            <img id="mapImage" src="" alt="Mapa">
+            <canvas id="gridCanvas"></canvas>
+            <canvas id="wallsCanvas"></canvas>
+            <canvas id="visionCanvas"></canvas>
+            <div id="tokensLayer"></div>
+            <canvas id="aoeCanvas"></canvas>
+        </div>
+
+        <!-- El tracker de turnos también se muestra aquí -->
+        <div id="playerTurnTracker"></div>
+    </div>
+    <div id="playerControlsContainer" class="player-controls-container">
+        <!-- Grupo de Controles de Interfaz -->
+        <div class="control-group">
+            <button id="multiSelectBtn" title="Activar/Desactivar Selección Múltiple">
+                <span class="btn-icon icon-multi-select"></span>
+            </button>
+            <button id="toggleTrackerPosBtn" title="Cambiar Posición del Panel de Turnos">
+                <span class="btn-icon icon-swap-position"></span>
+            </button>
+        </div>
+
+        <!-- Separador Visual -->
+        <div class="control-separator"></div>
+
+        <!-- Grupo de Controles de Dibujo -->
+        <div id="drawingControls" class="control-group">
+            <button id="drawWallBtn" class="draw-tool-btn" title="Dibujar Muro">
+                <span class="btn-icon icon-wall-draw"></span>
+            </button>
+            <button id="drawDoorBtn" class="draw-tool-btn" title="Dibujar Puerta">
+                <span class="btn-icon icon-door-draw"></span>
+            </button>
+            <button id="undoDrawBtn" class="draw-tool-btn" title="Deshacer último trazo">
+                <span class="btn-icon icon-undo"></span>
+            </button>
+        </div>
+    </div>
+
+    <script src="player.js"></script>
+</body>
+
+</html>
