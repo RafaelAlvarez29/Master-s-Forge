@@ -3426,3 +3426,8 @@ input.save-prof-check:checked + label::after {
 iframe {
   border: none;                /* Quitar el borde predeterminado */
 }
+
+.emoji-sound{
+  margin: 0;
+  font-size: 2rem;
+}
