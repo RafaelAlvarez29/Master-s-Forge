@@ -215,23 +215,24 @@ document.addEventListener('DOMContentLoaded', () => {
             // Configurar contenido
             modalTitle.textContent = title;
             modalMessage.innerHTML = message;
+
             const closeModal = (resolution) => {
                 modal.classList.remove('open');
-                resolve(resolution);
+                resolve(resolution); // <-- ESTA LÍNEA ES LA CLAVE
             };
 
             if (type === 'confirm') {
                 // Botón de Confirmar
                 const confirmBtn = document.createElement('button');
                 confirmBtn.textContent = confirmText;
-                confirmBtn.onclick = () => closeModal(true);
+                confirmBtn.onclick = () => closeModal(true); // <-- RESUELVE LA PROMESA CON 'true'
                 modalButtons.appendChild(confirmBtn);
 
                 // Botón de Cancelar
                 const cancelBtn = document.createElement('button');
                 cancelBtn.textContent = cancelText;
                 cancelBtn.className = 'secondary';
-                cancelBtn.onclick = () => closeModal(false);
+                cancelBtn.onclick = () => closeModal(false); // <-- RESUELVE LA PROMESA CON 'false'
                 modalButtons.appendChild(cancelBtn);
 
             } else { // para 'info', 'success', 'warning', 'error'
@@ -660,9 +661,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }));
     }
 
-    async function deleteSceneById(sceneId) {
-        if (!confirm("¿Estás seguro de que quieres eliminar esta escena? Esta acción no se puede deshacer.")) {
-            return;
+    async function deleteSceneById(sceneId) { // <-- ASEGÚRATE DE QUE LA FUNCIÓN SEA ASYNC
+
+        // =========================================================
+        // ===== REEMPLAZO DEL CONFIRM POR EL MODAL PERSONALIZADO =====
+        // =========================================================
+        const confirmed = await showCustomModal({
+            title: 'Confirmar Eliminación',
+            message: '¿Estás realmente seguro de que quieres eliminar esta escena? Esta acción es irreversible.',
+            type: 'confirm',
+            confirmText: 'Sí, eliminarla',
+            cancelText: 'No, cancelar'
+        });
+
+        if (!confirmed) {
+            return; // Si el usuario presiona "No, cancelar" (o cierra el modal), la función termina aquí.
         }
 
         let scenes = getSavedScenes();
@@ -912,7 +925,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderCharacterLibrary() {
         const library = getCharacterLibrary(); savedCharactersGrid.innerHTML = '';
         const hasCharacters = library.length > 0; noSavedCharactersMessage.style.display = hasCharacters ? 'none' : 'block';
-        characterLibraryActions.style.display = hasCharacters ? 'flex' : 'none'; library.forEach((char, index) => {
+        characterLibraryActions.style.display = hasCharacters ? 'flex' : 'none';
+        library.forEach((char, index) => {
             const card = document.createElement('div'); card.className = 'saved-char-card'; card.dataset.charIndex = index;
             const imageStyle = char.identity.image ? `background-image: url(${char.identity.image});` : `background-color: ${char.appearance.color};`;
             const previewContent = char.identity.image ? '' : char.identity.letter; card.innerHTML = ` <div class="saved-char-preview">
@@ -923,10 +937,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p class="saved-char-level">Nivel ${char.identity.level}</p>
             </div> <button class="delete-saved-char-btn" title="Eliminar de la biblioteca">×</button> `;
             card.addEventListener('click', () => {
-                const characterToAdd = getCharacterLibrary()[index]; if (characterToAdd) {
+                const characterToAdd = getCharacterLibrary()[index];
+                if (characterToAdd) {
                     const newInstance = JSON.parse(JSON.stringify(characterToAdd));
-                    newInstance.id = Date.now(); addTokenToBoard(newInstance);
-                    //notificacion
+                    newInstance.id = Date.now();
+                    newInstance.position.x = 20;
+                    newInstance.position.y = 20;
+                    // =======================================================
+
+                    addTokenToBoard(newInstance); // Ahora se añade con las coordenadas reseteadas                    //notificacion
                     // Llamada Mejorada para el toast
                     showNotification(`¡<strong style="color: var(--text-gold);">${characterToAdd.identity.name}</strong> ha regresado al tablero!`);
                 }
