@@ -111,20 +111,18 @@ Este proyecto es un testimonio del poder de las tecnologías web fundamentales, 
     Generated bash
     
     ```
-    git clone https://github.com/[tu-usuario]/[tu-repositorio].git
+    git clone https://github.com/RafaelAlvarez29/Master-s-Forge.git
     ```
     
-    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
     
 2. **Navega a la carpeta:**
     
     Generated bash
     
     ```
-    cd [tu-repositorio]
+    cd Master-s-Forge
     ```
     
-    Use code [with caution](https://support.google.com/legal/answer/13505487).Bash
     
 3. **Abre los archivos en tu navegador:**
     
