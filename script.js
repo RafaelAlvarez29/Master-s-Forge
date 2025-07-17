@@ -285,12 +285,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
         }
     };
+    mapImageInput.addEventListener('change', handleImageUpload);
 
     addTokenBtn.addEventListener('click', createTokenFromForm);
     updateTokenBtn.addEventListener('click', updateSelectedToken);
     deselectTokenBtn.addEventListener('click', deselectToken);
     toggleVisionBtn.addEventListener('click', toggleVisionMode);
     resetFogBtn.addEventListener('click', resetFog);
+    clearWallsBtn.addEventListener('click', clearAllWalls);	
     addStateBtn.addEventListener('click', addStateToSelectedToken);
     alignGridModeBtn.addEventListener('click', () => toggleAlignGridMode());
     resetGridOffsetBtn.addEventListener('click', resetGridOffset);
