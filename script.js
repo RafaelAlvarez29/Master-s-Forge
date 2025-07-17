@@ -1407,13 +1407,13 @@ document.addEventListener('DOMContentLoaded', () => {
             // (1s para que aparezca el logo + 2.5s de animación de pulso)
             setTimeout(() => {
                 splashScreen.classList.add('hidden');
-            }, 3500);
+            }, 0);//3500
 
             // Elimina completamente la pantalla del DOM después de que termine la transición de fade-out
             // para liberar recursos. 3500ms (espera) + 1000ms (transición) = 4500ms
             setTimeout(() => {
                 splashScreen.remove();
-            }, 4500);
+            }, 0);//timepo de pantalla de bienvenida 4500
         }
     });
     setupPanelNavigation();

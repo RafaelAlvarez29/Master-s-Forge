@@ -2148,9 +2148,8 @@ input[type="range"]::-webkit-slider-thumb {
 .icon-ambiance {
   background-image: url("assets/images/icons/ambiente_icon.png");
 }
-.icon-boock{
-    background-image: url("assets/images/icons/icon-boock.png");
-  
+.icon-boock {
+  background-image: url("assets/images/icons/icon-boock.png");
 }
 .char-stats-grid {
   display: grid;
@@ -3287,7 +3286,6 @@ input.save-prof-check:checked + label::after {
   }
 }
 
-
 /* --- ESTILOS PARA MODAL DE DIÁLOGO PERSONALIZADO --- */
 .custom-modal-content {
   max-width: 450px !important;
@@ -3317,19 +3315,19 @@ input.save-prof-check:checked + label::after {
 }
 
 #customModalTitle {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 #customModalMessage {
-    font-size: 1.1em;
-    line-height: 1.6;
-    color: var(--text-light);
-    margin-bottom: 25px;
-    white-space: pre-wrap; /* Respeta saltos de línea */
+  font-size: 1.1em;
+  line-height: 1.6;
+  color: var(--text-light);
+  margin-bottom: 25px;
+  white-space: pre-wrap; /* Respeta saltos de línea */
 }
 
 #customModalButtons button {
-    font-size: 1.1em;
+  font-size: 1.1em;
 }
 
 /* --- Variantes de Tipo --- */
@@ -3337,42 +3335,50 @@ input.save-prof-check:checked + label::after {
 /* Success (Verde) */
 .modal-type-success .custom-modal-content,
 .modal-type-success .custom-modal-icon {
-    border-color: #5dc66f;
+  border-color: #5dc66f;
 }
 .modal-type-success .custom-modal-icon {
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%235dc66f"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>');
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%235dc66f"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>');
 }
-.modal-type-success #customModalTitle { color: #5dc66f; }
+.modal-type-success #customModalTitle {
+  color: #5dc66f;
+}
 
 /* Warning (Amarillo/Dorado) */
 .modal-type-warning .custom-modal-content,
 .modal-type-warning .custom-modal-icon {
-    border-color: var(--text-gold);
+  border-color: var(--text-gold);
 }
 .modal-type-warning .custom-modal-icon {
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23e6c253"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>');
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23e6c253"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>');
 }
-.modal-type-warning #customModalTitle { color: var(--text-gold); }
+.modal-type-warning #customModalTitle {
+  color: var(--text-gold);
+}
 
 /* Error (Rojo) */
 .modal-type-error .custom-modal-content,
 .modal-type-error .custom-modal-icon {
-    border-color: #c65d5d;
+  border-color: #c65d5d;
 }
 .modal-type-error .custom-modal-icon {
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23c65d5d"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>');
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23c65d5d"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>');
 }
-.modal-type-error #customModalTitle { color: #c65d5d; }
+.modal-type-error #customModalTitle {
+  color: #c65d5d;
+}
 
 /* Confirm (Azul/Neutral) */
 .modal-type-confirm .custom-modal-content,
 .modal-type-confirm .custom-modal-icon {
-    border-color: #4a90e2;
+  border-color: #4a90e2;
 }
 .modal-type-confirm .custom-modal-icon {
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%234a90e2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>');
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%234a90e2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>');
 }
-.modal-type-confirm #customModalTitle { color: #4a90e2; }
+.modal-type-confirm #customModalTitle {
+  color: #4a90e2;
+}
 
 #splash-screen {
   position: fixed;
@@ -3401,7 +3407,8 @@ input.save-prof-check:checked + label::after {
   opacity: 0;
   transform: scale(0.8);
   /* Llama a la animación */
-  animation: fadeInLogo 1s ease-out forwards, pulseRune 2s ease-in-out 1s infinite;
+  animation: fadeInLogo 1s ease-out forwards,
+    pulseRune 2s ease-in-out 1s infinite;
 }
 
 /* Animación para que el logo aparezca */
@@ -3414,7 +3421,8 @@ input.save-prof-check:checked + label::after {
 
 /* Animación para el pulso de la runa brillante */
 @keyframes pulseRune {
-  0%, 100% {
+  0%,
+  100% {
     filter: drop-shadow(0 0 5px rgba(230, 194, 83, 0.4));
     transform: scale(1);
   }
@@ -3424,10 +3432,139 @@ input.save-prof-check:checked + label::after {
   }
 }
 iframe {
-  border: none;                /* Quitar el borde predeterminado */
+  border: none; /* Quitar el borde predeterminado */
 }
 
-.emoji-sound{
+.emoji-sound {
   margin: 0;
   font-size: 2rem;
+}
+/*MANUAL PORTADA HTML WEB*/
+.manual-body {
+  background-color: #fdf1db;
+  padding: 40px;
+}
+.img-portada {
+  width: 100%;
+}
+.manual-body h1 {
+  color: #833b0a;
+}
+.manual-body h2 {
+  color: #833b0a;
+  font-size: 1.3em;
+  text-align: left;
+  text-shadow: none;
+  font-family: "Cinzel", serif;
+}
+.manual-body p {
+  color: #110d0c;
+  font-weight: 400;
+}
+.manual-body ol {
+  color: #110d0c;
+}
+li {
+  color: #110d0c;
+}
+.inline-icon {
+  height: 25px; /* Ajusta el tamaño como necesites */
+  vertical-align: middle; /* Alinea el icono con el texto */
+  margin-left: 8px;
+}
+.inline-icon-small {
+  height: 18px; /* Un tamaño más pequeño para sub-listas */
+  vertical-align: middle;
+  margin-right: 5px;
+}
+
+/* Para la etiqueta <code> que resalta nombres de archivos */
+code {
+  background-color: #ffe7ba;
+  color: #333;
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-family: "Courier New", Courier, monospace;
+}
+
+/* Estilos para los bloques de información (callouts) */
+.callout {
+  padding: 15px;
+  margin: 20px 0;
+  border-left: 5px solid;
+  border-radius: 5px;
+}
+.callout-title {
+  font-weight: bold;
+  font-family: "Cinzel", serif;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+}
+.callout-title .icon-warning,
+.callout-title .icon-tip,
+.callout-title .icon-info {
+  margin-right: 10px;
+  /* Aquí deberías definir las clases de tus iconos, si no lo has hecho ya */
+}
+
+/* Colores específicos para cada tipo de callout */
+.callout.warning {
+  background-color: #fff3cd;
+  border-left-color: #ffc107;
+  color: #664d03;
+}
+.callout.tip {
+  background-color: #d1ecf1;
+  border-left-color: #0c5460;
+  color: #0c5460;
+}
+.callout.info {
+  background-color: #cce5ff;
+  border-left-color: #004085;
+  color: #004085;
+}
+
+/* Para los saltos de página al imprimir */
+@media print {
+  .manual-body {
+    background-color: white; /* Fondo blanco para impresión */
+  }
+}
+.manual-body h3 {
+  color: #833b0a;
+}
+.manual-body h4 {
+color:#833b0a;
+  font-family: "Cinzel", serif;
+}
+.button-download {
+  /* Copia los estilos de tus otros botones para mantener la coherencia */
+  display: inline-flex; /* Para alinear el icono y el texto */
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  background-color: var(--button-primary-bg); /* O el color que prefieras */
+  color:#1d56ac;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  font-family: 'Cinzel', serif;
+  font-weight: bold;
+  text-decoration: none; /* Quita el subrayado del enlace */
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.button-download:hover{
+  text-decoration: underline;
+}
+
+/* Efecto hover para el botón */
+.button-download:hover {
+  background-color: var(--button-primary-hover-bg); /* Un color ligeramente más oscuro/claro */
+}
+
+/* Estilo para el icono dentro del botón (si usas uno) */
+.button-download .btn-icon {
+  margin-right: 8px;
+  /* Asegúrate de tener una clase .icon-download definida con tu icono */
 }

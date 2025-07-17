@@ -255,11 +255,14 @@
             <nav class="panel-nav horizontal-nav">
                 <ul>
                     <li><button class="panel-nav-button" data-view="main-view-selected-token"><span
-                                class="nav-icon icon-selected-token"></span> Ficha Seleccionada</button></li>
+                                class="nav-icon icon-selected-token"></span>
+                            Ficha Seleccionada</button></li>
                     <li><button class="panel-nav-button" data-view="main-view-dm-notes"><span
-                                class="nav-icon icon-notes"></span> Notas del DM</button></li>
+                                class="nav-icon icon-notes"></span>
+                            Notas del DM</button></li>
                     <li><button class="panel-nav-button" data-view="main-view-manual"><span
-                                class="nav-icon icon-boock"></span> Manual</button></li>
+                                class="nav-icon icon-boock"></span>
+                            Manual</button></li>
                 </ul>
             </nav>
             <div class="panel-content">
@@ -572,14 +575,324 @@
                     <textarea id="dmNotes"
                         placeholder="Apunta aquí tus ideas, recordatorios, PNJ, o giros de la trama... Las notas se guardan automáticamente."></textarea>
                 </div>
-                <!-- Vista 2: Notas del DM -->
-                <div id="main-view-dm-notes" class="panel-view">
-                    <textarea id="dmNotes"
-                        placeholder="Apunta aquí tus ideas, recordatorios, PNJ, o giros de la trama... Las notas se guardan automáticamente."></textarea>
-                </div>
+
+
                 <div id="main-view-manual" class="panel-view">
-                    <iframe src="assets/docs/MASTER'S FORGE MANUAL DE USO.pdf" width="100%" height="743px">
-                        Este navegador no soporta PDFs.
+                    <img src="assets/images/icons/portadamanual.png" class="img-portada" alt="">
+                    <div class="manual-body">
+                        <h1>Manual de Usuario - Master's Forge</h1>
+                        <hr>
+                        <p>Bienvenido a <strong>Master's Forge</strong>, tu arsenal de herramientas digitales para
+                            dirigir partidas de rol inolvidables. Este manual te guiará a través de todas las
+                            funcionalidades, desde la preparación de la escena hasta la gestión del combate.</p>
+                        <img src="assets/images/icons/team.png" class="img-portada" alt="Un grupo de aventureros">
+
+                        <br>
+
+                        <h2><span class="icon-rocket"></span> Inicio Rápido</h2>
+                        <hr>
+                        <ol>
+                            <li>
+                                <p><strong>Abre dos ventanas:</strong> Una para ti (la <strong>Vista del DM</strong>) y
+                                    otra para tus jugadores (player.html, la <strong>Vista de Jugador</strong>).</p>
+                            </li>
+                            <li>
+                                <p><strong>Carga un Mapa:</strong> En la Vista del DM, ve al panel derecho y usa el
+                                    botón <strong>"Cargar Mapa de Fondo"</strong>.</p>
+                            </li>
+                            <li>
+                                <p><strong>Añade Fichas:</strong> Desde el panel izquierdo, crea nuevos personajes o
+                                    arrástralos desde tu biblioteca al mapa.</p>
+                            </li>
+                            <li>
+                                <p><strong>Prepara la Escena:</strong> Dibuja muros, puertas y ajusta la niebla de
+                                    guerra.</p>
+                            </li>
+                            <li>
+                                <p><strong>¡A Jugar!:</strong> Inicia la visión dinámica y que comience la aventura.</p>
+                            </li>
+                        </ol>
+
+                        <br><br>
+
+                        <h2><span class="icon-dashboard"></span> La Interfaz del DM</h2>
+                        <hr>
+                        <p>La interfaz principal se divide en tres columnas y un encabezado.</p>
+                        <img src="assets/images/icons/inicio.png" class="img-portada"
+                            alt="Vista general de la interfaz del DM">
+
+                        <br>
+
+                        <h3>1. Encabezado Superior</h3>
+                        <ul>
+                            <li>
+                                <p><strong>Título:</strong> Muestra el nombre de la aplicación.</p>
+                            </li>
+                            <li>
+                                <p><strong>Iniciar/Detener Visión:</strong> Activa o desactiva la <strong>Visión
+                                        Dinámica</strong> y la <strong>Niebla de Guerra</strong>.</p>
+                            </li>
+                            <li>
+                                <p><strong>Resetear Niebla:</strong> Restablece por completo la niebla de guerra en el
+                                    mapa
+                                    actual.</p>
+                            </li>
+                            <li>
+                                <p><strong>Ventana del Jugador:</strong> Abre (o enfoca si ya está abierta) la
+                                    <code>player.html</code>.
+                                </p>
+                            </li>
+                        </ul>
+
+                        <h3>2. Columna Izquierda: Fichas y Personajes</h3>
+                        <p>Esta columna gestiona todo lo relacionado con los personajes y sus fichas en el tablero.</p>
+
+                        <h4>2.1. Fichas en el Tablero <img src="assets/images/icons/fichas_icon.png"
+                                alt="Icono de Fichas" class="inline-icon"></h4>
+                        <ul>
+                            <li>Muestra una lista de todas las fichas (jugadores y enemigos) actualmente en el mapa.
+                            </li>
+                            <li>Ordenadas por iniciativa.</li>
+                            <li>Haz clic en una ficha para seleccionarla y editarla en la columna central.</li>
+                            <li>El botón <strong>X</strong> elimina la ficha del tablero.</li>
+                        </ul>
+
+                        <div style="page-break-after: always;"></div>
+
+                        <h4>2.2. Biblioteca de Personajes <img src="assets/images/icons/ficha_icon.png"
+                                alt="Icono de Biblioteca" class="inline-icon"></h4>
+                        <ul>
+                            <li>Aquí se guardan tus personajes reutilizables entre sesiones.</li>
+                            <li><strong>Añadir al Tablero:</strong> Haz clic en la tarjeta de un personaje para crear
+                                una nueva instancia de él en el mapa.</li>
+                            <li><strong>Guardar Personaje:</strong> Después de editar una ficha en la columna central,
+                                puedes guardarla aquí para usarla en el futuro.</li>
+                            <li><strong>Importar/Exportar Biblioteca:</strong>
+                                <ul>
+                                    <li><strong>Exportar:</strong> Guarda toda tu biblioteca en un archivo
+                                        <code>.json</code>.
+                                    </li>
+                                    <li><strong>Importar:</strong> Carga una biblioteca desde un archivo
+                                        <code>.json</code>. Te dará la opción de <strong>Añadir</strong> los personajes
+                                        a tu biblioteca actual o <strong>Reemplazarla</strong> por completo.
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                        <h2>2.3. Añadir Ficha Nueva <img src="assets/images/icons/mas_icon.png" alt="Icono de Añadir"
+                                class="inline-icon"></h2>
+                        <ul>
+                            <li>Un formulario completo para crear un personaje desde cero.</li>
+                            <li><strong>Información Básica:</strong> Tipo (Jugador/Enemigo), nombre, letra, clase, nivel
+                                y raza.</li>
+                            <li><strong>Imagen:</strong> Puedes subir una imagen (se optimizará automáticamente).</li>
+                            <li><strong>Estadísticas:</strong> Introduce sus puntuaciones de característica. Los
+                                modificadores se calculan solos.</li>
+                            <li><strong>Combate y Salvaciones:</strong> Ajusta su CA, velocidad, iniciativa y marca sus
+                                competencias en tiradas de salvación.</li>
+                            <li><strong>Apariencia:</strong> Elige un color, un borde y un tamaño para la ficha en el
+                                mapa.</li>
+                        </ul>
+
+                        <div style="page-break-after: always;"></div>
+
+                        <h3>3. Columna Central: El Editor Principal</h3>
+                        <p>Este es tu espacio de trabajo principal. Cambia su contenido según lo que selecciones.</p>
+
+                        <h2>3.1. Pantalla de Bienvenida</h2>
+                        <p>La vista por defecto. Te anima a cargar un mapa para empezar.</p>
+                        <img src="assets/images/icons/tuaventuracomienzaaqui.png" alt="Pantalla de bienvenida"
+                            style="width: 90%; display: block; margin: auto;">
+
+                        <h2>3.2. Editor de Ficha Seleccionada <img src="assets/images/icons/seleccionado_icon.png"
+                                alt="Icono de Selección" class="inline-icon"></h2>
+                        <ul>
+                            <li>Aparece al seleccionar una ficha de la lista izquierda.</li>
+                            <li><strong>Encabezado:</strong> Muestra el avatar, nombre, clase, nivel y raza. Haz clic en
+                                esta área para editar estos datos rápidamente.</li>
+                            <li><strong>Pestañas de Edición:</strong>
+                                <ul>
+                                    <li><strong>Combate:</strong> Gestiona la vida (con botones de acceso rápido para
+                                        curar/dañar), estados y efectos, e incluso previsualiza áreas de efecto (AoE).
+                                    </li>
+                                    <li><strong>Estadísticas:</strong> Edita las características, competencias, y la
+                                        apariencia de la ficha.</li>
+                                    <li><strong>Habilidades e Inventario:</strong> Listas de habilidades y objetos. Haz
+                                        clic en una tarjeta para verla en detalle o editarla. Usa el <strong>+</strong>
+                                        para añadir nuevas.</li>
+                                    <li><strong>Notas:</strong> Un espacio para el trasfondo, secretos o notas privadas
+                                        sobre ese personaje.</li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                        <h2>3.3. Notas del DM <img src="assets/images/icons/notas-icon.png" alt="Icono de Notas"
+                                class="inline-icon"></h2>
+                        <p>Un bloc de notas persistente. Todo lo que escribas aquí se guarda automáticamente en tu
+                            navegador para futuras sesiones. Ideal para recordatorios, ideas o la estructura de la
+                            sesión.</p>
+
+                        <h3>4. Columna Derecha: Herramientas Globales</h3>
+                        <p>Aquí se encuentran las herramientas que afectan a toda la escena.</p>
+
+                        <h2>4.1. Mapa y Escena <img src="assets/images/icons/mapa_icon.png" alt="Icono de Mapa"
+                                class="inline-icon"></h2>
+                        <ul>
+                            <li><strong>Cargar/Importar/Exportar/Guardar:</strong>
+                                <ul>
+                                    <li><strong>Cargar Mapa:</strong> Establece la imagen de fondo para la sesión.</li>
+                                    <li><strong>Guardar/Cargar Escena:</strong> Guarda <strong>toda</strong> la
+                                        configuración actual (mapa, fichas, muros, niebla) en la base de datos de tu
+                                        navegador para recuperarla más tarde.</li>
+                                    <li><strong>Exportar/Importar Escena:</strong> Guarda/carga una escena completa en
+                                        un archivo <code>.json</code> para compartirla con otros o hacer copias de
+                                        seguridad.</li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                        <div class="callout warning">
+                            <div class="callout-title"><span class="icon-warning"></span> Importante</div>
+                            <p>Para guardar o exportar una escena con el estado actual de la <strong>niebla de
+                                    guerra</strong>, la <strong>Ventana del Jugador debe estar abierta</strong>.</p>
+                        </div>
+
+                        <h2>4.2. Herramientas <img src="assets/images/icons/herramientas_icon.png"
+                                alt="Icono de Herramientas" class="inline-icon"></h2>
+                        <ul>
+                            <li><strong>Rejilla:</strong> Activa, cambia el color, opacidad y tamaño de la rejilla.</li>
+                            <li><strong>Alinear Rejilla:</strong> Una herramienta de precisión. Actívala y haz clic en
+                                la esquina de una casilla en el mapa del jugador para que la rejilla se alinee
+                                perfectamente.</li>
+                            <li><strong>Pincel de Niebla:</strong> Te permite "pintar" manualmente la niebla de guerra.
+                                Elige entre "Revelar" y "Ocultar" y ajusta el tamaño del pincel.</li>
+                        </ul>
+
+                        <h2>4.3. Muros y Puertas <img src="assets/images/icons/muro_icon.png" alt="Icono de Muro"
+                                class="inline-icon"></h2>
+                        <ul>
+                            <li>Activa el <strong>Modo Dibujo</strong> para trazar líneas en la Vista del Jugador que
+                                bloquearán la visión.</li>
+                            <li>Elige si quieres dibujar un <strong>Muro</strong> (permanente) o una
+                                <strong>Puerta</strong> (interactiva).
+                            </li>
+                            <li><strong>Deshacer</strong> elimina el último trazo. <strong>Limpiar</strong> borra todos
+                                los muros y puertas.</li>
+                        </ul>
+
+                        <div class="callout tip">
+                            <div class="callout-title"><span class="icon-tip"></span> Consejo de Dibujo</div>
+                            <p>En la Vista del Jugador, haz clic para iniciar una línea, y vuelve a hacer clic para
+                                terminarla. Si dibujas una puerta, se te pedirá un nombre.</p>
+                        </div>
+
+                        <h2>4.4. Control de Accesos <img src="assets/images/icons/puerta_icon.png" alt="Icono de Puerta"
+                                class="inline-icon"></h2>
+                        <ul>
+                            <li>Una lista de todas las puertas que has dibujado.</li>
+                            <li>Permite <strong>Abrir/Cerrar</strong>, <strong>Renombrar</strong> (haciendo clic en el
+                                nombre) o <strong>Eliminar</strong> cada puerta individualmente.</li>
+                        </ul>
+
+                        <h2>4.5. Ambientación <img src="assets/images/icons/ambiente_icon.png" alt="Icono de Ambiente"
+                                class="inline-icon"></h2>
+                        <ul>
+                            <li>Una sencilla <strong>mesa de sonidos</strong> para añadir inmersión.</li>
+                            <li><strong>Música:</strong> Sonidos largos que se repiten en bucle (Taverna, Bosque,
+                                Combate). Haz clic una vez para iniciar, y otra vez para detener.</li>
+                            <li><strong>Efectos:</strong> Sonidos cortos que se reproducen una sola vez (Espadazo,
+                                Hechizo, Grito).</li>
+                        </ul>
+
+                        <br>
+
+                        <h2><span class="icon-players"></span> La Vista de Jugador</h2>
+                        <hr>
+                        <p>Esta es la ventana que compartes con tus jugadores. Es una vista limpia y centrada en el
+                            mapa.</p>
+                        <img src="assets/images/icons/jugadoresM_icon.png" alt="Vista del jugador"
+                            style="width: 300px; display: block; margin: auto;">
+
+                        <h3>Funcionalidades del Jugador</h3>
+                        <ul>
+                            <li><strong>Mover Fichas:</strong> Los jugadores pueden arrastrar sus propias fichas por el
+                                mapa. Sus movimientos se sincronizan contigo.</li>
+                            <li><strong>Pan & Zoom:</strong> Pueden moverse por el mapa y hacer zoom con la rueda del
+                                ratón.</li>
+                            <li><strong>Panel de Turnos:</strong> Una versión simplificada del tracker de iniciativa,
+                                mostrando el orden, nombre, avatar y barras de vida de los personajes visibles.</li>
+                        </ul>
+
+                        <h3>Controles Flotantes del DM</h3>
+                        <p>En esta ventana, el DM tiene acceso a un panel de controles flotante.</p>
+                        <ul>
+                            <li><img src="assets/images/icons/seleccionmultiple_icon.png" class="inline-icon-small">
+                                <strong>Selección Múltiple:</strong> Activa este modo para seleccionar varias fichas a
+                                la vez. Las fichas seleccionadas se moverán juntas.
+                            </li>
+                            <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="peru" width="28px"
+                                    height="28px">
+                                    <path d="M0 0h24v24H0V0z" fill="none" />
+                                    <path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z" />
+                                </svg>
+                                <strong>Cambiar Posición del Panel:</strong> Mueve el panel de turnos de la derecha a la
+                                izquierda de la pantalla, y viceversa.
+                            </li>
+                            <li><strong>Herramientas de Dibujo:</strong>
+                                <ul>
+                                    <li><img src="assets/images/icons/muro_icon.png" class="inline-icon-small">
+                                        <strong>Muro:</strong> Activa el modo para dibujar muros.
+                                    </li>
+                                    <li><img src="assets/images/icons/puerta_icon.png" class="inline-icon-small">
+                                        <strong>Puerta:</strong> Activa el modo para dibujar puertas.
+                                    </li>
+                                    <li><img src="assets/images/icons/deshacer_icon.png" class="inline-icon-small">
+                                        <strong>Deshacer:</strong> Deshace el último muro o puerta dibujado.
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                        <div class="callout info">
+                            <div class="callout-title"><span class="icon-info"></span> Información</div>
+                            <p>Estos controles de dibujo <strong>solo aparecen cuando la Visión Dinámica está
+                                    desactivada</strong>, para evitar conflictos.</p>
+                        </div>
+                        <br>
+
+                        <h2><span class="icon-faq"></span> Preguntas Frecuentes (FAQ)</h2>
+                        <hr>
+
+                        <h2>¿Dónde se guarda mi información?</h2>
+                        <p>Toda la información (escenas, biblioteca de personajes, notas) se guarda localmente en tu
+                            navegador usando <strong>IndexedDB</strong> y <strong>LocalStorage</strong>. Es rápido y
+                            privado. Para hacer copias de seguridad o mover tu información a otro ordenador, usa las
+                            funciones de <strong>Exportar</strong>.</p>
+
+                        <h2>¿Por qué necesito tener la ventana del jugador abierta para guardar/exportar?</h2>
+                        <p>La lógica que gestiona el lienzo de la niebla de guerra reside en la ventana del jugador. Al
+                            guardar, la vista del DM le "pregunta" a la del jugador por el estado actual de la niebla
+                            para incluirlo en el archivo.</p>
+
+                        <h2>¿Puedo usar esto en diferentes navegadores?</h4>
+                            <p>Sí, pero tu información guardada (escenas, biblioteca) está ligada al navegador donde la
+                                creaste. Si quieres usar Chrome un día y Firefox otro, deberás usar las funciones de
+                                <strong>Exportar/Importar</strong> para mover tus datos.
+                            </p>
+
+                            <hr>
+
+                            <p style="text-align: center; font-style: italic;">Creado por <strong>Rafael
+                                    Alvarez</strong>.
+                            </p>
+                            <!-- Ejemplo: Un botón de descarga simple -->
+                            <a href="assets/docs/MASTER'S FORGE MANUAL DE USO.pdf" target="_blank"
+                                class="button-download">
+                                <span class="btn-icon icon-download"></span>
+                                <span class="btn-text">[Ver Manual (PDF)]</span>
+                            </a>
+                    </div>
                     </iframe>
                 </div>
             </div>
