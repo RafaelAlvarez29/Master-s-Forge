@@ -292,7 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
     deselectTokenBtn.addEventListener('click', deselectToken);
     toggleVisionBtn.addEventListener('click', toggleVisionMode);
     resetFogBtn.addEventListener('click', resetFog);
-    clearWallsBtn.addEventListener('click', clearAllWalls);	
+    clearWallsBtn.addEventListener('click', clearAllWalls);
     addStateBtn.addEventListener('click', addStateToSelectedToken);
     alignGridModeBtn.addEventListener('click', () => toggleAlignGridMode());
     resetGridOffsetBtn.addEventListener('click', resetGridOffset);
@@ -438,7 +438,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // ... (pegas aquí el resto de tu script.js desde `getSavedScenes` hasta el final)
 
     // --- GESTIÓN DE ESCENAS ---
-    function getSavedScenes() { return JSON.parse(localStorage.getItem('dndArsenalSavedScenes')) || []; }
 
     function saveCurrentScene() {
         const sceneName = sceneNameInput.value.trim();
@@ -471,9 +470,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function finalizeSceneSave(sceneName, sceneId, fogDataUrl) {
-        const tx = db.transaction([ASSETS_STORE], 'readwrite');
-        const assetStore = tx.objectStore(ASSETS_STORE);
         try {
+            // Guardamos los assets como antes
+            const assetTx = db.transaction(ASSETS_STORE, 'readwrite');
+            const assetStore = assetTx.objectStore(ASSETS_STORE);
+
             const mapAssetId = `map_${sceneId}`;
             const mapSrc = document.getElementById('mapImageInput')._dataUrl;
             await assetStore.put({ id: mapAssetId, data: mapSrc });
@@ -489,58 +490,76 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 const cleanToken = JSON.parse(JSON.stringify(t));
                 if (cleanToken.identity.image) cleanToken.identity.imageAssetId = imageAssetId;
-                delete cleanToken.identity.image;
+                delete cleanToken.identity.image; // No guardamos el dataURL en la metadata
                 return cleanToken;
             });
-            const tokenMetadata = await Promise.all(tokenPromises);
-            await tx.done;
 
-            const sceneMetadata = {
-                id: sceneId, name: sceneName, date: new Date().toISOString(),
+            const tokenMetadata = await Promise.all(tokenPromises);
+            await assetTx.done; // La transacción de assets termina aquí
+
+            // Creamos el objeto completo de la escena
+            const sceneObject = {
+                id: sceneId,
+                name: sceneName,
+                date: new Date().toISOString(),
                 mapAssetId: mapAssetId,
                 fogAssetId: fogAssetId,
                 cellSize: cellSize,
-                tokens: tokenMetadata,
+                tokens: tokenMetadata, // tokens sin la imagen en base64
                 walls: walls,
-                gridSettings: { visible: gridVisible, color: gridColor, opacity: gridOpacity, offsetX: gridOffsetX, offsetY: gridOffsetY }
+                gridSettings: {
+                    visible: gridVisible,
+                    color: gridColor,
+                    opacity: gridOpacity,
+                    offsetX: gridOffsetX,
+                    offsetY: gridOffsetY
+                }
             };
-            const scenes = getSavedScenes();
-            scenes.push(sceneMetadata);
-            localStorage.setItem('dndArsenalSavedScenes', JSON.stringify(scenes));
+
+            // --- CAMBIO CLAVE: Guardamos el objeto completo en IndexedDB, no en localStorage ---
+            await db.put(SCENES_STORE, sceneObject);
+
             showCustomModal({
                 title: 'Éxito',
                 message: `¡Escena "${sceneName}" guardada con éxito!`,
                 type: 'success'
             });
+
         } catch (error) {
             console.error('Error al finalizar el guardado de la escena:', error);
-            tx.abort();
             showCustomModal({
                 title: 'Error',
                 message: 'Hubo un error al guardar la escena. Revisa la consola.',
-                type: 'warning'
+                type: 'error'
             });
         }
     }
 
     async function loadSceneById(sceneId) {
-        const scenes = getSavedScenes();
-        const sceneMetadata = scenes.find(s => s.id == sceneId);
-        if (!sceneMetadata) {
-            showCustomModal({
-                title: 'Error',
-                message: 'No se encontró la escena.',
-                type: 'warning'
-            });
-            return;
-        }
         try {
-            const tx = db.transaction([ASSETS_STORE], 'readonly');
-            const assetStore = tx.objectStore(ASSETS_STORE);
+            // --- ¡AQUÍ ESTÁ LA CORRECCIÓN! ---
+            // Convertimos el ID que viene del 'dataset' (string) a un número.
+            const numericSceneId = parseInt(sceneId, 10);
+
+            // --- CAMBIO CLAVE: Usamos el ID numérico para buscar en IndexedDB ---
+            const sceneMetadata = await db.get(SCENES_STORE, numericSceneId);
+
+            if (!sceneMetadata) {
+                showCustomModal({
+                    title: 'Error',
+                    message: 'No se encontró la escena.',
+                    type: 'error'
+                });
+                return;
+            }
+
+            const assetTx = db.transaction(ASSETS_STORE, 'readonly');
+            const assetStore = assetTx.objectStore(ASSETS_STORE);
 
             const mapAsset = await assetStore.get(sceneMetadata.mapAssetId);
             const fogAsset = sceneMetadata.fogAssetId ? await assetStore.get(sceneMetadata.fogAssetId) : null;
 
+            // El resto de la lógica de carga es idéntica
             document.getElementById('mapImageInput')._dataUrl = mapAsset.data;
             isMapLoaded = true;
             cellSize = sceneMetadata.cellSize;
@@ -594,34 +613,38 @@ document.addEventListener('DOMContentLoaded', () => {
             showCustomModal({
                 title: 'Error',
                 message: 'Hubo un error al cargar los datos de la escena.',
-                type: 'warning'
+                type: 'error'
             });
         }
     }
 
     async function renderSavedScenesList() {
-        const scenes = getSavedScenes();
+        // --- CAMBIO CLAVE: Obtenemos todas las escenas de IndexedDB ---
+        const scenes = await db.getAll(SCENES_STORE);
         sceneListContainer.innerHTML = '';
 
         if (scenes.length === 0) {
             sceneListContainer.innerHTML = `
-    <div id="no-scenes-message">
-        <div class="icon icon-map-large"></div>
-        <h3>No hay mapas guardados</h3>
-        <p>Aún no has guardado ninguna escena. Crea una y guárdala para poder cargarla más tarde.</p>
-    </div>`;
+        <div id="no-scenes-message">
+            <div class="icon icon-map-large"></div>
+            <h3>No hay mapas guardados</h3>
+            <p>Aún no has guardado ninguna escena. Crea una y guárdala para poder cargarla más tarde.</p>
+        </div>`;
             return;
         }
 
         scenes.sort((a, b) => new Date(b.date) - new Date(a.date));
 
+        // El resto de la lógica para obtener los thumbnails y renderizar es igual
         const validMapKeys = scenes.map(scene => scene.mapAssetId).filter(key => key);
         const mapAssets = new Map();
         if (validMapKeys.length > 0) {
             const tx = db.transaction(ASSETS_STORE, 'readonly');
             const store = tx.objectStore(ASSETS_STORE);
             const assets = await Promise.all(validMapKeys.map(key => store.get(key)));
-            assets.forEach(asset => { if (asset) mapAssets.set(asset.id, asset.data); });
+            assets.forEach(asset => {
+                if (asset) mapAssets.set(asset.id, asset.data);
+            });
         }
 
         scenes.forEach((scene) => {
@@ -635,21 +658,21 @@ document.addEventListener('DOMContentLoaded', () => {
             card.dataset.sceneId = scene.id;
 
             card.innerHTML = `
-    <div class="scene-card-image-container">
-        <img src="${mapSrc}" alt="Vista previa de ${scene.name}" class="scene-card-image">
-        <div class="scene-card-info-overlay">
-            <h3 class="scene-card-name">${scene.name}</h3>
-            <p class="scene-card-date">Guardado: ${formattedDate}</p>
+        <div class="scene-card-image-container">
+            <img src="${mapSrc}" alt="Vista previa de ${scene.name}" class="scene-card-image">
+            <div class="scene-card-info-overlay">
+                <h3 class="scene-card-name">${scene.name}</h3>
+                <p class="scene-card-date">Guardado: ${formattedDate}</p>
+            </div>
+            <button class="delete-scene-btn" data-scene-id="${scene.id}" title="Eliminar Escena">×</button>
         </div>
-        <button class="delete-scene-btn" data-scene-id="${scene.id}" title="Eliminar Escena">×</button>
-    </div>
-    <div class="scene-card-body">
-        <div class="scene-card-stats">
-            <div class="scene-card-stat-item"><span class="scene-card-stat-icon icon-stat-token"></span><span>${tokenCount} Fichas</span></div>
-            <div class="scene-card-stat-item"><span class="scene-card-stat-icon icon-stat-wall"></span><span>${wallCount} Muros</span></div>
-            <div class="scene-card-stat-item"><span class="scene-card-stat-icon icon-stat-door"></span><span>${doorCount} Puertas</span></div>
-        </div>
-    </div>`;
+        <div class="scene-card-body">
+            <div class="scene-card-stats">
+                <div class="scene-card-stat-item"><span class="scene-card-stat-icon icon-stat-token"></span><span>${tokenCount} Fichas</span></div>
+                <div class="scene-card-stat-item"><span class="scene-card-stat-icon icon-stat-wall"></span><span>${wallCount} Muros</span></div>
+                <div class="scene-card-stat-item"><span class="scene-card-stat-icon icon-stat-door"></span><span>${doorCount} Puertas</span></div>
+            </div>
+        </div>`;
             sceneListContainer.appendChild(card);
         });
 
@@ -663,11 +686,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }));
     }
 
-    async function deleteSceneById(sceneId) { // <-- ASEGÚRATE DE QUE LA FUNCIÓN SEA ASYNC
-
-        // =========================================================
-        // ===== REEMPLAZO DEL CONFIRM POR EL MODAL PERSONALIZADO =====
-        // =========================================================
+    async function deleteSceneById(sceneId) {
         const confirmed = await showCustomModal({
             title: 'Confirmar Eliminación',
             message: '¿Estás realmente seguro de que quieres eliminar esta escena? Esta acción es irreversible.',
@@ -676,48 +695,60 @@ document.addEventListener('DOMContentLoaded', () => {
             cancelText: 'No, cancelar'
         });
 
-        if (!confirmed) {
-            return; // Si el usuario presiona "No, cancelar" (o cierra el modal), la función termina aquí.
+        if (!confirmed) return;
+
+        // --- ¡AQUÍ ESTÁ LA CORRECCIÓN! ---
+        // Convertimos el ID que viene del 'dataset' (string) a un número.
+        const numericSceneId = parseInt(sceneId, 10);
+
+        // Primero, obtenemos la metadata de la escena para saber qué assets borrar
+        // Usamos el ID numérico para la búsqueda.
+        const sceneToDelete = await db.get(SCENES_STORE, numericSceneId);
+
+        if (!sceneToDelete) {
+            console.warn("Se intentó borrar una escena que ya no existe:", numericSceneId);
+            renderSavedScenesList(); // Refrescar la UI por si acaso
+            return;
         }
 
-        let scenes = getSavedScenes();
-        const sceneToDelete = scenes.find(s => s.id == sceneId);
+        try {
+            const tx = db.transaction([SCENES_STORE, ASSETS_STORE], 'readwrite');
+            const sceneStore = tx.objectStore(SCENES_STORE);
+            const assetStore = tx.objectStore(ASSETS_STORE);
 
-        if (sceneToDelete) {
-            try {
-                const tx = db.transaction(ASSETS_STORE, 'readwrite');
-                const assetStore = tx.objectStore(ASSETS_STORE);
-                const deletePromises = [];
+            const deletePromises = [];
 
-                if (sceneToDelete.mapAssetId) {
-                    deletePromises.push(assetStore.delete(sceneToDelete.mapAssetId));
-                }
+            // 1. Borramos la entrada de la escena usando el ID numérico.
+            deletePromises.push(sceneStore.delete(numericSceneId));
 
-                if (sceneToDelete.tokens && Array.isArray(sceneToDelete.tokens)) {
-                    sceneToDelete.tokens.forEach(token => {
-                        const assetId = token.identity?.imageAssetId || token.imageAssetId;
-                        if (assetId) {
-                            deletePromises.push(assetStore.delete(assetId));
-                        }
-                    });
-                }
-
-                await Promise.all(deletePromises);
-                await tx.done;
-
-                scenes = scenes.filter(s => s.id != sceneId);
-                localStorage.setItem('dndArsenalSavedScenes', JSON.stringify(scenes));
-
-                renderSavedScenesList();
-
-            } catch (error) {
-                console.error("Error al eliminar los assets de la escena:", error);
-                showCustomModal({
-                    title: 'Atención',
-                    message: 'Hubo un problema al limpiar los datos de la escena eliminada.',
-                    type: 'warning'
+            // 2. Borramos los assets asociados (esta parte ya funcionaba bien)
+            if (sceneToDelete.mapAssetId) {
+                deletePromises.push(assetStore.delete(sceneToDelete.mapAssetId));
+            }
+            if (sceneToDelete.fogAssetId) {
+                deletePromises.push(assetStore.delete(sceneToDelete.fogAssetId));
+            }
+            if (sceneToDelete.tokens && Array.isArray(sceneToDelete.tokens)) {
+                sceneToDelete.tokens.forEach(token => {
+                    const assetId = token.identity?.imageAssetId || token.imageAssetId;
+                    if (assetId) {
+                        deletePromises.push(assetStore.delete(assetId));
+                    }
                 });
             }
+
+            await Promise.all(deletePromises);
+            await tx.done;
+
+            renderSavedScenesList();
+
+        } catch (error) {
+            console.error("Error al eliminar la escena y sus assets:", error);
+            showCustomModal({
+                title: 'Error',
+                message: 'Hubo un problema al eliminar los datos de la escena.',
+                type: 'error'
+            });
         }
     }
 
