@@ -70,6 +70,22 @@
             <button id="undoDrawBtn" class="draw-tool-btn" title="Deshacer último trazo">
                 <span class="btn-icon icon-undo"></span>
             </button>
+            <button id="clearWallsBtnPlayer" class="draw-tool-btn" title="Limpiar todos los muros y puertas">
+                <span class="btn-icon icon-clear-all"></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL PARA NOMBRAR PUERTA (EN VISTA DE JUGADOR) -->
+    <div id="playerDoorNameModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Nombrar Nuevo Acceso</h3>
+            <label for="playerDoorNameInput">Nombre:</label>
+            <input type="text" id="playerDoorNameInput" placeholder="Puerta de Roble...">
+            <div class="button-group">
+                <button id="confirmPlayerDoorNameBtn">Crear</button>
+                <button id="cancelPlayerDoorNameBtn" class="secondary">Cancelar</button>
+            </div>
         </div>
     </div>
 

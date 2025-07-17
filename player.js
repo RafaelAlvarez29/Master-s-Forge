@@ -29,6 +29,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const drawWallBtn = document.getElementById('drawWallBtn');
     const drawDoorBtn = document.getElementById('drawDoorBtn');
     const undoDrawBtn = document.getElementById('undoDrawBtn');
+    const clearWallsBtnPlayer = document.getElementById('clearWallsBtnPlayer');
+
+
+    // NUEVOS SELECTORES PARA EL MODAL DE PUERTA
+    const playerDoorNameModal = document.getElementById('playerDoorNameModal');
+    const playerDoorNameInput = document.getElementById('playerDoorNameInput');
+    const confirmPlayerDoorNameBtn = document.getElementById('confirmPlayerDoorNameBtn');
+    const cancelPlayerDoorNameBtn = document.getElementById('cancelPlayerDoorNameBtn');
 
 
     // --- Variables de Estado Locales ---
@@ -36,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let localWalls = [];
     let isVisionActive = false;
     let cellSize = 50;
+    let pendingPlayerDoor = null;
 
     let scale = 1,
         panX = 0,
@@ -218,6 +227,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     fogDataUrl: revealedBufferCanvas.toDataURL()
                 });
                 break;
+            case 'CMD_REQUEST_DOOR_NAME':
+                pendingPlayerDoor = payload.doorData; // Guardamos los datos de la puerta
+                playerDoorNameModal.classList.add('open');
+                playerDoorNameInput.value = ''; // Limpiamos el input
+                playerDoorNameInput.focus();
+                break;
         }
     };
 
@@ -255,7 +270,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Enviar evento al DM para que gestione el "deshacer"
         broadcast('EVENT_UNDO_LAST_WALL');
     });
-
+    clearWallsBtnPlayer.addEventListener('click', () => {
+        // Pedir confirmación al DM antes de una acción destructiva
+        if (confirm('¿Estás seguro de que quieres eliminar TODOS los muros y puertas del mapa?')) {
+            // Enviar evento al DM para que ejecute la limpieza
+            broadcast('EVENT_CLEAR_ALL_WALLS');
+        }
+    });
     // --- MANEJO DE MOUSE ACTUALIZADO ---
 
     mapContainer.addEventListener('mousedown', e => {
@@ -972,5 +993,45 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleTrackerPosBtn.addEventListener('click', () => {
         playerTurnTracker.classList.toggle('tracker-left');
         playerControlsContainer.classList.toggle('controls-right');
+    });
+
+    toggleTrackerPosBtn.addEventListener('click', () => {
+        playerTurnTracker.classList.toggle('tracker-left');
+        playerControlsContainer.classList.toggle('controls-right');
+    });
+
+    // --- NUEVOS MANEJADORES PARA EL MODAL DE PUERTA ---
+    confirmPlayerDoorNameBtn.addEventListener('click', () => {
+        const doorName = playerDoorNameInput.value.trim();
+        if (!doorName) {
+            alert('El nombre del acceso no puede estar vacío.');
+            return;
+        }
+
+        // Enviamos el nombre y los datos de la puerta de vuelta al DM
+        broadcast('EVENT_DOOR_NAME_SUBMITTED', {
+            name: doorName,
+            doorData: pendingPlayerDoor
+        });
+
+        playerDoorNameModal.classList.remove('open');
+        pendingPlayerDoor = null; // Limpiamos el estado
+    });
+
+    cancelPlayerDoorNameBtn.addEventListener('click', () => {
+        playerDoorNameModal.classList.remove('open');
+        pendingPlayerDoor = null;
+        // Notificamos al DM que se canceló para que pueda limpiar la línea temporal
+        broadcast('EVENT_DOOR_NAME_CANCELLED');
+    });
+    playerDoorNameInput.addEventListener('keydown', (event) => {
+        // Comprobamos si la tecla presionada es 'Enter'
+        if (event.key === 'Enter') {
+            // Evitamos que el formulario se envíe si estuviera dentro de uno (buena práctica)
+            event.preventDefault();
+
+            // Simulamos un clic en el botón de confirmar
+            confirmPlayerDoorNameBtn.click();
+        }
     });
 });

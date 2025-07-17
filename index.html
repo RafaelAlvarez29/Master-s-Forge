@@ -961,30 +961,7 @@
                                     type="range" id="brushSize" min="10" max="300" step="5" value="50"></div>
                         </div>
                     </div>
-                    <!-- Vista 3: Muros y Puertas -->
-                    <div id="right-view-walls" class="panel-view">
-                        <h3 class="view-title">Muros y Puertas</h3>
-                        <h4>Tipo de Trazado</h4>
-                        <div class="radio-tile-group">
-                            <div class="input-container"><input id="drawTypeWall" class="radio-button" type="radio"
-                                    name="drawType" value="wall" checked>
-                                <div class="radio-tile"><span class="radio-tile-icon icon-wall-draw"></span><label
-                                        for="drawTypeWall" class="radio-tile-label">Muro</label></div>
-                            </div>
-                            <div class="input-container"><input id="drawTypeDoor" class="radio-button" type="radio"
-                                    name="drawType" value="door">
-                                <div class="radio-tile"><span class="radio-tile-icon icon-door-draw"></span><label
-                                        for="drawTypeDoor" class="radio-tile-label">Puerta</label></div>
-                            </div>
-                        </div>
-                        <p class="help-text">Activa el modo dibujo y haz clic en la ventana del jugador para trazar
-                            líneas.</p><button id="toggleWallModeBtn">Activar Modo Dibujo</button>
-                        <div class="button-group"><button id="undoWallBtn" class="secondary"><span
-                                    class="btn-icon icon-undo"></span><span
-                                    class="btn-text">Deshacer</span></button><button id="clearWallsBtn"
-                                class="secondary"><span class="btn-icon icon-clear-all"></span><span
-                                    class="btn-text">Limpiar</span></button></div>
-                    </div>
+
                     <!-- Vista 4: Control de Accesos -->
                     <div id="right-view-doors" class="panel-view">
                         <h3 class="view-title">Control de Accesos</h3>
@@ -1080,8 +1057,6 @@
                                 title="Mapa y Escena"><span class="nav-icon icon-map"></span></button></li>
                         <li><button class="panel-nav-button" data-view="right-view-tools" title="Herramientas"><span
                                     class="nav-icon icon-tools"></span></button></li>
-                        <li><button class="panel-nav-button" data-view="right-view-walls" title="Muros"><span
-                                    class="nav-icon icon-walls"></span></button></li>
                         <li><button class="panel-nav-button" data-view="right-view-doors" title="Puertas"><span
                                     class="nav-icon icon-doors"></span></button></li>
                         <li><button class="panel-nav-button" data-view="right-view-ambiance" title="Ambientación"><span
@@ -1099,14 +1074,7 @@
     </div>
 
     <!-- Modales y Audios se mantienen igual -->
-    <div id="doorNameModal" class="modal-overlay">
-        <div class="modal-content">
-            <h3>Nombrar Acceso</h3><label for="doorNameInput">Nombre:</label><input type="text" id="doorNameInput"
-                placeholder="Puerta de Roble...">
-            <div class="button-group"><button id="confirmDoorNameBtn">Crear</button><button id="cancelDoorNameBtn"
-                    class="secondary">Cancelar</button></div>
-        </div>
-    </div>
+
     <div id="saveSceneModal" class="modal-overlay">
         <div class="modal-content">
             <h3>Guardar Escena</h3><label for="sceneNameInput">Nombre:</label><input type="text" id="sceneNameInput"

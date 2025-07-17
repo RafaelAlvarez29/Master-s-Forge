@@ -43,9 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const brushRevealCheckbox = document.getElementById('brushReveal');
     const brushHideCheckbox = document.getElementById('brushHide');
     const brushSizeInput = document.getElementById('brushSize');
-    const drawTypeInputs = document.querySelectorAll('input[name="drawType"]');
-    const toggleWallModeBtn = document.getElementById('toggleWallModeBtn');
-    const undoWallBtn = document.getElementById('undoWallBtn');
     const clearWallsBtn = document.getElementById('clearWallsBtn');
     const doorListUl = document.getElementById('doorList');
     const noDoorsMessage = document.getElementById('noDoorsMessage');
@@ -115,10 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const savedScenesModal = document.getElementById('savedScenesModal');
     const closeSavedScenesBtn = document.getElementById('closeSavedScenesBtn');
     const sceneListContainer = document.getElementById('sceneListContainer');
-    const doorNameModal = document.getElementById('doorNameModal');
-    const doorNameInput = document.getElementById('doorNameInput');
-    const confirmDoorNameBtn = document.getElementById('confirmDoorNameBtn');
-    const cancelDoorNameBtn = document.getElementById('cancelDoorNameBtn');
+
     const tokenHeaderInfo = document.querySelector('.token-header-info');
     const tokenInfoView = document.getElementById('tokenInfoView');
     const tokenInfoEdit = document.getElementById('tokenInfoEdit');
@@ -154,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     let tokens = [], walls = [], selectedTokenId = null, visionModeActive = false;
-    let activeBrushMode = null, pendingDoor = null;
+    let activeBrushMode = null;
     let activeLoopingSound = null, activeAoeType = null;
     let isAligningGrid = false;
     let currentModalContext = null;
@@ -257,17 +251,51 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'EVENT_MAP_CLICKED': deselectToken(); break;
             case 'EVENT_WALL_DRAWN':
                 if (payload.drawType === 'door') {
-                    pendingDoor = { x1: payload.start.x, y1: payload.start.y, x2: payload.end.x, y2: payload.end.y };
-                    doorNameInput.value = ''; doorNameModal.classList.add('open'); doorNameInput.focus();
+                    // En lugar de abrir un modal local, enviamos una orden al jugador
+                    broadcast('CMD_REQUEST_DOOR_NAME', {
+                        doorData: { x1: payload.start.x, y1: payload.start.y, x2: payload.end.x, y2: payload.end.y }
+                    });
                 } else {
                     walls.push({ id: Date.now(), x1: payload.start.x, y1: payload.start.y, x2: payload.end.x, y2: payload.end.y, type: 'wall' });
                     broadcast('CMD_DRAW_WALLS', { walls });
                 }
                 break;
-            case 'EVENT_UNDO_LAST_WALL': undoLastWall(); break;
+            case 'EVENT_UNDO_LAST_WALL':
+                undoLastWall();
+                break;
+            case 'EVENT_CLEAR_ALL_WALLS':
+                // La función clearAllWalls ya pide confirmación, pero es bueno tenerla
+                // en ambos lados. Podemos quitar la confirmación de la función original
+                // si ahora siempre se pedirá desde el origen del evento.
+                // Por ahora, la mantenemos para que el botón del panel del DM también funcione.
+                clearAllWalls();
+                break;
+            case 'EVENT_DOOR_NAME_SUBMITTED':
+                const { name, doorData } = payload;
+                walls.push({
+                    id: Date.now(),
+                    ...doorData,
+                    type: 'door',
+                    isOpen: false,
+                    name: name
+                });
+                updateDoorList();
+                broadcast('CMD_DRAW_WALLS', { walls });
+                if (visionModeActive) {
+                    broadcast('CMD_DRAW_VISION', { tokens, walls, cellSize });
+                }
+                break;
+
+            case 'EVENT_DOOR_NAME_CANCELLED':
+                // El jugador canceló. Simplemente re-dibujamos los muros actuales
+                // para eliminar la línea de previsualización que quedó en su pantalla.
+                broadcast('CMD_DRAW_WALLS', { walls });
+                break;
             case 'EVENT_GRID_ALIGNED':
-                gridOffsetX = payload.x; gridOffsetY = payload.y;
-                broadcastGridSettings(); toggleAlignGridMode(false);
+                gridOffsetX = payload.x;
+                gridOffsetY = payload.y;
+                broadcastGridSettings();
+                toggleAlignGridMode(false);
                 break;
             case 'EVENT_FOG_PAINTED': checkEnemyDiscovery(payload.visibleEnemies); break;
             case 'EVENT_FOG_DATA_RESPONSE':
@@ -292,7 +320,6 @@ document.addEventListener('DOMContentLoaded', () => {
     deselectTokenBtn.addEventListener('click', deselectToken);
     toggleVisionBtn.addEventListener('click', toggleVisionMode);
     resetFogBtn.addEventListener('click', resetFog);
-    clearWallsBtn.addEventListener('click', clearAllWalls);
     addStateBtn.addEventListener('click', addStateToSelectedToken);
     alignGridModeBtn.addEventListener('click', () => toggleAlignGridMode());
     resetGridOffsetBtn.addEventListener('click', resetGridOffset);
@@ -313,8 +340,6 @@ document.addEventListener('DOMContentLoaded', () => {
     cancelSaveSceneBtn.addEventListener('click', () => saveSceneModal.classList.remove('open'));
     confirmSaveSceneBtn.addEventListener('click', () => saveCurrentScene());
     closeSavedScenesBtn.addEventListener('click', () => savedScenesModal.classList.remove('open'));
-    confirmDoorNameBtn.addEventListener('click', createDoorFromModal);
-    cancelDoorNameBtn.addEventListener('click', () => { doorNameModal.classList.remove('open'); pendingDoor = null; broadcast('CMD_DRAW_WALLS', { walls }); });
     openPlayerViewBtn.addEventListener('click', () => { if (playerViewWindow && !playerViewWindow.closed) { playerViewWindow.focus(); return; } playerViewWindow = window.open('player.html', '_blank', 'width=1280,height=720'); setTimeout(() => { if (isMapLoaded) { const mapSrc = document.getElementById('mapImageInput')._dataUrl; broadcast('CMD_LOAD_NEW_MAP', { src: mapSrc }); setTimeout(() => { broadcast('CMD_LOAD_SCENE_DATA', { tokens: tokens, walls: walls, gridSettings: { visible: gridVisible, color: gridColor, opacity: gridOpacity, offsetX: gridOffsetX, offsetY: gridOffsetY, cellSize: cellSize } }); if (visionModeActive) { broadcast('CMD_SET_VISION_MODE', { active: true, tokens, walls, cellSize }); } }, 500); } }, 1500); });
     addAbilityBtn.addEventListener('click', () => openFeatureModal('ability'));
     addInventoryItemBtn.addEventListener('click', () => openFeatureModal('inventory'));
@@ -775,16 +800,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function resetFog() { if (!confirm("¿Reiniciar toda la niebla de guerra?")) return; tokens.forEach(t => { if (t.identity.type === 'enemy') t.isDiscovered = false; }); broadcast('CMD_RESET_FOG'); if (visionModeActive) broadcast('CMD_DRAW_VISION', { tokens, walls, cellSize }); updateTokenList(); }
     function checkEnemyDiscovery(visibleEnemies) { let trackerNeedsUpdate = false; visibleEnemies.forEach(enemyId => { const enemy = tokens.find(t => t.id === enemyId && !t.isDiscovered); if (enemy) { enemy.isDiscovered = true; trackerNeedsUpdate = true; } }); if (trackerNeedsUpdate) { updateTokenList(); broadcast('CMD_UPDATE_TURN_TRACKER', { tokens }); } }
     function handleBrushModeChange(event) { const checkbox = event.target; const otherCheckbox = checkbox.id === 'brushReveal' ? brushHideCheckbox : brushRevealCheckbox; if (checkbox.checked) { otherCheckbox.checked = false; activeBrushMode = checkbox.value; } else { activeBrushMode = null; } broadcast('CMD_SET_BRUSH_MODE', { mode: activeBrushMode }); }
-    function toggleWallMode() {
-        if (visionModeActive) {
-            showCustomModal({
-                title: 'Atención',
-                message: 'Desactiva la Visión Dinámica para editar muros.',
-                type: 'warning'
-            });
-            return;
-        } isDrawingWallMode = !isDrawingWallMode; toggleWallModeBtn.classList.toggle('active', isDrawingWallMode); broadcast('CMD_SET_WALL_DRAW_MODE', { active: isDrawingWallMode });
-    }
+    
     function toggleAlignGridMode(forceState) { isAligningGrid = typeof forceState === 'boolean' ? forceState : !isAligningGrid; alignGridModeBtn.classList.toggle('active', isAligningGrid); alignGridModeBtn.textContent = isAligningGrid ? 'Cancelar Alineación' : 'Activar Modo Alineación'; broadcast('CMD_SET_GRID_ALIGN_MODE', { active: isAligningGrid }); }
     function broadcastGridSettings() { broadcast('CMD_SET_GRID_SETTINGS', { gridSettings: { visible: gridVisible, color: gridColor, opacity: gridOpacity, offsetX: gridOffsetX, offsetY: gridOffsetY, cellSize: cellSize } }); }
     const calculateModifier = (score) => { const mod = Math.floor((score - 10) / 2); return mod >= 0 ? `+${mod}` : `${mod}`; };
@@ -807,17 +823,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateAoeControls() { aoeShapeButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.shape === activeAoeType)); document.querySelectorAll('.aoe-params').forEach(paramDiv => { paramDiv.style.display = paramDiv.id === `params-${activeAoeType}` ? 'block' : 'none'; }); }
     function broadcastAoeState() { if (!activeAoeType || !selectedTokenId) { broadcast('CMD_CLEAR_AOE'); return; } const token = tokens.find(t => t.id === selectedTokenId); if (!token) return; const aoeData = { type: activeAoeType, origin: { x: token.position.x + ((token.position.sizeMultiplier || 1) * cellSize / 2), y: token.position.y + ((token.position.sizeMultiplier || 1) * cellSize / 2) }, params: { color: aoeColorInput.value } }; switch (activeAoeType) { case 'line': aoeData.params.width = parseInt(document.getElementById('aoeLineWidth').value) || 1; break; case 'cone': aoeData.params.length = parseInt(document.getElementById('aoeConeLength').value) || 1; break; case 'cube': aoeData.params.size = parseInt(document.getElementById('aoeCubeSize').value) || 1; break; case 'sphere': aoeData.params.radius = parseInt(document.getElementById('aoeSphereRadius').value) || 1; break; case 'cylinder': aoeData.params.radius = parseInt(document.getElementById('aoeCylinderRadius').value) || 1; break; } broadcast('CMD_DRAW_AOE', { aoeData }); }
     function undoLastWall() { if (walls.length > 0) { walls.pop(); updateDoorList(); broadcast('CMD_DRAW_WALLS', { walls: walls }); if (visionModeActive) { broadcast('CMD_DRAW_VISION', { tokens, walls, cellSize }); } } }
-    function clearAllWalls() { if (confirm("¿Estás seguro de que quieres eliminar todos los muros y puertas?")) { walls = []; updateDoorList(); broadcast('CMD_DRAW_WALLS', { walls: walls }); if (visionModeActive) { broadcast('CMD_DRAW_VISION', { tokens, walls, cellSize }); } } }
-    function createDoorFromModal() {
-        const doorName = doorNameInput.value.trim(); if (!doorName) {
-            showCustomModal({
-                title: 'Atención',
-                message: 'Por favor, introduce un nombre para el acceso.',
-                type: 'warning'
-            });
-            return;
-        } if (pendingDoor) { walls.push({ id: Date.now(), ...pendingDoor, type: 'door', isOpen: false, name: doorName }); pendingDoor = null; doorNameModal.classList.remove('open'); updateDoorList(); broadcast('CMD_DRAW_WALLS', { walls }); if (visionModeActive) broadcast('CMD_DRAW_VISION', { tokens, walls, cellSize }); }
+    function clearAllWalls() {
+        walls = [];
+        updateDoorList();
+        broadcast('CMD_DRAW_WALLS', { walls: walls });
+        if (visionModeActive) {
+            broadcast('CMD_DRAW_VISION', { tokens, walls, cellSize });
+        }
     }
+
     function updateDoorList() {
         const doors = walls.filter(w => w.type === 'door'); doorListUl.innerHTML = ''; noDoorsMessage.style.display = doors.length === 0 ? 'block' : 'none'; doors.forEach(door => {
             const li = document.createElement('li'); li.innerHTML = `<span class="door-name" data-id="${door.id}" title="Haz clic para editar">${door.name}</span>
