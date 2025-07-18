@@ -123,6 +123,7 @@ body {
 .main-column {
   grid-area: main;
   flex-direction: column;
+  min-width: 550.188px;
 }
 
 .right-column .panel-container {
