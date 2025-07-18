@@ -3765,15 +3765,7 @@ s .portal-actions a:hover {
     transform: scale(1);
   }
 }
-.portal-actions {
-  display: grid;
-  grid-template-columns: repeat(
-    auto-fit,
-    minmax(140px, 1fr)
-  ); /* Cuadrícula responsiva */
-  gap: 20px; /* Espacio entre las tarjetas */
-  margin-top: 30px;
-}
+
 
 .portal-card {
   display: flex;
@@ -3836,7 +3828,17 @@ s .portal-actions a:hover {
   .portal-actions {
     /* ...cambia la cuadrícula a una sola columna */
     grid-template-columns: 1fr;
+    
   }
+  .portal-card{
+    flex-direction: row;
+  }
+  .portal-card{height: 150px;
+  }
+  .card-icon{
+    height: 75%;
+  }
+ 
 }
 a.secondary {
   font-size: 1.2em;
