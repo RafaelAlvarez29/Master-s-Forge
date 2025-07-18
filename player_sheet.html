@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Hoja de Personaje</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Aquí podrías tener un CSS específico para móvil si lo necesitas -->
+</head>
+
+<body class="mobile-sheet-body">
+
+    <div id="player-sheet-container">
+        <!-- El contenido se generará con JS, similar al tokenEditor del DM -->
+        <p id="noCharacterLoaded" class="no-tokens-message">Carga un personaje desde tu biblioteca o impórtalo para
+            empezar.</p>
+
+        <div id="tokenEditor" style="display: none;">
+            <!-- Encabezado del Personaje -->
+            <div class="token-header-display">
+                <!-- ... (similar al del DM, pero sin botones de edición de imagen) ... -->
+            </div>
+
+            <!-- Navegación por Pestañas -->
+            <nav class="token-editor-nav">
+                <!-- ... (igual que en dm.html: Combate, Estadísticas, etc.) ... -->
+            </nav>
+
+            <!-- Contenido de las Pestañas -->
+            <div class="token-editor-content">
+                <!-- Paneles para Combate, Stats, Habilidades, etc. se insertarán aquí -->
+            </div>
+
+            <!-- Acciones Principales -->
+            <div class="main-actions-footer">
+                <button id="exportCharacterBtn">Exportar Personaje</button>
+                <a href="library.html" class="secondary">Volver a la Biblioteca</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="player_sheet.js"></script>
+</body>
+
+</html>

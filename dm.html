@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master's Forge</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=IM+Fell+English+SC&display=swap"
+        rel="stylesheet">
+    <link rel="shortcut icon"
+        href="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/i/465e4532-5430-4be7-b49c-acf81087d8bd/dk17bz4-f9c81319-b029-4470-9675-b67c2fd91bf0.png"
+        type="image/x-icon">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="splash-screen">
+        <img src="assets/images/icons/dm-sinfondo.png" alt="Logo de Master's Forge" class="splash-logo">
+    </div>
+    <!-- ESTRUCTURA PRINCIPAL DEL PANEL DE CONTROL -->
+    <div class="dm-dashboard">
+
+        <!-- ENCABEZADO FIJO -->
+        <header class="dashboard-header">
+            <div class="panel-logo-container">
+                <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/465e4532-5430-4be7-b49c-acf81087d8bd/dk16kcf-77b0443f-cc50-45d6-a19d-de78a6dcb6e6.png/v1/fill/w_894,h_894/logo1_by_rafaelalvarez29_dk16kcf-pre.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9MTAyNCIsInBhdGgiOiJcL2ZcLzQ2NWU0NTMyLTU0MzAtNGJlNy1iNDljLWFjZjgxMDg3ZDhiZFwvZGsxNmtjZi03N2IwNDQzZi1jYzUwLTQ1ZDYtYTE5ZC1kZTc4YTZkY2I2ZTYucG5nIiwid2lkdGgiOiI8PTEwMjQifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6aW1hZ2Uub3BlcmF0aW9ucyJdfQ.YtjWIIde6uE-Q4uflRtmthgIoWGsVSYs6MqcARV12B8"
+                    alt="Logo de la Aplicación" class="panel-logo">
+            </div>
+            <div class="panel-title-container">
+                <h2>Master's Forge</h2>
+                <p class="panel-subtitle">Herramientas para Forjar tu Aventura</p>
+            </div>
+
+            <div class="header-actions">
+                <button id="toggleVisionBtn">Iniciar Visión</button>
+                <button id="resetFogBtn" title="Reiniciar toda la niebla">R</button>
+                <button id="openPlayerViewBtn">
+                    <span class="btn-icon icon-player-view"></span>
+                    <span class="btn-text">Ventana del Jugador</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- COLUMNA IZQUIERDA: GESTIÓN DE FICHAS -->
+        <aside class="panel-column left-column">
+            <div class="panel-container">
+                <nav class="panel-nav">
+                    <ul>
+                        <li><button class="panel-nav-button" data-view="left-view-board-tokens"
+                                title="Fichas en el Tablero"><span class="nav-icon icon-tokens"></span></button></li>
+                        <li><button class="panel-nav-button active" data-view="left-view-library"
+                                title="Biblioteca de Personajes"><span class="nav-icon icon-stat-token"></span></button>
+                        </li>
+                        <li><button class="panel-nav-button" data-view="left-view-add-token"
+                                title="Añadir Ficha Nueva"><span class="nav-icon icon-add-token"></span></button></li>
+                    </ul>
+                    <p class="credits">By. Rafael Alvarez.</p>
+                    <a href="Creditos" id="openCreditsLink"><span class="nav-icon r_dev_logo"></span></a>
+                </nav>
+                <div class="panel-content">
+                    <!-- Vista 1: Fichas en el Tablero -->
+                    <div id="left-view-board-tokens" class="panel-view">
+                        <h3 class="view-title">Fichas en el Tablero</h3>
+                        <ul id="tokenList"></ul>
+                    </div>
+                    <!-- Vista 2: Biblioteca de Personajes -->
+                    <div id="left-view-library" class="panel-view active">
+                        <h3 class="view-title">Biblioteca de Personajes</h3>
+                        <div id="savedCharactersGrid" class="saved-characters-grid"></div>
+                        <div id="characterLibraryActions" class="button-group" style="margin-top: 15px; display: none;">
+                            <button id="exportLibraryBtn" class="secondary" style="width: 100%;"><span
+                                    class="btn-icon icon-save-scene"></span><span>Exportar</span></button>
+                        </div>
+                        <p id="noSavedCharactersMessage" class="no-tokens-message">Aún no has guardado ningún personaje.
+                        </p>
+                        <div class="button-group"
+                            style="margin-top: 10px; border-top: 1px solid var(--input-border); padding-top: 10px;">
+                            <input type="file" id="importLibraryInput" class="hidden-file-input" accept=".json">
+                            <label for="importLibraryInput" class="custom-file-upload-btn secondary"
+                                style="width: 100%; margin: 0; padding: 12px; font-size: 1.2em;"><span
+                                    class="btn-icon icon-load-scene"></span><span>Importar</span></label>
+                        </div>
+                    </div>
+                    <!-- Vista 3: Añadir Ficha Nueva -->
+                    <div id="left-view-add-token" class="panel-view">
+                        <h3 class="view-title">Añadir Ficha Nueva</h3>
+                        <!-- Contenido del formulario de añadir ficha -->
+                        <div class="token-editor-form">
+                            <h4>Información Básica</h4>
+                            <div class="form-group">
+                                <label>Tipo:</label>
+                                <div class="radio-tile-group">
+                                    <div class="input-container"><input id="add_typePlayer" class="radio-button"
+                                            type="radio" name="add_tokenType" value="player" checked>
+                                        <div class="radio-tile"><span
+                                                class="radio-tile-icon icon-player-type"></span><label
+                                                for="add_typePlayer" class="radio-tile-label">Jugador</label></div>
+                                    </div>
+                                    <div class="input-container"><input id="add_typeEnemy" class="radio-button"
+                                            type="radio" name="add_tokenType" value="enemy">
+                                        <div class="radio-tile"><span
+                                                class="radio-tile-icon icon-enemy-type"></span><label
+                                                for="add_typeEnemy" class="radio-tile-label">Enemigo</label></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div><label for="tokenName">Nombre:*</label><input type="text" id="tokenName"
+                                        placeholder="Ej: Grog Strongjaw"></div>
+                                <div><label for="tokenLetter">Letra:*</label><input type="text" id="tokenLetter"
+                                        maxlength="2" placeholder="(ID Ficha)" value=""></div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group"><label for="tokenClass">Clase:</label><input type="text"
+                                        id="tokenClass" placeholder="Ej: Bárbaro"></div>
+                                <div class="form-group"><label for="tokenLevel">Nivel:</label><input type="number"
+                                        id="tokenLevel" value="1" min="1"></div>
+                            </div>
+                            <div class="form-group"><label for="tokenRace">Raza:</label><input type="text"
+                                    id="tokenRace" placeholder="Ej: Semi-Orco"></div>
+
+                            <div class="form-row">
+                                <div class="form-group" style="flex-grow: 1;"><label for="tokenImageInput">Imagen de
+                                        Ficha:</label>
+                                    <div class="file-upload-wrapper"><input type="file" id="tokenImageInput"
+                                            accept="image/*" class="hidden-file-input"><label for="tokenImageInput"
+                                            class="custom-file-upload-btn small-btn">Cargar</label><span
+                                            id="tokenImageName" class="file-name-display">Ningún archivo...</span></div>
+                                </div>
+                            </div>
+                            <h4>Estadísticas</h4>
+                            <div class="char-stats-grid" id="add_char_stats_grid">
+                                <div class="char-stat-card"><label>FUE</label><span class="char-mod"
+                                        id="add_str_mod">+0</span>
+                                    <div class="char-score-capsule"><input type="number" id="add_str_score"
+                                            class="char-score-input nobackgrund" value="10"></div>
+                                </div>
+                                <div class="char-stat-card"><label>DES</label><span class="char-mod"
+                                        id="add_dex_mod">+0</span>
+                                    <div class="char-score-capsule"><input type="number" id="add_dex_score"
+                                            class="char-score-input nobackgrund" value="10"></div>
+                                </div>
+                                <div class="char-stat-card"><label>CON</label><span class="char-mod"
+                                        id="add_con_mod">+0</span>
+                                    <div class="char-score-capsule"><input type="number" id="add_con_score"
+                                            class="char-score-input nobackgrund" value="10"></div>
+                                </div>
+                                <div class="char-stat-card"><label>INT</label><span class="char-mod"
+                                        id="add_int_mod">+0</span>
+                                    <div class="char-score-capsule"><input type="number" id="add_int_score"
+                                            class="char-score-input nobackgrund" value="10"></div>
+                                </div>
+                                <div class="char-stat-card"><label>SAB</label><span class="char-mod"
+                                        id="add_wis_mod">+0</span>
+                                    <div class="char-score-capsule"><input type="number" id="add_wis_score"
+                                            class="char-score-input nobackgrund" value="10"></div>
+                                </div>
+                                <div class="char-stat-card"><label>CAR</label><span class="char-mod"
+                                        id="add_car_mod">+0</span>
+                                    <div class="char-score-capsule"><input type="number" id="add_car_score"
+                                            class="char-score-input nobackgrund" value="10"></div>
+                                </div>
+                            </div>
+                            <div class="combat-stats-grid">
+                                <div class="combat-stat-card"><label class="combat-label-top">BONIF.</label><input
+                                        type="number" class="combat-value-input nobackgrund" id="add_proficiency_bonus"
+                                        value="2"><label class="combat-label-bottom">COMPETENCIA</label></div>
+                                <div class="combat-stat-card"><label class="combat-label-top">MOD.</label><input
+                                        type="number" class="combat-value-input nobackgrund" id="add_initiative_mod"
+                                        value="0"><label class="combat-label-bottom">INICIATIVA</label></div>
+                                <div class="combat-stat-card"><label class="combat-label-top">VELOCIDAD</label><input
+                                        type="number" class="combat-value-input nobackgrund" id="add_speed"
+                                        value="30"><label class="combat-label-bottom">PIES</label></div>
+                                <div class="combat-stat-card"><label class="combat-label-top">CLASE DE</label><input
+                                        type="number" class="combat-value-input nobackgrund" id="add_armor_class"
+                                        value="10"><label class="combat-label-bottom">ARMADURA</label></div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group"><label>👁️Visión (casillas):*</label><input type="number"
+                                        id="tokenVision" value="12" min="0"></div>
+                                <div class="form-group"><label>♥️Vida Inicial:</label><input type="number"
+                                        id="tokenHealth" value=""></div>
+                            </div>
+                            <h4>Tiradas de Salvación</h4>
+                            <div class="saving-throws-list" id="add_saving_throws_list">
+                                <div class="save-throw-row">
+                                    <div class="checkbox-container"><input type="checkbox" id="add_str_save_prof"
+                                            class="save-prof-check"><label for="add_str_save_prof"></label></div>
+                                    <span class="save-name" data-full-name="Fuerza" data-short-name="FUE">Fuerza</span>
+                                    <span class="save-total" id="add_str_save_total">+0</span>
+                                </div>
+                                <div class="save-throw-row">
+                                    <div class="checkbox-container"><input type="checkbox" id="add_dex_save_prof"
+                                            class="save-prof-check"><label for="add_dex_save_prof"></label></div>
+                                    <span class="save-name" data-full-name="Destreza"
+                                        data-short-name="DES">Destreza</span>
+                                    <span class="save-total" id="add_dex_save_total">+0</span>
+                                </div>
+                                <div class="save-throw-row">
+                                    <div class="checkbox-container"><input type="checkbox" id="add_con_save_prof"
+                                            class="save-prof-check"><label for="add_con_save_prof"></label></div>
+                                    <span class="save-name" data-full-name="Constitución"
+                                        data-short-name="CON">Constitución</span>
+                                    <span class="save-total" id="add_con_save_total">+0</span>
+                                </div>
+                                <div class="save-throw-row">
+                                    <div class="checkbox-container"><input type="checkbox" id="add_int_save_prof"
+                                            class="save-prof-check"><label for="add_int_save_prof"></label></div>
+                                    <span class="save-name" data-full-name="Inteligencia"
+                                        data-short-name="INT">Inteligencia</span>
+                                    <span class="save-total" id="add_int_save_total">+0</span>
+                                </div>
+                                <div class="save-throw-row">
+                                    <div class="checkbox-container"><input type="checkbox" id="add_wis_save_prof"
+                                            class="save-prof-check"><label for="add_wis_save_prof"></label></div>
+                                    <span class="save-name" data-full-name="Sabiduría"
+                                        data-short-name="SAB">Sabiduría</span>
+                                    <span class="save-total" id="add_wis_save_total">+0</span>
+                                </div>
+                                <div class="save-throw-row">
+                                    <div class="checkbox-container"><input type="checkbox" id="add_car_save_prof"
+                                            class="save-prof-check"><label for="add_car_save_prof"></label></div>
+                                    <span class="save-name" data-full-name="Carisma"
+                                        data-short-name="CAR">Carisma</span>
+                                    <span class="save-total" id="add_car_save_total">+0</span>
+                                </div>
+                            </div>
+                            <h4>Apariencia</h4>
+                            <div class="form-row">
+                                <div class="form-group"><label for="tokenColor">Relleno:*</label><input type="color"
+                                        id="tokenColor" value="#4a90e2">
+                                    <div class="checkbox-container" style="margin-top: 8px;"><input type="checkbox"
+                                            id="addBorderCheckbox">
+                                        <label for="addBorderCheckbox">Añadir Borde</label>
+                                    </div>
+                                    <div class="checkbox-container" style="margin-top: 8px;">
+                                        <input type="checkbox" id="addTransparentBgCheckbox">
+                                        <label for="addTransparentBgCheckbox">Sin Relleno</label>
+                                    </div>
+                                </div>
+                                <div class="form-group"><label for="tokenBorderColor">Borde:*</label><input type="color"
+                                        id="tokenBorderColor" value="#000000"><label
+                                        for="tokenSizeMultiplier">Tamaño:</label><input type="number"
+                                        id="tokenSizeMultiplier" value="1" min="0.5" step="0.5"></div>
+                            </div>
+                            <h4>Notas</h4>
+                            <div class="form-group"><textarea id="tokenNotes" rows="3" placeholder="..."></textarea>
+                            </div>
+                            <button id="addTokenBtn">Añadir Ficha</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- COLUMNA CENTRAL: EDITOR PRINCIPAL -->
+        <main class="panel-column main-column">
+            <nav class="panel-nav horizontal-nav">
+                <ul>
+                    <li><button class="panel-nav-button" data-view="main-view-selected-token"><span
+                                class="nav-icon icon-selected-token"></span>
+                            Ficha Seleccionada</button></li>
+                    <li><button class="panel-nav-button" data-view="main-view-dm-notes"><span
+                                class="nav-icon icon-notes"></span>
+                            Notas del DM</button></li>
+                    <li><button class="panel-nav-button" data-view="main-view-manual"><span
+                                class="nav-icon icon-boock"></span>
+                            Manual</button></li>
+                </ul>
+            </nav>
+            <div class="panel-content">
+                <div id="main-view-welcome" class="panel-view active welcome-screen">
+                    <div class="loading-state">
+                        <div class="loading-icon icon-dice-large"></div>
+                        <h1>Tu Aventura Comienza Aquí</h1>
+                        <h2>¡Manos a la obra, DM!</h2>
+                        <p>Carga tu mapa y prepara la escena. Tus jugadores confían en ti para crear una experiencia
+                            inolvidable.</p>
+                        <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/465e4532-5430-4be7-b49c-acf81087d8bd/dk1fb46-3fa3ffb8-cec7-408a-afa0-2a656e178fce.png/v1/fill/w_1148,h_696/dm_screen_by_rafaelalvarez29_dk1fb46-pre.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9Nzc2IiwicGF0aCI6IlwvZlwvNDY1ZTQ1MzItNTQzMC00YmU3LWI0OWMtYWNmODEwODdkOGJkXC9kazFmYjQ2LTNmYTNmZmI4LWNlYzctNDA4YS1hZmEwLTJhNjU2ZTE3OGZjZS5wbmciLCJ3aWR0aCI6Ijw9MTI4MCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.Q09gTvWeGEluAHfA1EXSgMuWKnP2Og4oU3577nPw970"
+                            alt="">
+                    </div>
+                </div>
+                <!-- Vista 1: Ficha Seleccionada -->
+                <div id="main-view-selected-token" class="panel-view active">
+                    <p id="noTokenSelected" class="no-tokens-message">Selecciona una ficha para ver su información...
+                    </p>
+                    <div id="tokenEditor">
+                        <div class="token-editor-form">
+                            <!-- El encabezado con la imagen y el nombre no cambia -->
+                            <div class="token-header-display">
+                                <div id="editTokenImagePreviewContainer">
+                                    <img id="editTokenImagePreview" src="" alt="Imagen de la Ficha">
+                                    <div id="editTokenLetterPreview" class="token-preview-letter"></div>
+                                    <label for="editTokenImageInput" class="change-image-btn"
+                                        title="Cargar/Cambiar imagen">✏️</label>
+                                    <button id="removeTokenImageBtn" class="remove-image-btn"
+                                        title="Quitar imagen">×</button>
+                                    <input type="file" id="editTokenImageInput"
+                                        accept="image/png, image/jpeg, image/webp, image/gif" class="hidden-file-input">
+                                </div>
+                                <div class="token-header-info">
+                                    <div id="tokenInfoView">
+                                        <h1 id="viewTokenName" class="token-name-view">Nombre del Personaje</h1>
+                                        <p class="token-class-level-view"><span id="viewTokenClass">Clase</span>, Nivel
+                                            <span id="viewTokenLevel">1</span>
+                                        </p>
+                                        <p id="viewTokenRace" class="token-race-view">Raza</p>
+                                    </div>
+                                    <div id="tokenInfoEdit" style="display: none;">
+                                        <input type="text" id="editTokenName" class="token-name-edit">
+                                        <div class="form-row"><input type="text" id="editTokenClass"
+                                                placeholder="Clase"><input type="number" id="editTokenLevel"
+                                                placeholder="Nivel" min="1"></div>
+                                        <input type="text" id="editTokenRace" placeholder="Raza">
+                                        <button id="saveHeaderBtn" class="small-btn">Guardar Cambios</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ===== INICIO DE LA ESTRUCTURA DE PESTAÑAS ===== -->
+                            <nav class="token-editor-nav">
+                                <ul>
+                                    <li><button class="token-nav-button active"
+                                            data-view="token-view-combat">Combate</button></li>
+                                    <li><button class="token-nav-button"
+                                            data-view="token-view-stats">Estadísticas</button></li>
+                                    <li><button class="token-nav-button"
+                                            data-view="token-view-abilities">Habilidades</button></li>
+                                    <li><button class="token-nav-button"
+                                            data-view="token-view-inventory">Inventario</button></li>
+                                    <li><button class="token-nav-button" data-view="token-view-notes">Notas</button>
+                                    </li>
+                                </ul>
+                            </nav>
+                            <div class="token-editor-content">
+                                <!-- Pestaña 1: Combate (Activa por defecto) -->
+                                <div id="token-view-combat" class="token-view-panel active">
+                                    <div class="combat-stats-grid">
+                                        <div class="combat-stat-card"><label
+                                                class="combat-label-top">BONIF.</label><input type="number"
+                                                class="combat-value-input nobackgrund" id="edit_proficiency_bonus"
+                                                value="2"><label class="combat-label-bottom">COMPETENCIA</label></div>
+                                        <div class="combat-stat-card"><label
+                                                class="combat-label-top">INICIATIVA</label><input type="number"
+                                                class="combat-value-input nobackgrund" id="editTokenTurn"><label
+                                                class="combat-label-bottom">(FINAL)</label></div>
+                                        <div class="combat-stat-card"><label
+                                                class="combat-label-top">VELOCIDAD</label><input type="number"
+                                                class="combat-value-input nobackgrund" id="edit_speed" value="30"><label
+                                                class="combat-label-bottom">PIES</label></div>
+                                        <div class="combat-stat-card"><label class="combat-label-top">CLASE
+                                                DE</label><input type="number" class="combat-value-input nobackgrund"
+                                                id="edit_armor_class" value="10"><label
+                                                class="combat-label-bottom">ARMADURA</label></div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group"><label>👁️Visión (Casillas)*</label><input type="number"
+                                                id="editTokenVision" min="0"></div>
+                                        <div class="form-group"><label>♥️Vida Máxima</label><input type="number"
+                                                id="editTokenHealthMax" min="0"></div>
+                                    </div>
+                                    <div class="health-controls">
+                                        <label>Puntos de Vida</label>
+                                        <div id="healthDisplayContainer" class="health-display-container"><span
+                                                id="healthDisplay" class="health-display"></span></div>
+                                        <div class="health-modifier-row">
+                                            <button class="health-modifier-btn negative"
+                                                data-amount="-10">-10</button><button
+                                                class="health-modifier-btn negative" data-amount="-5">-5</button><button
+                                                class="health-modifier-btn negative" data-amount="-1">-1</button>
+                                            <input type="text" id="healthModifierInput" class="health-modifier-input"
+                                                placeholder="±">
+                                            <button class="health-modifier-btn positive"
+                                                data-amount="1">+1</button><button class="health-modifier-btn positive"
+                                                data-amount="5">+5</button><button class="health-modifier-btn positive"
+                                                data-amount="10">+10</button>
+                                        </div>
+                                    </div>
+                                    <div id="tokenStatesEditor">
+                                        <h4 class="title-with-button"><span>Estados y Efectos</span><button
+                                                id="addStateBtn" class="add-item-btn" title="Añadir Estado">+</button>
+                                        </h4>
+                                        <div class="form-row">
+                                            <div class="form-group" style="flex-grow:1;"><label
+                                                    for="newStateEmoji">Emoji</label><input type="text"
+                                                    id="newStateEmoji" placeholder="🔥" maxlength="2"></div>
+                                            <div class="form-group" style="flex-grow:3;"><label
+                                                    for="newStateDesc">Descripción</label><input type="text"
+                                                    id="newStateDesc" placeholder="En llamas..."></div>
+                                        </div>
+                                        <ul id="editTokenStatesList"></ul>
+                                    </div>
+                                    <h4 id="aoeHeader">Áreas de Efecto</h4>
+                                    <div id="aoeControlsContainer">
+                                        <div id="aoeShapeSelector" class="button-group"><button id="aoeBtnLine"
+                                                data-shape="line">Línea</button><button id="aoeBtnCone"
+                                                data-shape="cone">Cono</button><button id="aoeBtnCube"
+                                                data-shape="cube">Cubo</button><button id="aoeBtnSphere"
+                                                data-shape="sphere">Esfera</button><button id="aoeBtnCylinder"
+                                                data-shape="cylinder">Cilindro</button></div>
+                                        <div id="aoeParamsContainer" style="margin-top:15px;">
+                                            <div id="params-line" class="aoe-params" style="display:none;">
+                                                <div class="form-group"><label for="aoeLineWidth">Ancho
+                                                        (casillas):</label><input type="number" id="aoeLineWidth"
+                                                        value="1" min="1"></div>
+                                            </div>
+                                            <div id="params-cone" class="aoe-params" style="display:none;">
+                                                <div class="form-group"><label for="aoeConeLength">Longitud
+                                                        (casillas):</label><input type="number" id="aoeConeLength"
+                                                        value="6" min="1"></div>
+                                            </div>
+                                            <div id="params-cube" class="aoe-params" style="display:none;">
+                                                <div class="form-group"><label for="aoeCubeSize">Tamaño
+                                                        (casillas):</label><input type="number" id="aoeCubeSize"
+                                                        value="3" min="1"></div>
+                                            </div>
+                                            <div id="params-sphere" class="aoe-params" style="display:none;">
+                                                <div class="form-group"><label for="aoeSphereRadius">Radio
+                                                        (casillas):</label><input type="number" id="aoeSphereRadius"
+                                                        value="4" min="1"></div>
+                                            </div>
+                                            <div id="params-cylinder" class="aoe-params" style="display:none;">
+                                                <div class="form-group"><label for="aoeCylinderRadius">Radio
+                                                        (casillas):</label><input type="number" id="aoeCylinderRadius"
+                                                        value="2" min="1"></div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group"><label for="aoeColor">Color:</label><input type="color"
+                                                id="aoeColor" value="#ff4500"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Pestaña 2: Estadísticas -->
+                                <div id="token-view-stats" class="token-view-panel">
+                                    <h4>Características</h4>
+                                    <div class="char-stats-grid" id="edit_char_stats_grid">
+                                        <div class="char-stat-card"><label>FUE</label><span class="char-mod"
+                                                id="edit_str_mod">+0</span>
+                                            <div class="char-score-capsule"><input type="number" id="edit_str_score"
+                                                    class="char-score-input nobackgrund" value="10"></div>
+                                        </div>
+                                        <div class="char-stat-card"><label>DES</label><span class="char-mod"
+                                                id="edit_dex_mod">+0</span>
+                                            <div class="char-score-capsule"><input type="number" id="edit_dex_score"
+                                                    class="char-score-input nobackgrund" value="10"></div>
+                                        </div>
+                                        <div class="char-stat-card"><label>CON</label><span class="char-mod"
+                                                id="edit_con_mod">+0</span>
+                                            <div class="char-score-capsule"><input type="number" id="edit_con_score"
+                                                    class="char-score-input nobackgrund" value="10"></div>
+                                        </div>
+                                        <div class="char-stat-card"><label>INT</label><span class="char-mod"
+                                                id="edit_int_mod">+0</span>
+                                            <div class="char-score-capsule"><input type="number" id="edit_int_score"
+                                                    class="char-score-input nobackgrund" value="10"></div>
+                                        </div>
+                                        <div class="char-stat-card"><label>SAB</label><span class="char-mod"
+                                                id="edit_wis_mod">+0</span>
+                                            <div class="char-score-capsule"><input type="number" id="edit_wis_score"
+                                                    class="char-score-input nobackgrund" value="10"></div>
+                                        </div>
+                                        <div class="char-stat-card"><label>CAR</label><span class="char-mod"
+                                                id="edit_car_mod">+0</span>
+                                            <div class="char-score-capsule"><input type="number" id="edit_car_score"
+                                                    class="char-score-input nobackgrund" value="10"></div>
+                                        </div>
+                                    </div>
+                                    <h4>Tiradas de Salvación</h4>
+                                    <div class="saving-throws-list" id="edit_saving_throws_list">
+                                        <div class="save-throw-row">
+                                            <div class="checkbox-container"><input type="checkbox"
+                                                    id="edit_str_save_prof" class="save-prof-check"><label
+                                                    for="edit_str_save_prof"></label></div><span
+                                                class="save-name">Fuerza</span><span class="save-total"
+                                                id="edit_str_save_total">+0</span>
+                                        </div>
+                                        <div class="save-throw-row">
+                                            <div class="checkbox-container"><input type="checkbox"
+                                                    id="edit_dex_save_prof" class="save-prof-check"><label
+                                                    for="edit_dex_save_prof"></label></div><span
+                                                class="save-name">Destreza</span><span class="save-total"
+                                                id="edit_dex_save_total">+0</span>
+                                        </div>
+                                        <div class="save-throw-row">
+                                            <div class="checkbox-container"><input type="checkbox"
+                                                    id="edit_con_save_prof" class="save-prof-check"><label
+                                                    for="edit_con_save_prof"></label></div><span
+                                                class="save-name">Constitución</span><span class="save-total"
+                                                id="edit_con_save_total">+0</span>
+                                        </div>
+                                        <div class="save-throw-row">
+                                            <div class="checkbox-container"><input type="checkbox"
+                                                    id="edit_int_save_prof" class="save-prof-check"><label
+                                                    for="edit_int_save_prof"></label></div><span
+                                                class="save-name">Inteligencia</span><span class="save-total"
+                                                id="edit_int_save_total">+0</span>
+                                        </div>
+                                        <div class="save-throw-row">
+                                            <div class="checkbox-container"><input type="checkbox"
+                                                    id="edit_wis_save_prof" class="save-prof-check"><label
+                                                    for="edit_wis_save_prof"></label></div><span
+                                                class="save-name">Sabiduría</span><span class="save-total"
+                                                id="edit_wis_save_total">+0</span>
+                                        </div>
+                                        <div class="save-throw-row">
+                                            <div class="checkbox-container"><input type="checkbox"
+                                                    id="edit_car_save_prof" class="save-prof-check"><label
+                                                    for="edit_car_save_prof"></label></div><span
+                                                class="save-name">Carisma</span><span class="save-total"
+                                                id="edit_car_save_total">+0</span>
+                                        </div>
+                                    </div>
+                                    <h4>Apariencia</h4>
+                                    <div class="form-row">
+                                        <div class="form-group"><label for="editTokenColor">Relleno*</label><input
+                                                type="color" id="editTokenColor">
+                                            <div class="checkbox-container" style="margin-top: 8px;"><input
+                                                    type="checkbox" id="editBorderCheckbox"><label
+                                                    for="editBorderCheckbox">Añadir Borde</label></div>
+                                            <div class="checkbox-container" style="margin-top: 8px;"><input
+                                                    type="checkbox" id="editTransparentBgCheckbox"><label
+                                                    for="editTransparentBgCheckbox">Sin Relleno</label></div>
+                                        </div>
+                                        <div class="form-group"><label for="editTokenBorderColor">Borde*</label><input
+                                                type="color" id="editTokenBorderColor"><label
+                                                for="editTokenSizeMultiplier">Tamaño:</label><input type="number"
+                                                id="editTokenSizeMultiplier" value="1" min="0.5" step="0.5"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Pestaña 3: Habilidades -->
+                                <div id="token-view-abilities" class="token-view-panel">
+                                    <div id="tokenAbilitiesEditor">
+                                        <h4 class="title-with-button">
+                                            <span>Habilidades</span>
+                                            <input type="text" id="searchAbilitiesInput" class="search-in-list-input"
+                                                placeholder="Buscar...">
+                                            <button id="addAbilityBtn" class="add-item-btn"
+                                                title="Añadir Habilidad">+</button>
+                                        </h4>
+                                        <div id="editAbilitiesList" class="info-card-list"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Pestaña 4: Inventario -->
+                                <div id="token-view-inventory" class="token-view-panel">
+                                    <div id="tokenInventoryEditor">
+                                        <h4 class="title-with-button">
+                                            <span>Inventario</span>
+                                            <input type="text" id="searchInventoryInput" class="search-in-list-input"
+                                                placeholder="Buscar...">
+                                            <button id="addInventoryItemBtn" class="add-item-btn"
+                                                title="Añadir Objeto">+</button>
+                                        </h4>
+                                        <div id="editInventoryList" class="info-card-list"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Pestaña 5: Notas -->
+                                <div id="token-view-notes" class="token-view-panel">
+                                    <h4>Notas del Personaje</h4>
+                                    <div class="form-group"><textarea id="editTokenNotes" rows="12"></textarea></div>
+                                </div>
+                            </div>
+                            <!-- ===== FIN DE LA NUEVA ESTRUCTURA DE PESTAÑAS ===== -->
+
+                            <button id="saveCharacterBtn" class="secondary"><span
+                                    class="btn-icon icon-save-scene"></span> Guardar Personaje en Biblioteca</button>
+                            <div class="form-row button-group">
+                                <button id="updateTokenBtn">Actualizar</button>
+                                <button id="deselectTokenBtn" class="secondary">Deseleccionar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Vista 2: Notas del DM -->
+                <div id="main-view-dm-notes" class="panel-view">
+                    <textarea id="dmNotes"
+                        placeholder="Apunta aquí tus ideas, recordatorios, PNJ, o giros de la trama... Las notas se guardan automáticamente."></textarea>
+                </div>
+
+
+                <div id="main-view-manual" class="panel-view">
+                    <img src="assets/images/icons/portadamanual.png" class="img-portada" alt="">
+                    <div class="manual-body">
+                        <h1>Manual de Usuario - Master's Forge</h1>
+                        <hr>
+                        <p>Bienvenido a <strong>Master's Forge</strong>, tu arsenal de herramientas digitales para
+                            dirigir partidas de rol inolvidables. Este manual te guiará a través de todas las
+                            funcionalidades, desde la preparación de la escena hasta la gestión del combate.</p>
+                        <img src="assets/images/icons/team.png" class="img-portada" alt="Un grupo de aventureros">
+
+                        <br>
+
+                        <h2><span class="icon-rocket"></span> Inicio Rápido</h2>
+                        <hr>
+                        <ol>
+                            <li>
+                                <p><strong>Abre dos ventanas:</strong> Una para ti (la <strong>Vista del DM</strong>) y
+                                    otra para tus jugadores (player.html, la <strong>Vista de Jugador</strong>).</p>
+                            </li>
+                            <li>
+                                <p><strong>Carga un Mapa:</strong> En la Vista del DM, ve al panel derecho y usa el
+                                    botón <strong>"Cargar Mapa de Fondo"</strong>.</p>
+                            </li>
+                            <li>
+                                <p><strong>Añade Fichas:</strong> Desde el panel izquierdo, crea nuevos personajes o
+                                    arrástralos desde tu biblioteca al mapa.</p>
+                            </li>
+                            <li>
+                                <p><strong>Prepara la Escena:</strong> Dibuja muros, puertas y ajusta la niebla de
+                                    guerra.</p>
+                            </li>
+                            <li>
+                                <p><strong>¡A Jugar!:</strong> Inicia la visión dinámica y que comience la aventura.</p>
+                            </li>
+                        </ol>
+
+                        <br><br>
+
+                        <h2><span class="icon-dashboard"></span> La Interfaz del DM</h2>
+                        <hr>
+                        <p>La interfaz principal se divide en tres columnas y un encabezado.</p>
+                        <img src="assets/images/icons/inicio.png" class="img-portada"
+                            alt="Vista general de la interfaz del DM">
+
+                        <br>
+
+                        <h3>1. Encabezado Superior</h3>
+                        <ul>
+                            <li>
+                                <p><strong>Título:</strong> Muestra el nombre de la aplicación.</p>
+                            </li>
+                            <li>
+                                <p><strong>Iniciar/Detener Visión:</strong> Activa o desactiva la <strong>Visión
+                                        Dinámica</strong> y la <strong>Niebla de Guerra</strong>.</p>
+                            </li>
+                            <li>
+                                <p><strong>Resetear Niebla:</strong> Restablece por completo la niebla de guerra en el
+                                    mapa
+                                    actual.</p>
+                            </li>
+                            <li>
+                                <p><strong>Ventana del Jugador:</strong> Abre (o enfoca si ya está abierta) la
+                                    <code>player.html</code>.
+                                </p>
+                            </li>
+                        </ul>
+
+                        <h3>2. Columna Izquierda: Fichas y Personajes</h3>
+                        <p>Esta columna gestiona todo lo relacionado con los personajes y sus fichas en el tablero.</p>
+
+                        <h4>2.1. Fichas en el Tablero <img src="assets/images/icons/fichas_icon.png"
+                                alt="Icono de Fichas" class="inline-icon"></h4>
+                        <ul>
+                            <li>Muestra una lista de todas las fichas (jugadores y enemigos) actualmente en el mapa.
+                            </li>
+                            <li>Ordenadas por iniciativa.</li>
+                            <li>Haz clic en una ficha para seleccionarla y editarla en la columna central.</li>
+                            <li>El botón <strong>X</strong> elimina la ficha del tablero.</li>
+                        </ul>
+
+                        <div style="page-break-after: always;"></div>
+
+                        <h4>2.2. Biblioteca de Personajes <img src="assets/images/icons/ficha_icon.png"
+                                alt="Icono de Biblioteca" class="inline-icon"></h4>
+                        <ul>
+                            <li>Aquí se guardan tus personajes reutilizables entre sesiones.</li>
+                            <li><strong>Añadir al Tablero:</strong> Haz clic en la tarjeta de un personaje para crear
+                                una nueva instancia de él en el mapa.</li>
+                            <li><strong>Guardar Personaje:</strong> Después de editar una ficha en la columna central,
+                                puedes guardarla aquí para usarla en el futuro.</li>
+                            <li><strong>Importar/Exportar Biblioteca:</strong>
+                                <ul>
+                                    <li><strong>Exportar:</strong> Guarda toda tu biblioteca en un archivo
+                                        <code>.json</code>.
+                                    </li>
+                                    <li><strong>Importar:</strong> Carga una biblioteca desde un archivo
+                                        <code>.json</code>. Te dará la opción de <strong>Añadir</strong> los personajes
+                                        a tu biblioteca actual o <strong>Reemplazarla</strong> por completo.
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                        <h2>2.3. Añadir Ficha Nueva <img src="assets/images/icons/mas_icon.png" alt="Icono de Añadir"
+                                class="inline-icon"></h2>
+                        <ul>
+                            <li>Un formulario completo para crear un personaje desde cero.</li>
+                            <li><strong>Información Básica:</strong> Tipo (Jugador/Enemigo), nombre, letra, clase, nivel
+                                y raza.</li>
+                            <li><strong>Imagen:</strong> Puedes subir una imagen (se optimizará automáticamente).</li>
+                            <li><strong>Estadísticas:</strong> Introduce sus puntuaciones de característica. Los
+                                modificadores se calculan solos.</li>
+                            <li><strong>Combate y Salvaciones:</strong> Ajusta su CA, velocidad, iniciativa y marca sus
+                                competencias en tiradas de salvación.</li>
+                            <li><strong>Apariencia:</strong> Elige un color, un borde y un tamaño para la ficha en el
+                                mapa.</li>
+                        </ul>
+
+                        <div style="page-break-after: always;"></div>
+
+                        <h3>3. Columna Central: El Editor Principal</h3>
+                        <p>Este es tu espacio de trabajo principal. Cambia su contenido según lo que selecciones.</p>
+
+                        <h2>3.1. Pantalla de Bienvenida</h2>
+                        <p>La vista por defecto. Te anima a cargar un mapa para empezar.</p>
+                        <img src="assets/images/icons/tuaventuracomienzaaqui.png" alt="Pantalla de bienvenida"
+                            style="width: 90%; display: block; margin: auto;">
+
+                        <h2>3.2. Editor de Ficha Seleccionada <img src="assets/images/icons/seleccionado_icon.png"
+                                alt="Icono de Selección" class="inline-icon"></h2>
+                        <ul>
+                            <li>Aparece al seleccionar una ficha de la lista izquierda.</li>
+                            <li><strong>Encabezado:</strong> Muestra el avatar, nombre, clase, nivel y raza. Haz clic en
+                                esta área para editar estos datos rápidamente.</li>
+                            <li><strong>Pestañas de Edición:</strong>
+                                <ul>
+                                    <li><strong>Combate:</strong> Gestiona la vida (con botones de acceso rápido para
+                                        curar/dañar), estados y efectos, e incluso previsualiza áreas de efecto (AoE).
+                                    </li>
+                                    <li><strong>Estadísticas:</strong> Edita las características, competencias, y la
+                                        apariencia de la ficha.</li>
+                                    <li><strong>Habilidades e Inventario:</strong> Listas de habilidades y objetos. Haz
+                                        clic en una tarjeta para verla en detalle o editarla. Usa el <strong>+</strong>
+                                        para añadir nuevas.</li>
+                                    <li><strong>Notas:</strong> Un espacio para el trasfondo, secretos o notas privadas
+                                        sobre ese personaje.</li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                        <h2>3.3. Notas del DM <img src="assets/images/icons/notas-icon.png" alt="Icono de Notas"
+                                class="inline-icon"></h2>
+                        <p>Un bloc de notas persistente. Todo lo que escribas aquí se guarda automáticamente en tu
+                            navegador para futuras sesiones. Ideal para recordatorios, ideas o la estructura de la
+                            sesión.</p>
+
+                        <h3>4. Columna Derecha: Herramientas Globales</h3>
+                        <p>Aquí se encuentran las herramientas que afectan a toda la escena.</p>
+
+                        <h2>4.1. Mapa y Escena <img src="assets/images/icons/mapa_icon.png" alt="Icono de Mapa"
+                                class="inline-icon"></h2>
+                        <ul>
+                            <li><strong>Cargar/Importar/Exportar/Guardar:</strong>
+                                <ul>
+                                    <li><strong>Cargar Mapa:</strong> Establece la imagen de fondo para la sesión.</li>
+                                    <li><strong>Guardar/Cargar Escena:</strong> Guarda <strong>toda</strong> la
+                                        configuración actual (mapa, fichas, muros, niebla) en la base de datos de tu
+                                        navegador para recuperarla más tarde.</li>
+                                    <li><strong>Exportar/Importar Escena:</strong> Guarda/carga una escena completa en
+                                        un archivo <code>.json</code> para compartirla con otros o hacer copias de
+                                        seguridad.</li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                        <div class="callout warning">
+                            <div class="callout-title"><span class="icon-warning"></span> Importante</div>
+                            <p>Para guardar o exportar una escena con el estado actual de la <strong>niebla de
+                                    guerra</strong>, la <strong>Ventana del Jugador debe estar abierta</strong>.</p>
+                        </div>
+
+                        <h2>4.2. Herramientas <img src="assets/images/icons/herramientas_icon.png"
+                                alt="Icono de Herramientas" class="inline-icon"></h2>
+                        <ul>
+                            <li><strong>Rejilla:</strong> Activa, cambia el color, opacidad y tamaño de la rejilla.</li>
+                            <li><strong>Alinear Rejilla:</strong> Una herramienta de precisión. Actívala y haz clic en
+                                la esquina de una casilla en el mapa del jugador para que la rejilla se alinee
+                                perfectamente.</li>
+                            <li><strong>Pincel de Niebla:</strong> Te permite "pintar" manualmente la niebla de guerra.
+                                Elige entre "Revelar" y "Ocultar" y ajusta el tamaño del pincel.</li>
+                        </ul>
+
+                        <h2>4.3. Muros y Puertas <img src="assets/images/icons/muro_icon.png" alt="Icono de Muro"
+                                class="inline-icon"></h2>
+                        <ul>
+                            <li>Activa el <strong>Modo Dibujo</strong> para trazar líneas en la Vista del Jugador que
+                                bloquearán la visión.</li>
+                            <li>Elige si quieres dibujar un <strong>Muro</strong> (permanente) o una
+                                <strong>Puerta</strong> (interactiva).
+                            </li>
+                            <li><strong>Deshacer</strong> elimina el último trazo. <strong>Limpiar</strong> borra todos
+                                los muros y puertas.</li>
+                        </ul>
+
+                        <div class="callout tip">
+                            <div class="callout-title"><span class="icon-tip"></span> Consejo de Dibujo</div>
+                            <p>En la Vista del Jugador, haz clic para iniciar una línea, y vuelve a hacer clic para
+                                terminarla. Si dibujas una puerta, se te pedirá un nombre.</p>
+                        </div>
+
+                        <h2>4.4. Control de Accesos <img src="assets/images/icons/puerta_icon.png" alt="Icono de Puerta"
+                                class="inline-icon"></h2>
+                        <ul>
+                            <li>Una lista de todas las puertas que has dibujado.</li>
+                            <li>Permite <strong>Abrir/Cerrar</strong>, <strong>Renombrar</strong> (haciendo clic en el
+                                nombre) o <strong>Eliminar</strong> cada puerta individualmente.</li>
+                        </ul>
+
+                        <h2>4.5. Ambientación <img src="assets/images/icons/ambiente_icon.png" alt="Icono de Ambiente"
+                                class="inline-icon"></h2>
+                        <ul>
+                            <li>Una sencilla <strong>mesa de sonidos</strong> para añadir inmersión.</li>
+                            <li><strong>Música:</strong> Sonidos largos que se repiten en bucle (Taverna, Bosque,
+                                Combate). Haz clic una vez para iniciar, y otra vez para detener.</li>
+                            <li><strong>Efectos:</strong> Sonidos cortos que se reproducen una sola vez (Espadazo,
+                                Hechizo, Grito).</li>
+                        </ul>
+
+                        <br>
+
+                        <h2><span class="icon-players"></span> La Vista de Jugador</h2>
+                        <hr>
+                        <p>Esta es la ventana que compartes con tus jugadores. Es una vista limpia y centrada en el
+                            mapa.</p>
+                        <img src="assets/images/icons/jugadoresM_icon.png" alt="Vista del jugador"
+                            style="width: 300px; display: block; margin: auto;">
+
+                        <h3>Funcionalidades del Jugador</h3>
+                        <ul>
+                            <li><strong>Mover Fichas:</strong> Los jugadores pueden arrastrar sus propias fichas por el
+                                mapa. Sus movimientos se sincronizan contigo.</li>
+                            <li><strong>Pan & Zoom:</strong> Pueden moverse por el mapa y hacer zoom con la rueda del
+                                ratón.</li>
+                            <li><strong>Panel de Turnos:</strong> Una versión simplificada del tracker de iniciativa,
+                                mostrando el orden, nombre, avatar y barras de vida de los personajes visibles.</li>
+                        </ul>
+
+                        <h3>Controles Flotantes del DM</h3>
+                        <p>En esta ventana, el DM tiene acceso a un panel de controles flotante.</p>
+                        <ul>
+                            <li><img src="assets/images/icons/seleccionmultiple_icon.png" class="inline-icon-small">
+                                <strong>Selección Múltiple:</strong> Activa este modo para seleccionar varias fichas a
+                                la vez. Las fichas seleccionadas se moverán juntas.
+                            </li>
+                            <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="peru" width="28px"
+                                    height="28px">
+                                    <path d="M0 0h24v24H0V0z" fill="none" />
+                                    <path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z" />
+                                </svg>
+                                <strong>Cambiar Posición del Panel:</strong> Mueve el panel de turnos de la derecha a la
+                                izquierda de la pantalla, y viceversa.
+                            </li>
+                            <li><strong>Herramientas de Dibujo:</strong>
+                                <ul>
+                                    <li><img src="assets/images/icons/muro_icon.png" class="inline-icon-small">
+                                        <strong>Muro:</strong> Activa el modo para dibujar muros.
+                                    </li>
+                                    <li><img src="assets/images/icons/puerta_icon.png" class="inline-icon-small">
+                                        <strong>Puerta:</strong> Activa el modo para dibujar puertas.
+                                    </li>
+                                    <li><img src="assets/images/icons/deshacer_icon.png" class="inline-icon-small">
+                                        <strong>Deshacer:</strong> Deshace el último muro o puerta dibujado.
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                        <div class="callout info">
+                            <div class="callout-title"><span class="icon-info"></span> Información</div>
+                            <p>Estos controles de dibujo <strong>solo aparecen cuando la Visión Dinámica está
+                                    desactivada</strong>, para evitar conflictos.</p>
+                        </div>
+                        <br>
+
+                        <h2><span class="icon-faq"></span> Preguntas Frecuentes (FAQ)</h2>
+                        <hr>
+
+                        <h2>¿Dónde se guarda mi información?</h2>
+                        <p>Toda la información (escenas, biblioteca de personajes, notas) se guarda localmente en tu
+                            navegador usando <strong>IndexedDB</strong> y <strong>LocalStorage</strong>. Es rápido y
+                            privado. Para hacer copias de seguridad o mover tu información a otro ordenador, usa las
+                            funciones de <strong>Exportar</strong>.</p>
+
+                        <h2>¿Por qué necesito tener la ventana del jugador abierta para guardar/exportar?</h2>
+                        <p>La lógica que gestiona el lienzo de la niebla de guerra reside en la ventana del jugador. Al
+                            guardar, la vista del DM le "pregunta" a la del jugador por el estado actual de la niebla
+                            para incluirlo en el archivo.</p>
+
+                        <h2>¿Puedo usar esto en diferentes navegadores?</h4>
+                            <p>Sí, pero tu información guardada (escenas, biblioteca) está ligada al navegador donde la
+                                creaste. Si quieres usar Chrome un día y Firefox otro, deberás usar las funciones de
+                                <strong>Exportar/Importar</strong> para mover tus datos.
+                            </p>
+
+                            <hr>
+
+                            <p style="text-align: center; font-style: italic;">Creado por <strong>Rafael
+                                    Alvarez</strong>.
+                            </p>
+                            <!-- Ejemplo: Un botón de descarga simple -->
+                            <a href="assets/docs/MASTER'S FORGE MANUAL DE USO.pdf" target="_blank"
+                                class="button-download">
+                                <span class="btn-icon icon-download"></span>
+                                <span class="btn-text">[Ver Manual (PDF)]</span>
+                            </a>
+                    </div>
+                    </iframe>
+                </div>
+            </div>
+        </main>
+
+
+        <!-- COLUMNA DERECHA: HERRAMIENTAS GLOBALES -->
+        <aside class="panel-column right-column">
+            <div class="panel-container">
+                <div class="panel-content">
+                    <!-- Vista 1: Mapa y Escena -->
+                    <div id="right-view-scene" class="panel-view active">
+                        <h3 class="view-title">Mapa y Escena</h3>
+                        <input type="file" id="mapImageInput" accept="image/*" class="hidden-file-input">
+                        <label for="mapImageInput" class="custom-file-upload-btn">Cargar Mapa de Fondo</label>
+                        <span id="fileNameDisplay" class="file-name-display">Ningún archivo seleccionado</span>
+                        <input type="file" id="importSceneInput" class="hidden-file-input" accept=".json">
+                        <div class="button-group"><button id="saveStateBtn"><span
+                                    class="btn-icon icon-save-scene"></span><span
+                                    class="btn-text">Guardar</span></button><button id="loadStateBtn"><span
+                                    class="btn-icon icon-load-scene"></span><span
+                                    class="btn-text">Cargar</span></button>
+                        </div>
+                        <div class="button-group"><button id="exportSceneBtn"><span
+                                    class="btn-icon icon-save-scene"></span><span
+                                    class="btn-text">Exportar</span></button><label for="importSceneInput"
+                                class="custom-file-upload-btn" style="width: 50%; margin: 0; padding: 12px;"><span
+                                    class="btn-icon icon-load-scene"></span><span
+                                    class="btn-text">Importar</span></label>
+                        </div>
+                    </div>
+                    <!-- Vista 2: Herramientas del DM -->
+                    <div id="right-view-tools" class="panel-view">
+                        <h3 class="view-title">Herramientas del DM</h3>
+                        <h4><span class="header-icon icon-grid"></span> Rejilla</h4>
+                        <div class="form-row">
+                            <div class="checkbox-container"><input type="checkbox" id="gridToggle"><label
+                                    for="gridToggle">Mostrar Rejilla</label></div><input type="color" id="gridColor"
+                                class="colorh" value="#000000">
+                        </div>
+                        <label for="gridOpacity">Opacidad:</label><input type="range" class="range1" id="gridOpacity"
+                            min="0" max="1" step="0.1" value="0.5">
+                        <label for="cellSize">Tamaño de Casilla (px):</label><input type="number" id="cellSize"
+                            value="50" min="10" step="0.1"><input type="range" id="cellSizeSlider" min="10" max="150"
+                            value="50" step="0.1" aria-label="Ajustar tamaño de casilla">
+                        <h4 class="top-margin"><span class="header-icon icon-align-grid"></span> Alinear Rejilla</h4>
+                        <p class="help-text">Activa este modo y luego haz clic en la esquina de una casilla en la
+                            ventana del Jugador.</p>
+                        <div class="button-group"><button id="alignGridModeBtn">Activar Modo Alineación</button><button
+                                id="resetGridOffsetBtn" class="secondary">Resetear</button></div>
+                        <h4 class="top-margin"><span class="header-icon icon-brush"></span> Pincel de Niebla</h4>
+                        <div class="fog-brush-controls">
+                            <div class="checkbox-tile-group">
+                                <div class="input-container"><input id="brushReveal" class="checkbox-button"
+                                        type="checkbox" name="brushMode" value="reveal"><label for="brushReveal"
+                                        class="checkbox-tile"><span
+                                            class="checkbox-tile-icon icon-reveal-fog"></span><span
+                                            class="checkbox-tile-label">Revelar</span></label></div>
+                                <div class="input-container"><input id="brushHide" class="checkbox-button"
+                                        type="checkbox" name="brushMode" value="hide"><label for="brushHide"
+                                        class="checkbox-tile"><span
+                                            class="checkbox-tile-icon icon-hide-fog"></span><span
+                                            class="checkbox-tile-label">Ocultar</span></label></div>
+                            </div>
+                            <div class="brush-size-container"><label for="brushSize">Tamaño Pincel:</label><input
+                                    type="range" id="brushSize" min="10" max="300" step="5" value="50"></div>
+                        </div>
+                    </div>
+
+                    <!-- Vista 4: Control de Accesos -->
+                    <div id="right-view-doors" class="panel-view">
+                        <h3 class="view-title">Control de Accesos</h3>
+                        <ul id="doorList"></ul>
+                        <p id="noDoorsMessage" class="help-text">No has dibujado puertas.</p>
+                    </div>
+                    <!-- Vista 5: Ambientación -->
+                    <div id="right-view-ambiance" class="panel-view">
+                        <h3 class="view-title">Ambientación</h3>
+                        <div class="sound-categories-container">
+                            <h4 class="sound-category-header">Música y Fondos</h4>
+                            <div class="sound-board-grid"><button class="sound-btn" data-sound-id="sound-tavern">
+                                    <p class="emoji-sound">🍻</p>
+                                    <div>Taverna</div>
+                                </button><button class="sound-btn" data-sound-id="sound-forest">
+                                    <p class="emoji-sound">🌲</p>
+                                    <div>Bosque
+                                    </div>
+                                </button><button class="sound-btn" data-sound-id="sound-cave">
+                                    <div>
+                                        <p class="emoji-sound">🕳️</p>
+                                        Cueva
+                                    </div>
+                                </button><button class="sound-btn" data-sound-id="sound-rain">
+                                    <div>
+                                        <p class="emoji-sound">⛈️</p>
+                                        Lluvia
+                                    </div>
+                                </button><button class="sound-btn" data-sound-id="sound-combat">
+                                    <p class="emoji-sound">⚔️</p>
+                                    <div>
+                                        Combate</div>
+                                </button><button class="sound-btn" data-sound-id="sound-tension">
+                                    <p class="emoji-sound">😰</p>
+                                    Tensión
+                                </button><button class="sound-btn" data-sound-id="sound-end-battle">
+                                    <p class="emoji-sound">💀</p>
+                                    Batalla final
+                                </button><button class="sound-btn" data-sound-id="music-DragonBallZ-capítuloanterior">
+                                    <p class="emoji-sound">🐉</p>
+                                    Recapitular DBZ
+                                </button></div>
+                            <h4 class="sound-category-header">Acción y Combate</h4>
+                            <div class="sound-board-grid"><button class="sound-btn"
+                                    data-sound-id="sound-eendigolongroar">
+                                    <p class="emoji-sound">👹</p>
+                                    <div>Roar Monstruo</div>
+                                </button><button class="sound-btn" data-sound-id="sound-Sword-slash">
+                                    <p class="emoji-sound">⚔️</p>
+                                    Espadazo
+                                </button><button class="sound-btn" data-sound-id="sound-sword-hit">
+                                    <p class="emoji-sound">🗡️</p>
+                                    Golpe Espada
+                                </button><button class="sound-btn" data-sound-id="sound-Fireball">
+                                    <p class="emoji-sound">🔥</p>
+                                    Bola de Fuego
+                                </button><button class="sound-btn" data-sound-id="sound-explosion">
+                                    <p class="emoji-sound">💥</p>
+                                    Explosión
+                                </button><button class="sound-btn" data-sound-id="sound-monster">
+                                    <p class="emoji-sound">💨</p>
+                                    Grito
+                                </button></div>
+                            <h4 class="sound-category-header">Efectos Varios</h4>
+                            <div class="sound-board-grid"><button class="sound-btn" data-sound-id="sound-magic">
+                                    <p class="emoji-sound">✨</p>
+                                    <div>
+                                        Hechizo</div>
+                                </button><button class="sound-btn" data-sound-id="sound-coin">
+                                    <p class="emoji-sound">🪙</p>
+                                    <div>Moneda</div>
+                                </button><button class="sound-btn" data-sound-id="sound-door-1">
+                                    <p class="emoji-sound">🚪</p>
+                                    <div>Puerta Chirría</div>
+                                </button><button class="sound-btn" data-sound-id="sound-noknok">
+                                    <p class="emoji-sound">🔲</p>
+                                    <div>Toc-Toc</div>
+                                </button><button class="sound-btn" data-sound-id="sound-noknok-1">
+                                    <p class="emoji-sound">🚪</p>
+                                    <div>Golpear
+                                        puerta</div>
+                                </button><button class="sound-btn" data-sound-id="sound-risasenlatadas">
+                                    <p class="emoji-sound">😂</p>
+                                    Risas enlatadas
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <nav class="panel-nav">
+                    <ul>
+                        <li><button class="panel-nav-button active" data-view="right-view-scene"
+                                title="Mapa y Escena"><span class="nav-icon icon-map"></span></button></li>
+                        <li><button class="panel-nav-button" data-view="right-view-tools" title="Herramientas"><span
+                                    class="nav-icon icon-tools"></span></button></li>
+                        <li><button class="panel-nav-button" data-view="right-view-doors" title="Puertas"><span
+                                    class="nav-icon icon-doors"></span></button></li>
+                        <li><button class="panel-nav-button" data-view="right-view-ambiance" title="Ambientación"><span
+                                    class="nav-icon icon-ambiance"></span></button></li>
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- PIE DE PÁGINA O CONTROLES GLOBALES FIJOS -->
+        <!-- <footer class="dashboard-footer">
+
+            <p class="panel-subtitle leyenda">~ Creado por Rafael Alvarez ~</p>
+        </footer>-->
+    </div>
+
+    <!-- Modales y Audios se mantienen igual -->
+
+    <div id="saveSceneModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>Guardar Escena</h3><label for="sceneNameInput">Nombre:</label><input type="text" id="sceneNameInput"
+                placeholder="Cripta del Rey...">
+            <div class="button-group"><button id="confirmSaveSceneBtn">Guardar</button><button id="cancelSaveSceneBtn"
+                    class="secondary">Cancelar</button></div>
+        </div>
+    </div>
+    <div id="savedScenesModal" class="modal-overlay">
+        <div class="saved-scenes-modal">
+            <div class="modal-header">
+                <h1 class="modal-title">Mapas Guardados</h1><button class="modal-close-btn"
+                    id="closeSavedScenesBtn">×</button>
+            </div>
+            <div class="modal-content-body">
+                <div id="sceneListContainer" class="saved-scenes-grid"></div>
+            </div>
+        </div>
+    </div>
+    <div id="featureInventoryModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="modalTitle"></h3>
+            <div class="form-group"><label for="modalNameInput">Nombre:</label><input type="text" id="modalNameInput">
+            </div>
+            <div class="form-group"><label for="modalDescriptionInput">Descripción:</label><textarea
+                    id="modalDescriptionInput" rows="4"></textarea></div>
+            <div class="button-group"><button id="confirmModalBtn">Guardar</button><button id="cancelModalBtn"
+                    class="secondary">Cancelar</button></div>
+        </div>
+    </div>
+
+    <div id="editCardModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="editCardModalTitle">Editar Elemento</h3>
+
+            <!-- Vista de Lectura -->
+            <div id="editCardViewMode">
+                <h4 id="viewCardName" class="info-card-title-modal"></h4>
+                <p id="viewCardDescription" class="info-card-desc-modal"></p>
+            </div>
+
+            <!-- Vista de Edición -->
+            <div id="editCardEditMode" style="display: none;">
+                <div class="form-group">
+                    <label for="editCardNameInput">Nombre:</label>
+                    <input type="text" id="editCardNameInput">
+                </div>
+                <div class="form-group">
+                    <label for="editCardDescriptionInput">Descripción:</label>
+                    <textarea id="editCardDescriptionInput" rows="8"></textarea>
+                </div>
+            </div>
+
+            <!-- Botones del Modal -->
+            <div class="button-group" id="editCardViewButtons">
+                <button id="editCardBtn">Editar</button>
+                <button id="closeCardBtn" class="secondary">Cerrar</button>
+            </div>
+            <div class="button-group" id="editCardEditButtons" style="display: none;">
+                <button id="updateCardBtn">Actualizar</button>
+                <button id="cancelEditCardBtn" class="secondary">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================== -->
+    <!-- ===== MODAL DE CRÉDITOS (NUEVO) ===== -->
+    <!-- ================================== -->
+    <!-- ================================== -->
+    <!-- ===== MODAL DE CRÉDITOS (REDiseñado) ===== -->
+    <!-- ================================== -->
+    <div id="creditsModal" class="modal-overlay">
+        <div class="modal-content credits-modal-content">
+            <button id="closeCreditsBtn" class="modal-close-btn"
+                style="position: absolute; top: -20px; right: -20px; z-index: 1;">×</button>
+
+            <div class="creator-profile">
+                <div class="creator-avatar-container">
+                    <img src="assets/images/icons/r_dev_logo.png" alt="Avatar del Creador" class="creator-avatar">
+                </div>
+                <h2 class="creator-name">Rafael Alvarez</h2>
+                <p class="creator-title">Diseñador y Desarrollador Full-Stack</p>
+            </div>
+
+            <div class="separator-line"></div>
+
+            <p class="project-description">
+                <strong>Forja de Aventuras</strong> nació de la pasión por los juegos de rol y el desarrollo web.
+                Esta herramienta fue creada con JavaScript puro, HTML y CSS para ofrecer una experiencia ligera,
+                rápida y personalizable a todos los Dungeon Masters.
+            </p>
+
+            <div class="social-links-grid">
+                <a href="https://tu_portfolio.com" target="_blank" rel="noopener noreferrer" class="social-card"
+                    id="portfolio-card">
+                    <span class="social-card-icon icon-portfolio"></span>
+                    <span class="social-card-text">Ver Portafolio</span>
+                </a>
+                <a href="https://github.com/tu_usuario/tu_repositorio" target="_blank" rel="noopener noreferrer"
+                    class="social-card" id="github-card">
+                    <span class="social-card-icon icon-github"></span>
+                    <span class="social-card-text">Código Fuente</span>
+                </a>
+                <a href="https://www.linkedin.com/in/tu_usuario/" target="_blank" rel="noopener noreferrer"
+                    class="social-card" id="linkedin-card">
+                    <span class="social-card-icon icon-linkedin"></span>
+                    <span class="social-card-text">Conectar</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================== -->
+    <!-- === MODAL DE DIÁLOGO PERSONALIZADO === -->
+    <!-- ================================== -->
+    <div id="customModal" class="modal-overlay">
+        <div class="modal-content custom-modal-content">
+            <div id="customModalIcon" class="custom-modal-icon"></div>
+            <h3 id="customModalTitle">Título del Modal</h3>
+            <p id="customModalMessage">Este es el mensaje del modal.</p>
+            <div id="customModalButtons" class="button-group">
+                <!-- Los botones se generarán con JavaScript -->
+            </div>
+        </div>
+    </div>
+
+
+    <audio id="damage-sound" src="https://www.myinstants.com/media/sounds/crap-dnd-song.mp3" preload="auto"></audio>
+    <audio id="heal-sound" src="https://www.myinstants.com/media/sounds/crap-dnd-song.mp3" preload="auto"></audio>
+    <audio id="sound-tavern" src="https://www.myinstants.com/media/sounds/crapdndsong_ICcww3d.mp3" preload="auto"
+        loop></audio>
+    <audio id="sound-forest" src="https://www.myinstants.com/media/sounds/forest-night.mp3" preload="auto" loop></audio>
+    <audio id="sound-cave" src="https://www.myinstants.com/media/sounds/cave-ambience-3.mp3" preload="auto"
+        loop></audio>
+    <audio id="sound-combat" src="https://www.myinstants.com/media/sounds/.mp3" preload="auto" loop></audio>
+    <audio id="sound-tension" src="https://www.myinstants.com/media/sounds/64-000-500-000-questions-mp3cut.mp3"
+        preload="auto" loop></audio>
+    <audio id="sound-magic" src="https://www.myinstants.com/media/sounds/magia.mp3" preload="auto"></audio>
+    <audio id="sound-monster" src="https://www.myinstants.com/media/sounds/monster-scream-aggressive.mp3"
+        preload="auto"></audio>
+    <audio id="sound-eendigolongroar" src="https://www.myinstants.com/media/sounds/wendigo-long-roar.mp3"
+        preload="auto"></audio>
+    <audio id="sound-rain" src="https://www.myinstants.com/media/sounds/lluvia.mp3" preload="auto" loop></audio>
+    <audio id="sound-coin" src="https://www.myinstants.com/media/sounds/coin.mp3" preload="auto"></audio>
+    <audio id="sound-Sword-slash" src="https://www.myinstants.com/media/sounds/sword-slash.mp3" preload="auto"></audio>
+    <audio id="sound-sword-hit" src="https://www.myinstants.com/media/sounds/sword-swing-hit.mp3"
+        preload="auto"></audio>
+    <audio id="sound-Fireball"
+        src="https://www.myinstants.com/media/sounds/ghast-fireball-minecraft-sound-sound-effect-for-editing.mp3"
+        preload="auto"></audio>
+    <audio id="sound-noknok" src="https://www.myinstants.com/media/sounds/dnd-puerta.mp3" preload="auto"></audio>
+    <audio id="sound-noknok-1" src="https://www.myinstants.com/media/sounds/dnd-aporreando.mp3" preload="auto"></audio>
+    <audio id="sound-end-battle" src="https://www.myinstants.com/media/sounds/end-battle.mp3" preload="auto"
+        loop></audio>
+    <audio id="sound-door-1" src="https://www.myinstants.com/media/sounds/dndoor-squeak.mp3" preload="auto"></audio>
+    <audio id="sound-explosion" src="https://www.myinstants.com/media/sounds/dnd-explosion.mp3" preload="auto"></audio>
+    <audio id="sound-risasenlatadas" src="https://www.myinstants.com/media/sounds/risas-enlatadas-tv.mp3"
+        preload="auto"></audio>
+    <audio id="music-DragonBallZ-capítuloanterior"
+        src="assets/sounds/Dragon Ball Z - Temas de recordatorio del capítulo anterior.mp3" preload="auto" loop></audio>
+
+
+    <!-- ================================== -->
+    <!-- === CONTENEDOR DE NOTIFICACIONES === -->
+    <!-- ================================== -->
+    <div id="notification-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/idb@7/build/umd.js"></script>
+    <script src="dm.js"></script>
+</body>
+
+</html>

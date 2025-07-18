@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Personajes</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="library-body">
+    <div class="panel-column" style="margin: auto; max-width: 800px;">
+        <div class="panel-container">
+            <div class="panel-content">
+                <h3 class="view-title">Mi Biblioteca de Personajes</h3>
+                <div id="playerCharactersGrid" class="saved-characters-grid">
+                    <!-- Las tarjetas de personajes se insertarán aquí -->
+                </div>
+                <p id="noSavedCharactersMessage" class="no-tokens-message">Aún no has guardado ningún personaje.</p>
+
+                <div class="button-group" style="margin-top: 20px;">
+                    <button id="importLibraryBtn">Importar</button>
+                    <input type="file" id="importLibraryInput" accept=".json" style="display:none;">
+                    <button id="exportLibraryBtn">Exportar Todo</button>
+                    <a href="creator.html" class="secondary">Crear Nuevo</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="library.js"></script>
+</body>
+
+</html>
