@@ -112,10 +112,12 @@ body {
 
 .left-column {
   grid-area: left;
+  min-width: 300.828px;
 }
 
 .right-column {
   grid-area: right;
+  min-width: 348px;
 }
 
 .main-column {
@@ -2292,6 +2294,13 @@ input[type="range"]::-webkit-slider-thumb {
   border-radius: 3px;
 }
 
+.save-throw-row .save-name {
+  white-space: nowrap; /* Evita que el nombre se parta en varias líneas */
+  overflow: hidden; /* Oculta el texto que se desborda */
+  text-overflow: ellipsis; /* Añade "..." si el texto se corta (opcional, pero elegante) */
+  flex-shrink: 1; /* Permite que el elemento se encoja si es necesario */
+}
+
 .save-throw-row:hover {
   background-color: rgba(255, 255, 255, 0.05);
 }
@@ -3535,7 +3544,7 @@ code {
   color: #833b0a;
 }
 .manual-body h4 {
-color:#833b0a;
+  color: #833b0a;
   font-family: "Cinzel", serif;
 }
 .button-download {
@@ -3545,22 +3554,24 @@ color:#833b0a;
   justify-content: center;
   padding: 10px 20px;
   background-color: var(--button-primary-bg); /* O el color que prefieras */
-  color:#1d56ac;
+  color: #1d56ac;
   border: 1px solid var(--border-color);
   border-radius: 5px;
-  font-family: 'Cinzel', serif;
+  font-family: "Cinzel", serif;
   font-weight: bold;
   text-decoration: none; /* Quita el subrayado del enlace */
   cursor: pointer;
   transition: background-color 0.2s;
 }
-.button-download:hover{
+.button-download:hover {
   text-decoration: underline;
 }
 
 /* Efecto hover para el botón */
 .button-download:hover {
-  background-color: var(--button-primary-hover-bg); /* Un color ligeramente más oscuro/claro */
+  background-color: var(
+    --button-primary-hover-bg
+  ); /* Un color ligeramente más oscuro/claro */
 }
 
 /* Estilo para el icono dentro del botón (si usas uno) */
