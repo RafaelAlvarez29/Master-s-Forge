@@ -4,29 +4,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Personajes</title>
+    <title>Mis Personajes - Forja de Aventuras</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .library-body {
+            background-color: #1a1a1a;
+            padding: 20px 10px;
+        }
+
+        .library-container {
+            margin: 0 auto;
+            max-width: 900px;
+        }
+
+        .library-actions {
+            display: flex;
+            flex-wrap: wrap;
+            /* Para que se vea bien en móviles */
+            gap: 15px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--input-border);
+        }
+
+        .library-actions button,
+        .library-actions a {
+            flex: 1 1 200px;
+            /* Crecen y se encogen, con un tamaño base */
+            padding: 12px;
+            font-size: 1.1em;
+            text-align: center;
+        }
+    </style>
 </head>
 
 <body class="library-body">
-    <div class="panel-column" style="margin: auto; max-width: 800px;">
+
+    <div class="library-container">
         <div class="panel-container">
             <div class="panel-content">
-                <h3 class="view-title">Mi Biblioteca de Personajes</h3>
-                <div id="playerCharactersGrid" class="saved-characters-grid">
-                    <!-- Las tarjetas de personajes se insertarán aquí -->
-                </div>
-                <p id="noSavedCharactersMessage" class="no-tokens-message">Aún no has guardado ningún personaje.</p>
+                <div class="panel-view active">
+                    <div class="view-title" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Mi Biblioteca de Personajes</span>
+                        <a href="index.html" title="Volver al Portal" style="font-size: 0.8em; text-decoration: none;">↩
+                            Volver</a>
+                    </div>
 
-                <div class="button-group" style="margin-top: 20px;">
-                    <button id="importLibraryBtn">Importar</button>
-                    <input type="file" id="importLibraryInput" accept=".json" style="display:none;">
-                    <button id="exportLibraryBtn">Exportar Todo</button>
-                    <a href="creator.html" class="secondary">Crear Nuevo</a>
+                    <div id="playerCharactersGrid" class="saved-characters-grid">
+                        <!-- Las tarjetas de personajes se generarán con JavaScript -->
+                    </div>
+
+                    <p id="noSavedCharactersMessage" class="no-tokens-message">
+                        Aún no has guardado ningún personaje. ¡Crea uno nuevo para empezar!
+                    </p>
+
+                    <div class="library-actions">
+                        <a href="creator.html" class="button">Crear Nuevo Personaje</a>
+                        <button id="importLibraryBtn" class="secondary">Importar Biblioteca</button>
+                        <input type="file" id="importLibraryInput" accept=".json" style="display:none;">
+                        <button id="exportLibraryBtn" class="secondary">Exportar Biblioteca</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Contenedor de Notificaciones -->
+    <div id="notification-container"></div>
+
     <script src="library.js"></script>
 </body>
 

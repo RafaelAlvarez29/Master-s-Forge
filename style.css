@@ -3580,3 +3580,196 @@ code {
   margin-right: 8px;
   /* Asegúrate de tener una clase .icon-download definida con tu icono */
 }
+/* ==========================================================================
+   ESTILOS PARA EL PORTAL Y LA APLICACIÓN DE JUGADOR
+   ========================================================================== */
+
+/* --- Estilos del Portal de Inicio --- */
+.portal-body {
+  height: 100vh; /* Ocupa toda la altura de la ventana */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #1a1a1a;
+  background-image: linear-gradient(
+      rgba(26, 26, 26, 0.7),
+      rgba(26, 26, 26, 0.9)
+    ),
+    url("https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/465e4532-5430-4be7-b49c-acf81087d8bd/dk1fb46-3fa3ffb8-cec7-408a-afa0-2a656e178fce.png/v1/fill/w_1148,h_696/dm_screen_by_rafaelalvarez29_dk1fb46-pre.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9Nzc2IiwicGF0aCI6IlwvZlwvNDY1ZTQ1MzItNTQzMC00YmU3LWI0OWMtYWNmODEwODdkOGJkXC9kazFmYjQ2LTNmYTNmZmI4LWNlYzctNDA4YS1hZmEwLTJhNjU2ZTE3OGZjZS5wbmciLCJ3aWR0aCI6Ijw9MTI4MCJ9XV0sImF1ZCI6WyJ1cm46c2VydmljZTppbWFnZS5vcGVyYXRpb25zIl19.Q09gTvWeGEluAHfA1EXSgMuWKnP2Og4oU3577nPw970");
+  background-size: cover;
+  background-position: center;
+  font-family: "Cinzel", serif;
+  overflow: hidden; /* Evita el scroll en la página del portal */
+}
+
+.portal-container {
+  background-color: rgba(20, 20, 20, 0.85);
+  backdrop-filter: blur(8px);
+  padding: 30px 40px;
+  border-radius: 15px;
+  border: 2px solid var(--border-gold);
+  text-align: center;
+  max-width: 90%;
+  width: 500px;
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+  animation: fadeIn 1s ease-in-out;
+}
+
+.portal-logo {
+  width: 120px;
+  margin-bottom: 15px;
+}
+
+.portal-title {
+  font-family: "IM Fell English SC", serif;
+  font-size: 2.2em;
+  color: var(--text-gold);
+  margin: 0;
+}
+
+.portal-subtitle {
+  font-size: 1.1em;
+  color: var(--text-light);
+  margin-bottom: 30px;
+}
+
+.portal-actions a {
+  display: block;
+  background-color: var(--btn-primary-bg);
+  color: var(--text-dark);
+  padding: 15px 20px;
+  margin: 15px 0;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 1.2em;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  border: 2px solid var(--btn-primary-border);
+}
+
+.portal-actions a:hover {
+  background-color: var(--btn-primary-hover-bg);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.portal-actions a.secondary {
+  background-color: var(--btn-secondary-bg);
+  color: var(--text-light);
+  border-color: var(--btn-secondary-border);
+}
+
+.portal-actions a.secondary:hover {
+  background-color: var(--btn-secondary-hover-bg);
+}
+
+/* --- Estilos para Páginas de Jugador (Creator, Library, Sheet) --- */
+
+.creator-body,
+.library-body,
+.mobile-sheet-body {
+  background-color: #1a1a1a;
+  padding: 15px 10px;
+}
+
+.creator-container,
+.library-container {
+  margin: 0 auto;
+  max-width: 600px;
+  padding-bottom: 120px; /* Espacio para el footer fijo */
+}
+.library-container {
+  max-width: 900px;
+}
+
+/* Footer fijo para acciones en móvil */
+.main-actions-footer {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--panel-bg);
+  padding: 15px;
+  display: flex;
+  gap: 15px;
+  border-top: 2px solid var(--border-gold);
+  z-index: 100;
+  box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.4);
+}
+
+.main-actions-footer button,
+.main-actions-footer a {
+  flex: 1;
+  padding: 15px;
+  font-size: 1.1em;
+  text-align: center;
+  text-decoration: none;
+}
+
+.library-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--input-border);
+}
+
+.library-actions button,
+.library-actions a {
+  flex: 1 1 200px;
+  padding: 12px;
+  font-size: 1.1em;
+  text-align: center;
+  text-decoration: none;
+}
+
+/* --- Estilos para Notificaciones (para que funcionen en todas las páginas) --- */
+
+#notification-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1050;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  pointer-events: none; /* Para no interferir con los clics */
+}
+
+.notification-toast {
+  background-color: var(--panel-bg);
+  color: var(--text-light);
+  padding: 15px 20px;
+  border-radius: 8px;
+  margin-top: 10px;
+  border: 1px solid var(--border-gold);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transform: translateX(100%);
+  animation: slideInAndOut 4s ease-in-out forwards;
+}
+
+@keyframes slideInAndOut {
+  0%,
+  100% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  10%,
+  90% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

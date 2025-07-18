@@ -1,95 +1,22 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forja de Aventuras - Inicio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=IM+Fell+English+SC&display=swap"
+        rel="stylesheet">
     <link rel="shortcut icon"
         href="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/i/465e4532-5430-4be7-b49c-acf81087d8bd/dk17bz4-f9c81319-b029-4470-9675-b67c2fd91bf0.png"
         type="image/x-icon">
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* Estilos específicos para la página de inicio */
-        body,
-        html {
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #1a1a1a;
-            background-image: url('assets/images/backgrounds/portal_background.jpg');
-            /* Añade una imagen de fondo si quieres */
-            background-size: cover;
-            background-position: center;
-            font-family: 'Cinzel', serif;
-        }
-
-        .portal-container {
-            background-color: rgba(20, 20, 20, 0.85);
-            backdrop-filter: blur(10px);
-            padding: 40px;
-            border-radius: 15px;
-            border: 2px solid var(--border-gold);
-            text-align: center;
-            max-width: 90%;
-            width: 500px;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
-        }
-
-        .portal-logo {
-            width: 150px;
-            margin-bottom: 20px;
-        }
-
-        .portal-title {
-            font-family: 'IM Fell English SC', serif;
-            font-size: 2.5em;
-            color: var(--text-gold);
-            margin-bottom: 10px;
-        }
-
-        .portal-subtitle {
-            font-size: 1.2em;
-            color: var(--text-light);
-            margin-bottom: 30px;
-        }
-
-        .portal-actions a {
-            display: block;
-            background-color: var(--btn-primary-bg);
-            color: var(--text-dark);
-            padding: 15px 20px;
-            margin: 15px 0;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 1.3em;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            border: 2px solid var(--btn-primary-border);
-        }
-
-        .portal-actions a:hover {
-            background-color: var(--btn-primary-hover-bg);
-            transform: translateY(-3px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-        }
-
-        .portal-actions a.secondary {
-            background-color: var(--btn-secondary-bg);
-            color: var(--text-light);
-            border-color: var(--btn-secondary-border);
-        }
-
-        .portal-actions a.secondary:hover {
-            background-color: var(--btn-secondary-hover-bg);
-        }
-    </style>
 </head>
+<body class="portal-body">
 
-<body>
     <div class="portal-container">
-        <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/465e4532-5430-4be7-b49c-acf81087d8bd/dk16kcf-77b0443f-cc50-45d6-a19d-de78a6dcb6e6.png/v1/fill/w_894,h_894/logo1_by_rafaelalvarez29_dk16kcf-pre.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9MTAyNCIsInBhdGgiOiJcL2ZcLzQ2NWU0NTMyLTU0MzAtNGJlNy1iNDljLWFjZjgxMDg3ZDhiZFwvZGsxNmtjZi03N2IwNDQzZi1jYzUwLTQ1ZDYtYTE5ZC1kZTc4YTZkY2I2ZTYucG5nIiwid2lkdGgiOiI8PTEwMjQifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6aW1hZ2Uub3BlcmF0aW9ucyJdfQ.YtjWIIde6uE-Q4uflRtmthgIoWGsVSYs6MqcARV12B8"
+        <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/465e4532-5430-4be7-b49c-acf81087d8bd/dk16kcf-77b0443f-cc50-45d6-a19d-de78a6dcb6e6.png/v1/fill/w_894,h_894/logo1_by_rafaelalvarez29_dk16kcf-pre.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9MTAyNCIsInBhdGgiOiJcL2ZcLzQ2NWU0NTMyLTU0MzAtNGJlNy1iNDljLWFjZjgxMDg3ZDhiZFwvZGsxNmtjZi03N2IwNDQzZi1jYzUwLTQ1ZDYtYTE5ZC1kZTc4YTZkY2I2ZTYucGpngIiwid2lkdGgiOiI8PTEwMjQifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6aW1hZ2Uub3BlcmF0aW9ucyJdfQ.YtjWIIde6uE-Q4uflRtmthgIoWGsVSYs6MqcARV12B8"
             alt="Logo" class="portal-logo">
         <h1 class="portal-title">Forja de Aventuras</h1>
         <p class="portal-subtitle">Elige tu camino</p>
@@ -99,6 +26,6 @@
             <a href="library.html" class="secondary">Mis Personajes</a>
         </div>
     </div>
-</body>
 
+</body>
 </html>

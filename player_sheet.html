@@ -6,39 +6,275 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Hoja de Personaje</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Aquí podrías tener un CSS específico para móvil si lo necesitas -->
+    <style>
+        .mobile-sheet-body {
+            background-color: #1a1a1a;
+            padding: 10px;
+        }
+
+        #player-sheet-container {
+            padding-bottom: 120px;
+            /* Espacio para el footer fijo */
+        }
+
+        .main-actions-footer {
+            position: sticky;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--panel-bg);
+            padding: 15px;
+            display: flex;
+            gap: 15px;
+            border-top: 2px solid var(--border-gold);
+            z-index: 100;
+        }
+
+        .main-actions-footer button,
+        .main-actions-footer a {
+            flex-grow: 1;
+            padding: 15px;
+            font-size: 1.2em;
+            text-align: center;
+            text-decoration: none;
+        }
+    </style>
 </head>
 
 <body class="mobile-sheet-body">
 
     <div id="player-sheet-container">
-        <!-- El contenido se generará con JS, similar al tokenEditor del DM -->
-        <p id="noCharacterLoaded" class="no-tokens-message">Carga un personaje desde tu biblioteca o impórtalo para
-            empezar.</p>
+        <p id="noCharacterLoaded" class="no-tokens-message">No hay ningún personaje cargado. Vuelve a tu <a
+                href="library.html">biblioteca</a> para seleccionar uno.</p>
 
         <div id="tokenEditor" style="display: none;">
-            <!-- Encabezado del Personaje -->
-            <div class="token-header-display">
-                <!-- ... (similar al del DM, pero sin botones de edición de imagen) ... -->
-            </div>
+            <div class="token-editor-form">
+                <!-- ENCABEZADO DEL PERSONAJE -->
+                <div class="token-header-display">
+                    <div id="editTokenImagePreviewContainer">
+                        <img id="editTokenImagePreview" src="" alt="Imagen de la Ficha">
+                        <div id="editTokenLetterPreview" class="token-preview-letter"></div>
+                    </div>
+                    <div class="token-header-info">
+                        <h1 id="viewTokenName" class="token-name-view"></h1>
+                        <p class="token-class-level-view"><span id="viewTokenClass"></span>, Nivel <span
+                                id="viewTokenLevel"></span></p>
+                        <p id="viewTokenRace" class="token-race-view"></p>
+                    </div>
+                </div>
 
-            <!-- Navegación por Pestañas -->
-            <nav class="token-editor-nav">
-                <!-- ... (igual que en dm.html: Combate, Estadísticas, etc.) ... -->
-            </nav>
+                <!-- PESTAÑAS DE NAVEGACIÓN -->
+                <nav class="token-editor-nav">
+                    <ul>
+                        <li><button class="token-nav-button active" data-view="token-view-combat">Combate</button></li>
+                        <li><button class="token-nav-button" data-view="token-view-stats">Estadísticas</button></li>
+                        <li><button class="token-nav-button" data-view="token-view-abilities">Habilidades</button></li>
+                        <li><button class="token-nav-button" data-view="token-view-inventory">Inventario</button></li>
+                        <li><button class="token-nav-button" data-view="token-view-notes">Notas</button></li>
+                    </ul>
+                </nav>
 
-            <!-- Contenido de las Pestañas -->
-            <div class="token-editor-content">
-                <!-- Paneles para Combate, Stats, Habilidades, etc. se insertarán aquí -->
-            </div>
+                <!-- CONTENIDO DE LAS PESTAÑAS -->
+                <div class="token-editor-content">
+                    <!-- Pestaña 1: Combate -->
+                    <div id="token-view-combat" class="token-view-panel active">
+                        <div class="combat-stats-grid">
+                            <div class="combat-stat-card"><label class="combat-label-top">BONIF.</label><input
+                                    type="number" class="combat-value-input nobackgrund" id="edit_proficiency_bonus"
+                                    value="2"><label class="combat-label-bottom">COMPETENCIA</label></div>
+                            <div class="combat-stat-card"><label class="combat-label-top">INICIATIVA</label><input
+                                    type="number" class="combat-value-input nobackgrund" id="edit_initiative"><label
+                                    class="combat-label-bottom">(FINAL)</label></div>
+                            <div class="combat-stat-card"><label class="combat-label-top">VELOCIDAD</label><input
+                                    type="number" class="combat-value-input nobackgrund" id="edit_speed"
+                                    value="30"><label class="combat-label-bottom">PIES</label></div>
+                            <div class="combat-stat-card"><label class="combat-label-top">CLASE DE</label><input
+                                    type="number" class="combat-value-input nobackgrund" id="edit_armor_class"
+                                    value="10"><label class="combat-label-bottom">ARMADURA</label></div>
+                        </div>
+                        <div class="form-group"><label>♥️Vida Máxima</label><input type="number" id="editTokenHealthMax"
+                                min="0"></div>
+                        <div class="health-controls">
+                            <label>Puntos de Vida Actuales</label>
+                            <div id="healthDisplayContainer" class="health-display-container"><span id="healthDisplay"
+                                    class="health-display"></span></div>
+                            <div class="health-modifier-row">
+                                <button class="health-modifier-btn negative" data-amount="-10">-10</button>
+                                <button class="health-modifier-btn negative" data-amount="-5">-5</button>
+                                <button class="health-modifier-btn negative" data-amount="-1">-1</button>
+                                <input type="text" id="healthModifierInput" class="health-modifier-input"
+                                    placeholder="±">
+                                <button class="health-modifier-btn positive" data-amount="1">+1</button>
+                                <button class="health-modifier-btn positive" data-amount="5">+5</button>
+                                <button class="health-modifier-btn positive" data-amount="10">+10</button>
+                            </div>
+                        </div>
+                        <div id="tokenStatesEditor">
+                            <h4 class="title-with-button"><span>Estados y Efectos</span><button id="addStateBtn"
+                                    class="add-item-btn" title="Añadir Estado">+</button></h4>
+                            <div class="form-row">
+                                <div class="form-group" style="flex-grow:1;"><label
+                                        for="newStateEmoji">Emoji</label><input type="text" id="newStateEmoji"
+                                        placeholder="🔥" maxlength="2"></div>
+                                <div class="form-group" style="flex-grow:3;"><label
+                                        for="newStateDesc">Descripción</label><input type="text" id="newStateDesc"
+                                        placeholder="En llamas..."></div>
+                            </div>
+                            <ul id="editTokenStatesList"></ul>
+                        </div>
+                    </div>
 
-            <!-- Acciones Principales -->
-            <div class="main-actions-footer">
-                <button id="exportCharacterBtn">Exportar Personaje</button>
-                <a href="library.html" class="secondary">Volver a la Biblioteca</a>
+                    <!-- Pestaña 2: Estadísticas -->
+                    <div id="token-view-stats" class="token-view-panel">
+                        <h4>Características</h4>
+                        <div class="char-stats-grid" id="edit_char_stats_grid">
+                            <div class="char-stat-card"><label>FUE</label><span class="char-mod"
+                                    id="edit_str_mod">+0</span>
+                                <div class="char-score-capsule"><input type="number" id="edit_str_score"
+                                        class="char-score-input nobackgrund" value="10"></div>
+                            </div>
+                            <div class="char-stat-card"><label>DES</label><span class="char-mod"
+                                    id="edit_dex_mod">+0</span>
+                                <div class="char-score-capsule"><input type="number" id="edit_dex_score"
+                                        class="char-score-input nobackgrund" value="10"></div>
+                            </div>
+                            <div class="char-stat-card"><label>CON</label><span class="char-mod"
+                                    id="edit_con_mod">+0</span>
+                                <div class="char-score-capsule"><input type="number" id="edit_con_score"
+                                        class="char-score-input nobackgrund" value="10"></div>
+                            </div>
+                            <div class="char-stat-card"><label>INT</label><span class="char-mod"
+                                    id="edit_int_mod">+0</span>
+                                <div class="char-score-capsule"><input type="number" id="edit_int_score"
+                                        class="char-score-input nobackgrund" value="10"></div>
+                            </div>
+                            <div class="char-stat-card"><label>SAB</label><span class="char-mod"
+                                    id="edit_wis_mod">+0</span>
+                                <div class="char-score-capsule"><input type="number" id="edit_wis_score"
+                                        class="char-score-input nobackgrund" value="10"></div>
+                            </div>
+                            <div class="char-stat-card"><label>CAR</label><span class="char-mod"
+                                    id="edit_car_mod">+0</span>
+                                <div class="char-score-capsule"><input type="number" id="edit_car_score"
+                                        class="char-score-input nobackgrund" value="10"></div>
+                            </div>
+                        </div>
+                        <h4>Tiradas de Salvación</h4>
+                        <div class="saving-throws-list" id="edit_saving_throws_list">
+                            <div class="save-throw-row">
+                                <div class="checkbox-container"><input type="checkbox" id="edit_str_save_prof"
+                                        class="save-prof-check"><label for="edit_str_save_prof"></label></div><span
+                                    class="save-name">Fuerza</span><span class="save-total"
+                                    id="edit_str_save_total">+0</span>
+                            </div>
+                            <div class="save-throw-row">
+                                <div class="checkbox-container"><input type="checkbox" id="edit_dex_save_prof"
+                                        class="save-prof-check"><label for="edit_dex_save_prof"></label></div><span
+                                    class="save-name">Destreza</span><span class="save-total"
+                                    id="edit_dex_save_total">+0</span>
+                            </div>
+                            <div class="save-throw-row">
+                                <div class="checkbox-container"><input type="checkbox" id="edit_con_save_prof"
+                                        class="save-prof-check"><label for="edit_con_save_prof"></label></div><span
+                                    class="save-name">Constitución</span><span class="save-total"
+                                    id="edit_con_save_total">+0</span>
+                            </div>
+                            <div class="save-throw-row">
+                                <div class="checkbox-container"><input type="checkbox" id="edit_int_save_prof"
+                                        class="save-prof-check"><label for="edit_int_save_prof"></label></div><span
+                                    class="save-name">Inteligencia</span><span class="save-total"
+                                    id="edit_int_save_total">+0</span>
+                            </div>
+                            <div class="save-throw-row">
+                                <div class="checkbox-container"><input type="checkbox" id="edit_wis_save_prof"
+                                        class="save-prof-check"><label for="edit_wis_save_prof"></label></div><span
+                                    class="save-name">Sabiduría</span><span class="save-total"
+                                    id="edit_wis_save_total">+0</span>
+                            </div>
+                            <div class="save-throw-row">
+                                <div class="checkbox-container"><input type="checkbox" id="edit_car_save_prof"
+                                        class="save-prof-check"><label for="edit_car_save_prof"></label></div><span
+                                    class="save-name">Carisma</span><span class="save-total"
+                                    id="edit_car_save_total">+0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pestaña 3: Habilidades -->
+                    <div id="token-view-abilities" class="token-view-panel">
+                        <div id="tokenAbilitiesEditor">
+                            <h4 class="title-with-button">
+                                <span>Habilidades y Rasgos</span>
+                                <input type="text" id="searchAbilitiesInput" class="search-in-list-input"
+                                    placeholder="Buscar...">
+                                <button id="addAbilityBtn" class="add-item-btn" title="Añadir Habilidad">+</button>
+                            </h4>
+                            <div id="editAbilitiesList" class="info-card-list"></div>
+                        </div>
+                    </div>
+
+                    <!-- Pestaña 4: Inventario -->
+                    <div id="token-view-inventory" class="token-view-panel">
+                        <div id="tokenInventoryEditor">
+                            <h4 class="title-with-button">
+                                <span>Inventario</span>
+                                <input type="text" id="searchInventoryInput" class="search-in-list-input"
+                                    placeholder="Buscar...">
+                                <button id="addInventoryItemBtn" class="add-item-btn" title="Añadir Objeto">+</button>
+                            </h4>
+                            <div id="editInventoryList" class="info-card-list"></div>
+                        </div>
+                    </div>
+
+                    <!-- Pestaña 5: Notas -->
+                    <div id="token-view-notes" class="token-view-panel">
+                        <h4>Notas del Personaje</h4>
+                        <div class="form-group"><textarea id="editTokenNotes" rows="12"></textarea></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- BARRA DE ACCIONES INFERIOR -->
+    <div class="main-actions-footer">
+        <button id="exportCharacterBtn">Exportar</button>
+        <a href="library.html" class="button secondary">Mi Biblioteca</a>
+    </div>
+
+    <!-- MODALES -->
+    <div id="featureInventoryModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="modalTitle"></h3>
+            <div class="form-group"><label for="modalNameInput">Nombre:</label><input type="text" id="modalNameInput">
+            </div>
+            <div class="form-group"><label for="modalDescriptionInput">Descripción:</label><textarea
+                    id="modalDescriptionInput" rows="4"></textarea></div>
+            <div class="button-group"><button id="confirmModalBtn">Guardar</button><button id="cancelModalBtn"
+                    class="secondary">Cancelar</button></div>
+        </div>
+    </div>
+    <div id="editCardModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="editCardModalTitle"></h3>
+            <div id="editCardViewMode">
+                <h4 id="viewCardName" class="info-card-title-modal"></h4>
+                <p id="viewCardDescription" class="info-card-desc-modal"></p>
+            </div>
+            <div id="editCardEditMode" style="display: none;">
+                <div class="form-group"><label for="editCardNameInput">Nombre:</label><input type="text"
+                        id="editCardNameInput"></div>
+                <div class="form-group"><label for="editCardDescriptionInput">Descripción:</label><textarea
+                        id="editCardDescriptionInput" rows="8"></textarea></div>
+            </div>
+            <div class="button-group" id="editCardViewButtons"><button id="editCardBtn">Editar</button><button
+                    id="closeCardBtn" class="secondary">Cerrar</button></div>
+            <div class="button-group" id="editCardEditButtons" style="display: none;"><button
+                    id="updateCardBtn">Actualizar</button><button id="cancelEditCardBtn"
+                    class="secondary">Cancelar</button></div>
+        </div>
+    </div>
+    <div id="notification-container"></div>
 
     <script src="player_sheet.js"></script>
 </body>
