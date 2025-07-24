@@ -669,6 +669,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateTokenElement(token) {
         const el = token.element;
         if (!el) return;
+
+        // --- LÓGICA EXISTENTE (sin cambios) ---
         const size = (token.position.sizeMultiplier || 1) * cellSize;
         token.position.size = size;
         el.style.left = `${token.position.x}px`;
@@ -677,6 +679,7 @@ document.addEventListener('DOMContentLoaded', () => {
         el.style.height = `${size}px`;
         el.style.backgroundColor = token.appearance.color;
         el.style.border = token.appearance.borderColor ? `3px solid ${token.appearance.borderColor}` : 'none';
+
         if (token.identity.image) {
             el.classList.add('has-image');
             el.style.backgroundImage = `url(${token.identity.image})`;
@@ -686,7 +689,18 @@ document.addEventListener('DOMContentLoaded', () => {
             el.style.backgroundImage = 'none';
             el.textContent = token.identity.letter;
         }
-        updateTokenVisibility(token);
+        updateTokenVisibility(token);//borrar? #pendiente
+
+        // ===== LÓGICA MODIFICADA PARA EL ESTADO "FUERA DE COMBATE" =====
+        // Ahora comprueba la vida para jugadores O el estado 'isDefeated' para enemigos.
+        const isKnockedOut = (token.identity.type === 'player' && token.stats.health.current <= 0) ||
+            (token.identity.type === 'enemy' && token.isDefeated);
+
+        if (isKnockedOut) {
+            el.classList.add('knocked-out');
+        } else {
+            el.classList.remove('knocked-out');
+        }
     }
 
     function updateTokenVisibility(token) {
@@ -881,7 +895,7 @@ document.addEventListener('DOMContentLoaded', () => {
         revealedBufferCtx.globalCompositeOperation = 'source-over';
         revealedBufferCtx.drawImage(visionThisFrameCanvas, 0, 0);
         visionCtx.clearRect(0, 0, visionCanvas.width, visionCanvas.height);
-        visionCtx.fillStyle = 'rgba(0,0,0,0.95)';
+        visionCtx.fillStyle = '000000)';
         visionCtx.fillRect(0, 0, visionCanvas.width, visionCanvas.height);
         visionCtx.globalCompositeOperation = 'destination-out';
         visionCtx.drawImage(revealedBufferCanvas, 0, 0);
@@ -930,7 +944,7 @@ document.addEventListener('DOMContentLoaded', () => {
         revealedBufferCtx.arc(x, y, brushSize / (2 * scale), 0, Math.PI * 2);
         revealedBufferCtx.fill();
         visionCtx.clearRect(0, 0, visionCanvas.width, visionCanvas.height);
-        visionCtx.fillStyle = 'rgba(0,0,0,0.95)';
+        visionCtx.fillStyle = '000000';
         visionCtx.fillRect(0, 0, visionCanvas.width, visionCanvas.height);
         visionCtx.globalCompositeOperation = 'destination-out';
         visionCtx.drawImage(revealedBufferCanvas, 0, 0);
@@ -1196,7 +1210,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // 2. Mostrar "???" para Clase y Nivel
-            detailsClassLevel.textContent = `??? Lv. ??`;
+            detailsClassLevel.textContent = `????? Lv. ??`;
 
             // 3. Ocultar los estados de los enemigos
             detailsStates.innerHTML = '';

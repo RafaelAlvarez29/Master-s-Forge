@@ -438,6 +438,18 @@ document.addEventListener('DOMContentLoaded', () => {
         healthDisplay.className = `health-display ${getHealthColorClass(token.stats.health.current, token.stats.health.max)}`;
         renderTokenStatesEditor(token);
 
+        const enemyControls = document.getElementById('enemyDefeatedControls');
+
+        // Mantenemos SIEMPRE visibles los controles de vida para el DM.
+        // Lo que cambia es si mostramos el botón de "Abatir" o no.
+        if (token.identity.type === 'enemy') {
+            enemyControls.style.display = 'block'; // Mostramos el botón de abatir para enemigos.
+            const defeatedBtn = document.getElementById('toggleDefeatedBtn');
+            defeatedBtn.textContent = token.isDefeated ? 'Reanimar Enemigo' : 'Abatir Enemigo';
+        } else { // Si es un jugador
+            enemyControls.style.display = 'none'; // Ocultamos el botón de abatir para jugadores.
+        }
+
         // --- PESTAÑA ESTADÍSTICAS ---
         ['str', 'dex', 'con', 'int', 'wis', 'car'].forEach(stat => {
             if (token.stats.characteristics && token.stats.characteristics[stat]) {
@@ -461,10 +473,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('editTokenNotes').value = token.info.notes;
     }
 
-    // ... El resto del archivo
 
-    // El resto de las funciones (guardado, carga, etc.) se mantienen igual que en tu versión anterior.
-    // ... (pegas aquí el resto de tu script.js desde `getSavedScenes` hasta el final)
 
     // --- GESTIÓN DE ESCENAS ---
 
@@ -1628,6 +1637,24 @@ document.addEventListener('DOMContentLoaded', () => {
             updateTokenBtn.click();
         });
     }
+    const toggleDefeatedBtn = document.getElementById('toggleDefeatedBtn');
+    if (toggleDefeatedBtn) {
+        toggleDefeatedBtn.addEventListener('click', () => {
+            if (!selectedTokenId) return;
+            const token = tokens.find(t => t.id === selectedTokenId);
+            if (!token || token.identity.type !== 'enemy') return;
+
+            // Invertir el estado 'isDefeated'. Si no existe, lo inicializa como true.
+            token.isDefeated = !token.isDefeated;
+
+            // Actualizar el texto del botón en la UI del DM
+            toggleDefeatedBtn.textContent = token.isDefeated ? 'Reanimar Enemigo' : 'Abatir Enemigo';
+
+            // Enviar los datos actualizados al jugador para que aplique el efecto visual
+            broadcast('CMD_UPDATE_TOKEN_DATA', { tokenData: token });
+        });
+    }
+
     setupPanelNavigation();
     renderCharacterLibrary();
     loadDmNotes();
