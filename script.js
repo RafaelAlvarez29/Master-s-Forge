@@ -20,6 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     initDB();
 
+
+
     const CHAR_LIB_STORE = 'characterLibrary'; // Clave para localStorage
 
     // --- BROADCAST CHANNEL ---
@@ -75,6 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const edit_tokenVision = document.getElementById('editTokenVision');
     const edit_tokenSizeMultiplier = document.getElementById('editTokenSizeMultiplier');
     const updateTokenBtn = document.getElementById('updateTokenBtn');
+    const quickUpdateTokenBtn = document.getElementById('quickUpdateTokenBtn');
     const deselectTokenBtn = document.getElementById('deselectTokenBtn');
     const healthDisplay = document.getElementById('healthDisplay');
     const healthDisplayContainer = document.getElementById('healthDisplayContainer');
@@ -112,6 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const savedScenesModal = document.getElementById('savedScenesModal');
     const closeSavedScenesBtn = document.getElementById('closeSavedScenesBtn');
     const sceneListContainer = document.getElementById('sceneListContainer');
+    const resetInitiativeBtn = document.getElementById('resetInitiativeBtn');
 
     const tokenHeaderInfo = document.querySelector('.token-header-info');
     const tokenInfoView = document.getElementById('tokenInfoView');
@@ -793,14 +797,90 @@ document.addEventListener('DOMContentLoaded', () => {
         } addTokenToBoard(tokenData);
     }
     function deleteToken(tokenId) { tokens = tokens.filter(t => t.id !== tokenId); if (selectedTokenId === tokenId) deselectToken(); updateTokenList(); broadcast('CMD_DELETE_TOKEN', { id: tokenId }); if (visionModeActive) broadcast('CMD_DRAW_VISION', { tokens, walls, cellSize }); }
-    function selectToken(tokenId) { if (selectedTokenId === tokenId) return; deselectToken(); selectedTokenId = tokenId; const token = tokens.find(t => t.id === tokenId); if (!token) { deselectToken(); return; } const mainColumn = document.querySelector('.main-column'); const tokenViewButton = mainColumn.querySelector('[data-view="main-view-selected-token"]'); if (tokenViewButton) { tokenViewButton.click(); } selectedTokenView.classList.add('has-selection'); updateTokenInUI(token); broadcast('CMD_SELECT_TOKEN', { id: tokenId }); broadcast('CMD_HIGHLIGHT_TRACKER_CARD', { id: tokenId }); }
-    function deselectToken() { if (!selectedTokenId) return; const oldListItem = tokenListUl.querySelector(`li[data-id="${selectedTokenId}"]`); if (oldListItem) oldListItem.classList.remove('selected-in-list'); selectedTokenId = null; selectedTokenView.classList.remove('has-selection'); if (activeAoeType) toggleAoe(null); broadcast('CMD_DESELECT_TOKEN'); broadcast('CMD_HIGHLIGHT_TRACKER_CARD', { id: null }); }
-    function updateSelectedToken() { if (!selectedTokenId) return; const token = tokens.find(t => t.id === selectedTokenId); if (!token) return; token.identity.name = document.getElementById('editTokenName').value.trim(); token.identity.char_class = document.getElementById('editTokenClass').value.trim() || 'Clase'; token.identity.level = parseInt(document.getElementById('editTokenLevel').value) || 1; token.identity.race = document.getElementById('editTokenRace').value.trim() || 'Raza'; token.stats.initiative = parseInt(document.getElementById('editTokenTurn').value) || 0; token.stats.vision.radius = parseInt(document.getElementById('editTokenVision').value) || 0; token.stats.health.max = parseInt(document.getElementById('editTokenHealthMax').value) || 0; token.stats.proficiencyBonus = parseInt(document.getElementById('edit_proficiency_bonus').value) || 0; token.stats.speed = parseInt(document.getElementById('edit_speed').value) || 0; token.stats.armorClass = parseInt(document.getElementById('edit_armor_class').value) || 0;['str', 'dex', 'con', 'int', 'wis', 'car'].forEach(stat => { token.stats.characteristics[stat].score = parseInt(document.getElementById(`edit_${stat}_score`).value) || 10; token.stats.characteristics[stat].proficient = document.getElementById(`edit_${stat}_save_prof`).checked; }); token.appearance.color = document.getElementById('editTransparentBgCheckbox').checked ? 'transparent' : document.getElementById('editTokenColor').value; token.appearance.borderColor = editBorderCheckbox.checked ? document.getElementById('editTokenBorderColor').value : null; token.info.notes = document.getElementById('editTokenNotes').value; token.position.sizeMultiplier = parseFloat(document.getElementById('editTokenSizeMultiplier').value) || 1; if (token.stats.health.current > token.stats.health.max) { token.stats.health.current = token.stats.health.max; } updateTokenInUI(token); updateTokenList(); broadcast('CMD_UPDATE_TOKEN_DATA', { tokenData: token }); if (visionModeActive) { broadcast('CMD_DRAW_VISION', { tokens, walls, cellSize }); } }
+    function selectToken(tokenId) {
+        if (selectedTokenId === tokenId) {
+            broadcast('CMD_PING_TOKEN', { id: tokenId });
+            return;
+        }
+        // Le decimos a deselectToken que estamos cambiando de ficha, para que no oculte el panel.
+        deselectToken(true);
+
+        selectedTokenId = tokenId;
+        const token = tokens.find(t => t.id === tokenId);
+        if (!token) {
+            deselectToken(); // Si el token no existe, deselecciona de verdad.
+            return;
+        }
+
+        const mainColumn = document.querySelector('.main-column');
+        const tokenViewButton = mainColumn.querySelector('[data-view="main-view-selected-token"]');
+        if (tokenViewButton) {
+            tokenViewButton.click();
+        }
+
+        selectedTokenView.classList.add('has-selection');
+        updateTokenInUI(token);
+        broadcast('CMD_SHOW_TOKEN_DETAILS', { tokenData: token });
+        broadcast('CMD_SELECT_TOKEN', { id: tokenId });
+        broadcast('CMD_HIGHLIGHT_TRACKER_CARD', { id: tokenId });
+    }
+    function deselectToken(isSwitching = false) {
+        if (!selectedTokenId) return;
+
+        const oldListItem = tokenListUl.querySelector(`li[data-id="${selectedTokenId}"]`);
+        if (oldListItem) oldListItem.classList.remove('selected-in-list');
+
+        selectedTokenId = null;
+        selectedTokenView.classList.remove('has-selection');
+
+        if (activeAoeType) toggleAoe(null);
+
+        broadcast('CMD_DESELECT_TOKEN');
+        broadcast('CMD_HIGHLIGHT_TRACKER_CARD', { id: null });
+
+        // --- LÓGICA MODIFICADA ---
+        // Solo oculta el panel si no estamos cambiando a otro token inmediatamente.
+        if (!isSwitching) {
+            broadcast('CMD_HIDE_TOKEN_DETAILS');
+        }
+    }
+    function updateSelectedToken() {
+        if (!selectedTokenId) return;
+        const token = tokens.find(t => t.id === selectedTokenId);
+        if (!token) return; token.identity.name = document.getElementById('editTokenName').value.trim();
+        token.identity.char_class = document.getElementById('editTokenClass').value.trim() || 'Clase';
+        token.identity.level = parseInt(document.getElementById('editTokenLevel').value) || 1;
+        token.identity.race = document.getElementById('editTokenRace').value.trim() || 'Raza';
+        token.stats.initiative = parseInt(document.getElementById('editTokenTurn').value) || 0;
+        token.stats.vision.radius = parseInt(document.getElementById('editTokenVision').value) || 0;
+        token.stats.health.max = parseInt(document.getElementById('editTokenHealthMax').value) || 0;
+        token.stats.proficiencyBonus = parseInt(document.getElementById('edit_proficiency_bonus').value) || 0;
+        token.stats.speed = parseInt(document.getElementById('edit_speed').value) || 0;
+        token.stats.armorClass = parseInt(document.getElementById('edit_armor_class').value) || 0;
+        ['str', 'dex', 'con', 'int', 'wis', 'car'].forEach(stat => {
+            token.stats.characteristics[stat].score = parseInt(document.getElementById(`edit_${stat}_score`).value) || 10;
+            token.stats.characteristics[stat].proficient = document.getElementById(`edit_${stat}_save_prof`).checked;
+        }); token.appearance.color = document.getElementById('editTransparentBgCheckbox').checked ? 'transparent' : document.getElementById('editTokenColor').value;
+        token.appearance.borderColor = editBorderCheckbox.checked ? document.getElementById('editTokenBorderColor').value : null;
+        token.info.notes = document.getElementById('editTokenNotes').value;
+        token.position.sizeMultiplier = parseFloat(document.getElementById('editTokenSizeMultiplier').value) || 1;
+        if (token.stats.health.current > token.stats.health.max) {
+            token.stats.health.current = token.stats.health.max;
+
+        } updateTokenInUI(token);
+        updateTokenList();
+        broadcast('CMD_UPDATE_TOKEN_DATA', { tokenData: token });
+        broadcast('CMD_SHOW_TOKEN_DETAILS', { tokenData: token });
+
+        if (visionModeActive) {
+            broadcast('CMD_DRAW_VISION', { tokens, walls, cellSize });
+        }
+    }
     function toggleVisionMode() { visionModeActive = !visionModeActive; toggleVisionBtn.textContent = visionModeActive ? 'Detener Visión' : 'Iniciar Visión'; broadcast('CMD_SET_VISION_MODE', { active: visionModeActive, tokens, walls, cellSize }); }
     function resetFog() { if (!confirm("¿Reiniciar toda la niebla de guerra?")) return; tokens.forEach(t => { if (t.identity.type === 'enemy') t.isDiscovered = false; }); broadcast('CMD_RESET_FOG'); if (visionModeActive) broadcast('CMD_DRAW_VISION', { tokens, walls, cellSize }); updateTokenList(); }
     function checkEnemyDiscovery(visibleEnemies) { let trackerNeedsUpdate = false; visibleEnemies.forEach(enemyId => { const enemy = tokens.find(t => t.id === enemyId && !t.isDiscovered); if (enemy) { enemy.isDiscovered = true; trackerNeedsUpdate = true; } }); if (trackerNeedsUpdate) { updateTokenList(); broadcast('CMD_UPDATE_TURN_TRACKER', { tokens }); } }
     function handleBrushModeChange(event) { const checkbox = event.target; const otherCheckbox = checkbox.id === 'brushReveal' ? brushHideCheckbox : brushRevealCheckbox; if (checkbox.checked) { otherCheckbox.checked = false; activeBrushMode = checkbox.value; } else { activeBrushMode = null; } broadcast('CMD_SET_BRUSH_MODE', { mode: activeBrushMode }); }
-    
+
     function toggleAlignGridMode(forceState) { isAligningGrid = typeof forceState === 'boolean' ? forceState : !isAligningGrid; alignGridModeBtn.classList.toggle('active', isAligningGrid); alignGridModeBtn.textContent = isAligningGrid ? 'Cancelar Alineación' : 'Activar Modo Alineación'; broadcast('CMD_SET_GRID_ALIGN_MODE', { active: isAligningGrid }); }
     function broadcastGridSettings() { broadcast('CMD_SET_GRID_SETTINGS', { gridSettings: { visible: gridVisible, color: gridColor, opacity: gridOpacity, offsetX: gridOffsetX, offsetY: gridOffsetY, cellSize: cellSize } }); }
     const calculateModifier = (score) => { const mod = Math.floor((score - 10) / 2); return mod >= 0 ? `+${mod}` : `${mod}`; };
@@ -808,8 +888,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateSavingThrowsUI = (prefix) => { const stats = ['str', 'dex', 'con', 'int', 'wis', 'car']; const profBonus = parseInt(document.getElementById(`${prefix}_proficiency_bonus`).value) || 0; stats.forEach(stat => { const score = parseInt(document.getElementById(`${prefix}_${stat}_score`).value) || 10; const baseMod = Math.floor((score - 10) / 2); const isProficient = document.getElementById(`${prefix}_${stat}_save_prof`).checked; const total = baseMod + (isProficient ? profBonus : 0); const totalDisplay = document.getElementById(`${prefix}_${stat}_save_total`); if (totalDisplay) { totalDisplay.textContent = total >= 0 ? `+${total}` : `${total}`; } }); };
     async function handleEditTokenImageChange(event) { if (!selectedTokenId) return; const file = event.target.files[0]; if (file) { const token = tokens.find(t => t.id === selectedTokenId); if (token) { token.identity.image = await processImage(file); updateTokenInUI(token); broadcast('CMD_UPDATE_TOKEN_DATA', { tokenData: token }); } } }
     function removeEditTokenImage() { if (!selectedTokenId) return; const token = tokens.find(t => t.id === selectedTokenId); if (token) { token.identity.image = null; updateTokenInUI(token); broadcast('CMD_UPDATE_TOKEN_DATA', { tokenData: token }); } }
-    function applyHealthChange(amount) { if (!selectedTokenId || isNaN(amount)) return; const token = tokens.find(t => t.id === selectedTokenId); if (!token) return; const oldHealth = token.stats.health.current; let newHealth = oldHealth + amount; newHealth = Math.max(0, Math.min(token.stats.health.max, newHealth)); const actualChange = newHealth - oldHealth; token.stats.health.current = newHealth; updateTokenInUI(token); updateTokenList(); if (actualChange !== 0) { const text = `${actualChange > 0 ? '+' : ''}${actualChange}`; const typeClass = actualChange > 0 ? 'heal' : 'damage'; const panelFloat = document.createElement('div'); panelFloat.className = `damage-float ${typeClass}`; panelFloat.textContent = text; healthDisplayContainer.appendChild(panelFloat); setTimeout(() => panelFloat.remove(), 1000); const sound = actualChange < 0 ? damageSound : healSound; sound.currentTime = 0; sound.play(); const animationClass = actualChange < 0 ? 'damaged' : 'healed'; const timeout = actualChange < 0 ? 400 : 500; broadcast('CMD_SHOW_DAMAGE_FLOAT', { amount: actualChange, tokenId: token.id }); broadcast('CMD_APPLY_TOKEN_ANIMATION', { tokenId: token.id, animationClass, timeout }); broadcast('CMD_UPDATE_TOKEN_DATA', { tokenData: token }); } } function addStateToSelectedToken() {
-        if (!selectedTokenId) return; const token = tokens.find(t => t.id === selectedTokenId); if (!token) return; const emoji = newStateEmoji.value.trim(); const desc = newStateDesc.value.trim(); if (!emoji) {
+    function applyHealthChange(amount) {
+        if (!selectedTokenId || isNaN(amount)) return;
+        const token = tokens.find(t => t.id === selectedTokenId);
+        if (!token) return;
+        const oldHealth = token.stats.health.current;
+        let newHealth = oldHealth + amount;
+        newHealth = Math.max(0, Math.min(token.stats.health.max, newHealth));
+        const actualChange = newHealth - oldHealth;
+        token.stats.health.current = newHealth;
+        updateTokenInUI(token);
+        updateTokenList();
+        if (actualChange !== 0) {
+            const text = `${actualChange > 0 ? '+' : ''}${actualChange}`;
+            const typeClass = actualChange > 0 ? 'heal' : 'damage';
+            const panelFloat = document.createElement('div');
+            panelFloat.className = `damage-float ${typeClass}`;
+            panelFloat.textContent = text;
+            healthDisplayContainer.appendChild(panelFloat);
+            setTimeout(() => panelFloat.remove(), 1000);
+            const sound = actualChange < 0 ? damageSound : healSound;
+            sound.currentTime = 0;
+            sound.play();
+            const animationClass = actualChange < 0 ? 'damaged' : 'healed';
+            const timeout = actualChange < 0 ? 400 : 500;
+            broadcast('CMD_SHOW_DAMAGE_FLOAT', { amount: actualChange, tokenId: token.id });
+            broadcast('CMD_APPLY_TOKEN_ANIMATION', { tokenId: token.id, animationClass, timeout });
+            broadcast('CMD_UPDATE_TOKEN_DATA', { tokenData: token });
+            broadcast('CMD_SHOW_TOKEN_DETAILS', { tokenData: token });
+        }
+    }
+    function addStateToSelectedToken() {
+        if (!selectedTokenId) return;
+        const token = tokens.find(t => t.id === selectedTokenId); if (!token) return; const emoji = newStateEmoji.value.trim(); const desc = newStateDesc.value.trim(); if (!emoji) {
             showCustomModal({
                 title: 'Atención',
                 message: 'El emoji del estado no puede estar vacío.',
@@ -1430,6 +1541,93 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 0);//timepo de pantalla de bienvenida 4500
         }
     });
+
+    if (resetInitiativeBtn) {
+        resetInitiativeBtn.addEventListener('click', async () => {
+            // 1. Comprobar si hay fichas en el tablero
+            if (tokens.length === 0) {
+                showNotification('No hay fichas en el tablero para reiniciar.');
+                return;
+            }
+
+            // 2. Pedir confirmación al usuario
+            const confirmed = await showCustomModal({
+                title: 'Reiniciar Iniciativa',
+                message: '¿Estás seguro de que quieres establecer la iniciativa de TODAS las fichas en el tablero a 0?',
+                type: 'confirm',
+                confirmText: 'Sí, reiniciar',
+                cancelText: 'Cancelar'
+            });
+
+            // 3. Si confirma, ejecutar la lógica
+            if (confirmed) {
+                tokens.forEach(token => {
+                    if (token.stats) {
+                        token.stats.initiative = 0;
+                    }
+                });
+
+                // 4. Actualizar todas las interfaces
+                updateTokenList(); // Actualiza la lista del panel izquierdo
+                broadcast('CMD_UPDATE_TURN_TRACKER', { tokens }); // Actualiza el tracker del jugador
+
+                // Si hay un token seleccionado, actualiza también su ficha en el panel central
+                if (selectedTokenId) {
+                    const selectedToken = tokens.find(t => t.id === selectedTokenId);
+                    if (selectedToken) {
+                        updateTokenInUI(selectedToken);
+                    }
+                }
+
+                showNotification('¡Iniciativa de todas las fichas reiniciada a 0!');
+            }
+        });
+    }
+
+    // Listener para actualizar la iniciativa automáticamente al perder el foco o presionar Enter
+    const editTokenTurnInput = document.getElementById('editTokenTurn');
+    if (editTokenTurnInput) {
+
+        const updateInitiative = () => {
+            // 1. Asegurarse de que hay un token seleccionado
+            if (!selectedTokenId) return;
+            const token = tokens.find(t => t.id === selectedTokenId);
+            if (!token) return;
+
+            // 2. Obtener el nuevo valor y comprobar si ha cambiado
+            const newInitiative = parseInt(editTokenTurnInput.value) || 0;
+            if (token.stats.initiative === newInitiative) {
+                return; // No hacer nada si el valor no cambió
+            }
+
+            // 3. Actualizar el dato en el objeto del token
+            token.stats.initiative = newInitiative;
+
+            // 4. Actualizar las interfaces
+            updateTokenList(); // Reordena la lista de la izquierda
+            broadcast('CMD_UPDATE_TURN_TRACKER', { tokens }); // Actualiza y reordena el tracker del jugador
+
+            showNotification(`Iniciativa de ${token.identity.name} actualizada a ${newInitiative}.`);
+        };
+
+        // Activar la actualización cuando el campo pierde el foco
+        editTokenTurnInput.addEventListener('blur', updateInitiative);
+
+        // Activar la actualización y quitar el foco al presionar Enter
+        editTokenTurnInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault(); // Evita cualquier comportamiento por defecto de Enter
+                editTokenTurnInput.blur(); // Llama al evento 'blur', que ejecuta nuestra lógica de guardado
+            }
+        });
+    }
+    if (quickUpdateTokenBtn && updateTokenBtn) {
+        quickUpdateTokenBtn.addEventListener('click', () => {
+            // Simula un clic en el botón de "Actualizar" que está al final del formulario.
+            // Esto reutiliza la función updateSelectedToken() sin tener que llamarla directamente.
+            updateTokenBtn.click();
+        });
+    }
     setupPanelNavigation();
     renderCharacterLibrary();
     loadDmNotes();

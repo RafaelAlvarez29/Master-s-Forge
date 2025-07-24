@@ -27,6 +27,7 @@
 
     <!-- Contenido del mapa, movido desde index.html -->
     <div id="mapContainer">
+        <div id="brushPreview"></div>
         <div class="loading-state">
             <div class="loading-icon icon-dice-large"></div>
             <h1>Esperando la Aventura del DM...</h1>
@@ -39,6 +40,7 @@
             <canvas id="wallsCanvas"></canvas>
             <canvas id="visionCanvas"></canvas>
             <div id="tokensLayer"></div>
+            <div class="map-ping" id="mapPingCircle"></div>
             <canvas id="aoeCanvas"></canvas>
         </div>
 
@@ -53,6 +55,9 @@
             </button>
             <button id="toggleTrackerPosBtn" title="Cambiar Posición del Panel de Turnos">
                 <span class="btn-icon icon-swap-position"></span>
+            </button>
+            <button id="toggleVisionUpdateBtn" title="Alternar actualización de visión (Dinámica / Al soltar)">
+                <span class="btn-icon icon-vision-toggle"></span>
             </button>
         </div>
 
@@ -88,6 +93,31 @@
             </div>
         </div>
     </div>
+
+    <!-- ===== INICIO: NUEVO PANEL DE DETALLES DE FICHA SELECCIONADA ===== -->
+    <div id="selectedTokenDetails" style="display: none;">
+        <div id="detailsPreview" class="details-preview">
+            <!-- La imagen o la letra irán aquí -->
+        </div>
+        <div class="details-info">
+            <div class="details-row-1">
+                <span id="detailsClassLevel" class="details-badge"></span>
+                <div id="detailsStates" class="details-states">
+                    <!-- Los iconos de estado irán aquí -->
+                </div>
+            </div>
+            <div class="details-row-2">
+                <p id="detailsNameRace" class="details-name-race"></p>
+            </div>
+            <div class="details-row-3" id="detailsHealthContainer">
+                <div class="details-health-bar-container">
+                    <div id="detailsHealthBarFill" class="details-health-bar-fill"></div>
+                    <span id="detailsHealthText" class="details-health-text"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ===== FIN: NUEVO PANEL DE DETALLES DE FICHA SELECCIONADA ===== -->
 
     <script src="player.js"></script>
 </body>

@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Selectores del DOM ---
     const mapContainer = document.getElementById('mapContainer');
+    const brushPreview = document.getElementById('brushPreview');
     const mapContentWrapper = document.getElementById('mapContentWrapper');
     const loadingState = document.querySelector('.loading-state');
     const mapImage = document.getElementById('mapImage');
@@ -38,6 +39,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const confirmPlayerDoorNameBtn = document.getElementById('confirmPlayerDoorNameBtn');
     const cancelPlayerDoorNameBtn = document.getElementById('cancelPlayerDoorNameBtn');
 
+    const toggleVisionUpdateBtn = document.getElementById('toggleVisionUpdateBtn');
+    const mapPingCircle = document.getElementById('mapPingCircle');
+
+    // --- Selectores del Panel de Detalles  ---
+    const selectedTokenDetails = document.getElementById('selectedTokenDetails');
+    const detailsPreview = document.getElementById('detailsPreview');
+    const detailsClassLevel = document.getElementById('detailsClassLevel');
+    const detailsStates = document.getElementById('detailsStates');
+    const detailsNameRace = document.getElementById('detailsNameRace');
+    const detailsHealthContainer = document.getElementById('detailsHealthContainer');
+    const detailsHealthBarFill = document.getElementById('detailsHealthBarFill');
+    const detailsHealthText = document.getElementById('detailsHealthText');
 
     // --- Variables de Estado Locales ---
     let localTokens = [];
@@ -71,6 +84,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let isMultiSelectMode = false;
     let selectedGroup = new Set();
     let dragOffsets = new Map();
+
+    let isDynamicVision = true; // true = actualiza al mover, false = actualiza al soltar
+
 
 
     // --- MANEJO DE COMANDOS DEL DM ---
@@ -178,9 +194,18 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'CMD_SET_BRUSH_MODE':
                 activeBrushMode = payload.mode;
                 mapContainer.classList.toggle('brush-mode-active', !!activeBrushMode);
+                if (activeBrushMode) {
+                    brushPreview.style.display = 'block'; // Muestra la previsualización
+                    brushPreview.classList.toggle('hide-mode', activeBrushMode === 'hide');
+                } else {
+                    brushPreview.style.display = 'none'; // La oculta si no hay pincel activo
+                }
                 break;
             case 'CMD_SET_BRUSH_SIZE':
                 brushSize = payload.size;
+                // Actualiza el tamaño del círculo de previsualización
+                brushPreview.style.width = `${brushSize / scale}px`;
+                brushPreview.style.height = `${brushSize / scale}px`;
                 break;
             case 'CMD_SET_GRID_ALIGN_MODE':
                 isAligningGrid = payload.active;
@@ -233,6 +258,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 playerDoorNameInput.value = ''; // Limpiamos el input
                 playerDoorNameInput.focus();
                 break;
+            case 'CMD_PING_TOKEN':
+                const tokenToPing = localTokens.find(t => t.id === payload.id);
+                if (tokenToPing) {
+                    pingToken(tokenToPing);
+                }
+                break;
+            case 'CMD_PLAY_SOUND':
+                if (payload.soundId) {
+                    const audio = new Audio(); // Crea una instancia de audio temporal
+                    const sourceAudio = document.getElementById(payload.soundId); // Busca la fuente en el DOM
+                    if (sourceAudio) {
+                        audio.src = sourceAudio.src;
+                        audio.play().catch(e => console.error("Error al reproducir sonido:", e));
+                    }
+                }
+                break;
+            case 'CMD_SHOW_TOKEN_DETAILS':
+                updateTokenDetailsPanel(payload.tokenData);
+                selectedTokenDetails.style.display = 'flex';
+                // Usamos un pequeño timeout para que la animación de entrada funcione
+                setTimeout(() => selectedTokenDetails.classList.add('visible'), 10);
+                break;
+
+            case 'CMD_HIDE_TOKEN_DETAILS':
+                selectedTokenDetails.classList.remove('visible');
+                // Ocultamos el elemento después de que la animación termine
+                setTimeout(() => selectedTokenDetails.style.display = 'none', 300);
+                break;
         }
     };
 
@@ -277,6 +330,8 @@ document.addEventListener('DOMContentLoaded', () => {
             broadcast('EVENT_CLEAR_ALL_WALLS');
         }
     });
+
+
     // --- MANEJO DE MOUSE ACTUALIZADO ---
 
     mapContainer.addEventListener('mousedown', e => {
@@ -399,8 +454,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentDraggedToken.position.y = dragInitialTokenY + deltaY;
                 updateTokenElement(currentDraggedToken);
             }
-            if (isVisionActive) drawVision(localTokens, localWalls);
-            return;
+            if (isVisionActive && isDynamicVision) {
+                drawVision(localTokens, localWalls);
+            } return;
         }
         if (isPanning) {
             const dx = e.clientX - panStartX;
@@ -435,6 +491,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    mapContainer.addEventListener('mousemove', e => {
+        // Si hay un modo de pincel activo, mueve la previsualización
+        if (activeBrushMode) {
+            const mapRect = mapContainer.getBoundingClientRect();
+            const viewportX = e.clientX - mapRect.left;
+            const viewportY = e.clientY - mapRect.top;
+            brushPreview.style.left = `${viewportX}px`;
+            brushPreview.style.top = `${viewportY}px`;
+        }
+    });
+
+    toggleVisionUpdateBtn.addEventListener('click', () => {
+        isDynamicVision = !isDynamicVision;
+        toggleVisionUpdateBtn.classList.toggle('active', !isDynamicVision);
+        toggleVisionUpdateBtn.title = isDynamicVision ?
+            'Modo dinámico: La visión se actualiza al arrastrar (más intensivo)' :
+            'Modo estático: La visión se actualiza al soltar (mejor rendimiento)';
+    });
     // ... (El resto del archivo, incluyendo el listener de 'mouseup' y otras funciones, sigue igual)
 
     document.addEventListener('mouseup', e => {
@@ -550,6 +624,9 @@ document.addEventListener('DOMContentLoaded', () => {
         panX = panX - (mouseX * (scale - (scale / (e.deltaY < 0 ? zoomFactor : 1 / zoomFactor))));
         panY = panY - (mouseY * (scale - (scale / (e.deltaY < 0 ? zoomFactor : 1 / zoomFactor))));
 
+        brushPreview.style.width = `${brushSize / scale}px`;
+        brushPreview.style.height = `${brushSize / scale}px`;
+
         updateTransform();
     });
     function resizeAllCanvas() {
@@ -662,7 +739,34 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         wallsCtx.setLineDash([]);
     }
+    function pingToken(token) {
+        if (!token || !token.element) return;
 
+        // 1. Calcula el tamaño del token y del ping inicial
+        const tokenSize = (token.position.sizeMultiplier || 1) * cellSize;
+
+        // 2. Calcula el centro del token (esto estaba bien)
+        const tokenCenterX = token.position.x + tokenSize / 2;
+        const tokenCenterY = token.position.y + tokenSize / 2;
+
+        // 3. Establece el tamaño del círculo de ping
+        mapPingCircle.style.width = `${tokenSize}px`;
+        mapPingCircle.style.height = `${tokenSize}px`;
+
+        // 4. --- LA CORRECCIÓN CLAVE ---
+        // Calcula la posición de la esquina superior izquierda del ping.
+        // Para centrarlo, restamos la mitad del tamaño del ping a las coordenadas del centro del token.
+        const pingTop = tokenCenterY - (tokenSize / 2);
+        const pingLeft = tokenCenterX - (tokenSize / 2);
+
+        mapPingCircle.style.left = `${pingLeft}px`;
+        mapPingCircle.style.top = `${pingTop}px`;
+
+        // 5. El resto de la función para reiniciar la animación se mantiene igual
+        mapPingCircle.classList.remove('pinging');
+        void mapPingCircle.offsetWidth;
+        mapPingCircle.classList.add('pinging');
+    }
     function getIntersection(ray, wall) {
         const r_px = ray.x1,
             r_py = ray.y1,
@@ -843,6 +947,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return 'health-high';
     }
 
+    // player.js - VERSIÓN CORREGIDA
     function updatePlayerTurnTracker(tokens) {
         playerTurnTracker.innerHTML = '';
         if (!tokens) return;
@@ -854,10 +959,19 @@ document.addEventListener('DOMContentLoaded', () => {
             card.dataset.id = token.id;
             const imageStyle = token.identity.image ? `background-image: url(${token.identity.image});` : `background-color: ${token.appearance.color};`;
             const statesHTML = (token.info.states || []).map(state => `<span title="${state.description}">${state.emoji}</span>`).join('');
+
+            // --- AQUÍ ESTÁ LA SOLUCIÓN ---
+            // La variable empieza vacía.
             let healthInfoHTML = '';
-            const healthPercentage = token.stats.health.max > 0 ? (token.stats.health.current / token.stats.health.max) * 100 : 0;
-            const healthColorClass = getHealthColorClass(token.stats.health.current, token.stats.health.max);
-            healthInfoHTML = `<div class="health-bar-container"><div class="health-bar-fill ${healthColorClass}" style="width: ${healthPercentage}%;"></div></div><div class="player-token-health-text">Vida: ${token.stats.health.current}/${token.stats.health.max}</div>`;
+
+            // SOLO si el token es un JUGADOR, genera el HTML de la vida.
+            if (token.identity.type === 'player') {
+                const healthPercentage = token.stats.health.max > 0 ? (token.stats.health.current / token.stats.health.max) * 100 : 0;
+                const healthColorClass = getHealthColorClass(token.stats.health.current, token.stats.health.max);
+                healthInfoHTML = `<div class="health-bar-container"><div class="health-bar-fill ${healthColorClass}" style="width: ${healthPercentage}%;"></div></div><div class="player-token-health-text">Vida: ${token.stats.health.current}/${token.stats.health.max}</div>`;
+            }
+
+            // El resto del código funciona igual. Si el token es un enemigo, healthInfoHTML estará vacío.
             card.innerHTML = ` <div class="player-token-preview" style="${imageStyle}">${token.identity.image ? '' : token.identity.letter}</div> <div class="player-token-info"> <div class="player-token-name">${token.identity.name}</div> <div class="player-token-initiative">Iniciativa: ${token.stats.initiative || 0}</div> ${healthInfoHTML} <div class="player-token-states">${statesHTML}</div> </div>`;
             playerTurnTracker.appendChild(card);
         });
@@ -995,10 +1109,7 @@ document.addEventListener('DOMContentLoaded', () => {
         playerControlsContainer.classList.toggle('controls-right');
     });
 
-    toggleTrackerPosBtn.addEventListener('click', () => {
-        playerTurnTracker.classList.toggle('tracker-left');
-        playerControlsContainer.classList.toggle('controls-right');
-    });
+
 
     // --- NUEVOS MANEJADORES PARA EL MODAL DE PUERTA ---
     confirmPlayerDoorNameBtn.addEventListener('click', () => {
@@ -1034,4 +1145,70 @@ document.addEventListener('DOMContentLoaded', () => {
             confirmPlayerDoorNameBtn.click();
         }
     });
+    function updateTokenDetailsPanel(token) {
+        if (!token) return;
+
+        // --- LÓGICA PARA JUGADORES ---
+        if (token.identity.type === 'player') {
+            // 1. Actualizar imagen o letra (igual para ambos)
+            if (token.identity.image) {
+                detailsPreview.style.backgroundImage = `url(${token.identity.image})`;
+                detailsPreview.textContent = '';
+                detailsPreview.style.backgroundColor = 'transparent';
+            } else {
+                detailsPreview.style.backgroundImage = 'none';
+                detailsPreview.textContent = token.identity.letter;
+                detailsPreview.style.backgroundColor = token.appearance.color;
+            }
+
+            // 2. Actualizar Clase y Nivel
+            detailsClassLevel.textContent = `${token.identity.char_class}, Lv. ${token.identity.level}`;
+
+            // 3. Actualizar Estados
+            detailsStates.innerHTML = (token.info.states || [])
+                .map(state => `<span title="${state.description}">${state.emoji}</span>`)
+                .join('');
+
+            // 4. Actualizar Nombre y Raza
+            detailsNameRace.innerHTML = `${token.identity.name}<span class="race">${token.identity.race}</span>`;
+
+            // 5. Actualizar Barra de Vida
+            detailsHealthContainer.style.display = 'block';
+            const healthPercentage = token.stats.health.max > 0 ? (token.stats.health.current / token.stats.health.max) * 100 : 0;
+            const healthColorClass = getHealthColorClass(token.stats.health.current, token.stats.health.max);
+
+            detailsHealthBarFill.className = `details-health-bar-fill ${healthColorClass}`;
+            detailsHealthBarFill.style.width = `${healthPercentage}%`;
+            detailsHealthText.textContent = `${token.stats.health.current} / ${token.stats.health.max}`;
+
+        }
+        // --- LÓGICA PARA ENEMIGOS (NUEVO BLOQUE) ---
+        else {
+            // 1. Actualizar imagen o letra (igual para ambos)
+            if (token.identity.image) {
+                detailsPreview.style.backgroundImage = `url(${token.identity.image})`;
+                detailsPreview.textContent = '';
+                detailsPreview.style.backgroundColor = 'transparent';
+            } else {
+                detailsPreview.style.backgroundImage = 'none';
+                detailsPreview.textContent = token.identity.letter;
+                detailsPreview.style.backgroundColor = token.appearance.color;
+            }
+
+            // 2. Mostrar "???" para Clase y Nivel
+            detailsClassLevel.textContent = `??? Lv. ??`;
+
+            // 3. Ocultar los estados de los enemigos
+            detailsStates.innerHTML = '';
+
+            // 4. Mostrar solo el nombre del enemigo
+            detailsNameRace.innerHTML = `${token.identity.name}`;
+
+            // 5. Mostrar barra de vida estática y vacía
+            detailsHealthContainer.style.display = 'block'; // Aseguramos que se vea
+            detailsHealthBarFill.className = 'details-health-bar-fill'; // Quitamos clases de color
+            detailsHealthBarFill.style.width = '0%'; // La barra estará vacía
+            detailsHealthText.textContent = '?? / ??'; // Texto estático
+        }
+    }
 });

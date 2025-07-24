@@ -102,7 +102,14 @@
                 <div class="panel-content">
                     <!-- Vista 1: Fichas en el Tablero -->
                     <div id="left-view-board-tokens" class="panel-view">
-                        <h3 class="view-title">Fichas en el Tablero</h3>
+                        <!-- Título modificado para incluir el botón -->
+                        <div class="title-with-button">
+                            <h3 class="view-title" style="margin-bottom: 0; border: none;">Fichas en el Tablero</h3>
+                            <button id="resetInitiativeBtn" class="add-item-btn"
+                                title="Reiniciar todas las iniciativas a 0">
+                                <span class="btn-icon icon-undo" style="transform: scaleX(-1);"></span>
+                            </button>
+                        </div>
                         <ul id="tokenList"></ul>
                     </div>
                     <!-- Vista 2: Biblioteca de Personajes -->
@@ -206,16 +213,16 @@
                             <div class="combat-stats-grid">
                                 <div class="combat-stat-card"><label class="combat-label-top">BONIF.</label><input
                                         type="number" class="combat-value-input nobackgrund" id="add_proficiency_bonus"
-                                        value="2"><label class="combat-label-bottom">COMPETENCIA</label></div>
+                                        value="2"><label class="combat-label-bottom">💪COMPETENCIA</label></div>
                                 <div class="combat-stat-card"><label class="combat-label-top">MOD.</label><input
                                         type="number" class="combat-value-input nobackgrund" id="add_initiative_mod"
-                                        value="0"><label class="combat-label-bottom">INICIATIVA</label></div>
+                                        value="0"><label class="combat-label-bottom">🤺INICIATIVA</label></div>
                                 <div class="combat-stat-card"><label class="combat-label-top">VELOCIDAD</label><input
                                         type="number" class="combat-value-input nobackgrund" id="add_speed"
-                                        value="30"><label class="combat-label-bottom">PIES</label></div>
+                                        value="30"><label class="combat-label-bottom">🏃‍♂️PIES</label></div>
                                 <div class="combat-stat-card"><label class="combat-label-top">CLASE DE</label><input
                                         type="number" class="combat-value-input nobackgrund" id="add_armor_class"
-                                        value="10"><label class="combat-label-bottom">ARMADURA</label></div>
+                                        value="10"><label class="combat-label-bottom">🛡️ARMADURA</label></div>
                             </div>
                             <div class="form-row">
                                 <div class="form-group"><label>👁️Visión (casillas):*</label><input type="number"
@@ -360,20 +367,26 @@
                             </div>
 
                             <!-- ===== INICIO DE LA ESTRUCTURA DE PESTAÑAS ===== -->
-                            <nav class="token-editor-nav">
-                                <ul>
-                                    <li><button class="token-nav-button active"
-                                            data-view="token-view-combat">Combate</button></li>
-                                    <li><button class="token-nav-button"
-                                            data-view="token-view-stats">Estadísticas</button></li>
-                                    <li><button class="token-nav-button"
-                                            data-view="token-view-abilities">Habilidades</button></li>
-                                    <li><button class="token-nav-button"
-                                            data-view="token-view-inventory">Inventario</button></li>
-                                    <li><button class="token-nav-button" data-view="token-view-notes">Notas</button>
-                                    </li>
-                                </ul>
-                            </nav>
+                            <div class="token-editor-header">
+                                <nav class="token-editor-nav">
+                                    <ul>
+                                        <li><button class="token-nav-button active"
+                                                data-view="token-view-combat">Combate</button></li>
+                                        <li><button class="token-nav-button"
+                                                data-view="token-view-stats">Estadísticas</button>
+                                        </li>
+                                        <li><button class="token-nav-button"
+                                                data-view="token-view-abilities">Habilidades</button></li>
+                                        <li><button class="token-nav-button"
+                                                data-view="token-view-inventory">Inventario</button></li>
+                                        <li><button class="token-nav-button" data-view="token-view-notes">Notas</button>
+                                        </li>
+                                    </ul>
+                                </nav>
+                                <button id="quickUpdateTokenBtn" title="Guardar cambios en la ficha">
+                                    <span class="btn-icon icon-save-scene"></span>
+                                </button>
+                            </div>
                             <div class="token-editor-content">
                                 <!-- Pestaña 1: Combate (Activa por defecto) -->
                                 <div id="token-view-combat" class="token-view-panel active">
@@ -381,19 +394,20 @@
                                         <div class="combat-stat-card"><label
                                                 class="combat-label-top">BONIF.</label><input type="number"
                                                 class="combat-value-input nobackgrund" id="edit_proficiency_bonus"
-                                                value="2"><label class="combat-label-bottom">COMPETENCIA</label></div>
+                                                value="2"><label class="combat-label-bottom">💪COMPETENCIA</label></div>
                                         <div class="combat-stat-card"><label
                                                 class="combat-label-top">INICIATIVA</label><input type="number"
                                                 class="combat-value-input nobackgrund" id="editTokenTurn"><label
-                                                class="combat-label-bottom">(FINAL)</label></div>
+                                                class="combat-label-bottom">🤺(FINAL)</label></div>
                                         <div class="combat-stat-card"><label
                                                 class="combat-label-top">VELOCIDAD</label><input type="number"
                                                 class="combat-value-input nobackgrund" id="edit_speed" value="30"><label
-                                                class="combat-label-bottom">PIES</label></div>
-                                        <div class="combat-stat-card"><label class="combat-label-top">CLASE
-                                                DE</label><input type="number" class="combat-value-input nobackgrund"
+                                                class="combat-label-bottom">🏃‍♂️PIES</label></div>
+                                        <div class="combat-stat-card"><label class="combat-label-top">CLASE DE</label>
+                                            <input type="number" class="combat-value-input nobackgrund"
                                                 id="edit_armor_class" value="10"><label
-                                                class="combat-label-bottom">ARMADURA</label></div>
+                                                class="combat-label-bottom">🛡️ARMADURA</label>
+                                        </div>
                                     </div>
                                     <div class="form-row">
                                         <div class="form-group"><label>👁️Visión (Casillas)*</label><input type="number"
@@ -512,43 +526,43 @@
                                         <div class="save-throw-row">
                                             <div class="checkbox-container"><input type="checkbox"
                                                     id="edit_str_save_prof" class="save-prof-check"><label
-                                                    for="edit_str_save_prof"></label></div><span
-                                                class="save-name">Fuerza</span><span class="save-total"
+                                                    for="edit_str_save_prof"></label></div>
+                                            <span class="save-name">Fuerza</span><span class="save-total"
                                                 id="edit_str_save_total">+0</span>
                                         </div>
                                         <div class="save-throw-row">
                                             <div class="checkbox-container"><input type="checkbox"
                                                     id="edit_dex_save_prof" class="save-prof-check"><label
-                                                    for="edit_dex_save_prof"></label></div><span
-                                                class="save-name">Destreza</span><span class="save-total"
+                                                    for="edit_dex_save_prof"></label></div>
+                                            <span class="save-name">Destreza</span><span class="save-total"
                                                 id="edit_dex_save_total">+0</span>
                                         </div>
                                         <div class="save-throw-row">
                                             <div class="checkbox-container"><input type="checkbox"
                                                     id="edit_con_save_prof" class="save-prof-check"><label
-                                                    for="edit_con_save_prof"></label></div><span
-                                                class="save-name">Constitución</span><span class="save-total"
+                                                    for="edit_con_save_prof"></label></div>
+                                            <span class="save-name">Constitución</span><span class="save-total"
                                                 id="edit_con_save_total">+0</span>
                                         </div>
                                         <div class="save-throw-row">
                                             <div class="checkbox-container"><input type="checkbox"
                                                     id="edit_int_save_prof" class="save-prof-check"><label
-                                                    for="edit_int_save_prof"></label></div><span
-                                                class="save-name">Inteligencia</span><span class="save-total"
+                                                    for="edit_int_save_prof"></label></div>
+                                            <span class="save-name">Inteligencia</span><span class="save-total"
                                                 id="edit_int_save_total">+0</span>
                                         </div>
                                         <div class="save-throw-row">
                                             <div class="checkbox-container"><input type="checkbox"
                                                     id="edit_wis_save_prof" class="save-prof-check"><label
-                                                    for="edit_wis_save_prof"></label></div><span
-                                                class="save-name">Sabiduría</span><span class="save-total"
+                                                    for="edit_wis_save_prof"></label></div>
+                                            <span class="save-name">Sabiduría</span><span class="save-total"
                                                 id="edit_wis_save_total">+0</span>
                                         </div>
                                         <div class="save-throw-row">
                                             <div class="checkbox-container"><input type="checkbox"
                                                     id="edit_car_save_prof" class="save-prof-check"><label
-                                                    for="edit_car_save_prof"></label></div><span
-                                                class="save-name">Carisma</span><span class="save-total"
+                                                    for="edit_car_save_prof"></label></div>
+                                            <span class="save-name">Carisma</span><span class="save-total"
                                                 id="edit_car_save_total">+0</span>
                                         </div>
                                     </div>
@@ -558,7 +572,8 @@
                                                 type="color" id="editTokenColor">
                                             <div class="checkbox-container" style="margin-top: 8px;"><input
                                                     type="checkbox" id="editBorderCheckbox"><label
-                                                    for="editBorderCheckbox">Añadir Borde</label></div>
+                                                    for="editBorderCheckbox">Añadir
+                                                    Borde</label></div>
                                             <div class="checkbox-container" style="margin-top: 8px;"><input
                                                     type="checkbox" id="editTransparentBgCheckbox"><label
                                                     for="editTransparentBgCheckbox">Sin Relleno</label></div>
@@ -607,7 +622,8 @@
                             <!-- ===== FIN DE LA NUEVA ESTRUCTURA DE PESTAÑAS ===== -->
 
                             <button id="saveCharacterBtn" class="secondary"><span
-                                    class="btn-icon icon-save-scene"></span> Guardar Personaje en Biblioteca</button>
+                                    class="btn-icon icon-save-scene"></span>
+                                Guardar Personaje en Biblioteca</button>
                             <div class="form-row button-group">
                                 <button id="updateTokenBtn">Actualizar</button>
                                 <button id="deselectTokenBtn" class="secondary">Deseleccionar</button>
@@ -1280,6 +1296,10 @@
         preload="auto"></audio>
     <audio id="music-DragonBallZ-capítuloanterior"
         src="assets/sounds/Dragon Ball Z - Temas de recordatorio del capítulo anterior.mp3" preload="auto" loop></audio>
+    <audio id="sound-door-open" src="https://www.myinstants.com/media/sounds/dndoor-squeak.mp3" preload="auto"></audio>
+    <audio id="sound-door-close" src="https://www.myinstants.com/media/sounds/dnd-aporreando.mp3"
+        preload="auto"></audio>
+
 
 
     <!-- ================================== -->
