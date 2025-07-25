@@ -81,7 +81,72 @@ body {
   margin: 0;
   width: auto;
 }
+/*boton borrar de estados*/
+.state-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 15px; /* Increased padding for better spacing */
+  margin-bottom: 5px; /* Added margin between list items */
+  background-color: #333; /* Dark background color */
+  color: #fff; /* White text color */
+  border-radius: 8px; /* Rounded corners */
+  animation: slideIn 0.3s ease-out;
+}
+.state-item:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 215, 0, 0.1) 0%,
+    rgba(255, 215, 0, 0.05) 100%
+  );
+  border-color: rgba(255, 215, 0, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
 
+.state-emoji {
+  font-size: 1.2em;
+  margin-right: 8px; /* Add some space between emoji and text */
+}
+
+.state-desc {
+  flex-grow: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.delete-state-btn {
+  background: linear-gradient(
+    to bottom,
+    #8c2d2d,
+    #591d1d
+  ); /* Red background for the button */
+  color: var(--text-gold);
+  border: none;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.9em; /* Slightly smaller "x" */
+  line-height: 0.9em; /* Adjust line height for better "x" centering */
+  flex-shrink: 0;
+  padding: 0; /* Remove default button padding */
+}
+
+.delete-state-btn:hover {
+  background-color: #c0392b; /* Darker red on hover */
+}
+/* .delete-state-btn{
+  height: 45px;
+  width: 45px;
+  margin-left: 10px;
+  border: #4e0000;
+} */
 .dashboard-footer {
   grid-area: footer;
   display: flex;
@@ -216,10 +281,12 @@ body {
 .panel-content {
   flex-grow: 1;
   overflow-y: auto;
-  padding: 15px;
+  padding: 0px 15px 15px 15px;
   position: relative;
 }
-
+#dmNotes{
+  margin-top: 15px;
+}
 .panel-view {
   display: none;
   flex-direction: column;
@@ -415,7 +482,7 @@ button.secondary:hover {
 }
 
 .token-editor-form {
-  padding: 10px;
+  padding: 10px 20px 10px 10px;
   background: rgba(0, 0, 0, 0.1);
   border-radius: 5px;
 }
@@ -768,15 +835,20 @@ button.secondary:hover {
 }
 
 .token.knocked-out::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   border-radius: 50%; /* Para que coincida con la forma del token */
-  background-color: rgba(26, 26, 26, 0.75); /* Negro muy oscuro y semitransparente */
-  box-shadow: inset 0 0 10px rgba(0,0,0,0.5); /* Sombra interior sutil */
+  background-color: rgba(
+    26,
+    26,
+    26,
+    0.75
+  ); /* Negro muy oscuro y semitransparente */
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5); /* Sombra interior sutil */
   transition: opacity 0.3s ease;
   opacity: 1; /* Por defecto visible cuando la clase está aplicada */
 }
@@ -3731,6 +3803,7 @@ code {
   align-items: center; /* Centra verticalmente los elementos */
   gap: 15px; /* Espacio entre la nav y el botón */
   margin-bottom: -1px; /* Solapa el borde inferior para un look integrado */
+  position: sticky ;
 }
 
 /* Hacemos que la navegación ocupe todo el espacio disponible */
@@ -3890,3 +3963,38 @@ code {
   color: white;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
 }
+/* --- INICIO: CORRECCIÓN PARA TOKEN EDITOR HEADER STICKY --- */
+
+/* 1. Hacemos que el formulario del editor sea un contenedor flex que ocupe toda la altura. */
+/*    Esto es crucial para que sus hijos puedan gestionarse verticalmente. */
+#main-view-selected-token .token-editor-form {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Ocupa toda la altura de su contenedor padre (.panel-content) */
+}
+
+/* 2. Convertimos el header del editor en el elemento "sticky". */
+/*    - top: 0; le dice dónde pegarse. */
+/*    - z-index: 10; se asegura de que se muestre por encima del contenido que se desplaza. */
+/*    - background-color: es VITAL para que el contenido no se transparente al pasar por debajo. */
+.token-editor-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: var(--panel-bg); /* Usa el color de fondo del panel */
+    padding-top: 10px; /* Un poco de espacio para que no se vea tan pegado arriba */
+    padding-bottom: 5px;
+}
+
+/* 3. Hacemos que el contenido de las pestañas sea el área que se desplace (scroll). */
+/*    - flex-grow: 1; hace que ocupe todo el espacio vertical sobrante. */
+/*    - overflow-y: auto; le añade la barra de scroll vertical cuando sea necesario. */
+.token-editor-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    /* Un pequeño ajuste para que el scrollbar no se pegue al borde */
+    padding-right: 5px; 
+}
+
+
+/* --- FIN: CORRECCIÓN PARA TOKEN EDITOR HEADER STICKY --- */

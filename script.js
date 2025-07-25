@@ -1026,18 +1026,55 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
-    function renderTokenStatesEditor(token) { editTokenStatesList.innerHTML = ''; if (!token || !token.info || !token.info.states) return; token.info.states.forEach((state, index) => { const li = document.createElement('li'); li.innerHTML = `<span class="state-emoji">${state.emoji}</span><span class="state-desc">${state.description}</span><button class="delete-state-btn" data-index="${index}">×</button>`; editTokenStatesList.appendChild(li); }); editTokenStatesList.querySelectorAll('.delete-state-btn').forEach(btn => btn.addEventListener('click', () => removeStateFromSelectedToken(parseInt(btn.dataset.index)))); }
-    tokenInfoEdit.querySelectorAll('input').forEach(input => { input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); saveHeaderChanges(); tokenInfoView.style.display = 'block'; tokenInfoEdit.style.display = 'none'; } else if (e.key === 'Escape') { updateTokenInUI(tokens.find(t => t.id === selectedTokenId)); } }); });
-    saveCharacterBtn.addEventListener('click', () => {
-        if (!selectedTokenId) {
-            showCustomModal({
-                title: 'Atención',
-                message: 'Primero selecciona una ficha del tablero para guardarla.',
-                type: 'warning'
-            });
-            return;
-        } const tokenToSave = tokens.find(t => t.id === selectedTokenId); if (tokenToSave) { saveCharacterToLibrary(tokenToSave); }
+function renderTokenStatesEditor(token) {
+    editTokenStatesList.innerHTML = '';
+    if (!token || !token.info || !token.info.states) return;
+
+    token.info.states.forEach((state, index) => {
+        const li = document.createElement('li');
+        // Agregamos la clase 'state-item' al li para aplicar los estilos de Flexbox
+        li.classList.add('state-item'); 
+        li.innerHTML = `
+            <span class="state-emoji">${state.emoji}</span>
+            <span class="state-desc">${state.description}</span>
+            <button class="delete-state-btn" data-index="${index}">×</button>
+        `;
+        editTokenStatesList.appendChild(li);
     });
+
+    editTokenStatesList.querySelectorAll('.delete-state-btn').forEach(btn => 
+        btn.addEventListener('click', () => removeStateFromSelectedToken(parseInt(btn.dataset.index)))
+    );
+}
+
+// El resto de tu código JavaScript permanece igual
+tokenInfoEdit.querySelectorAll('input').forEach(input => {
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            saveHeaderChanges();
+            tokenInfoView.style.display = 'block';
+            tokenInfoEdit.style.display = 'none';
+        } else if (e.key === 'Escape') {
+            updateTokenInUI(tokens.find(t => t.id === selectedTokenId));
+        }
+    });
+});
+
+saveCharacterBtn.addEventListener('click', () => {
+    if (!selectedTokenId) {
+        showCustomModal({
+            title: 'Atención',
+            message: 'Primero selecciona una ficha del tablero para guardarla.',
+            type: 'warning'
+        });
+        return;
+    } 
+    const tokenToSave = tokens.find(t => t.id === selectedTokenId); 
+    if (tokenToSave) { 
+        saveCharacterToLibrary(tokenToSave); 
+    }
+});
     const saveHeaderBtn = document.getElementById('saveHeaderBtn'); if (saveHeaderBtn) { saveHeaderBtn.addEventListener('click', (e) => { e.stopPropagation(); saveHeaderChanges(); }); }
     tokenInfoEdit.querySelectorAll('input').forEach(input => { input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); saveHeaderChanges(); } else if (e.key === 'Escape') { const token = tokens.find(t => t.id === selectedTokenId); if (token) updateTokenInUI(token); tokenInfoView.style.display = 'block'; tokenInfoEdit.style.display = 'none'; } }); });
     function getCharacterLibrary() { return JSON.parse(localStorage.getItem(CHAR_LIB_STORE)) || []; }
