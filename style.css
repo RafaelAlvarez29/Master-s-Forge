@@ -299,6 +299,7 @@ body {
 .view-title {
   margin: 0 0 15px 0;
   padding-bottom: 10px;
+  padding-top: 10px;
   font-family: "IM Fell English SC", serif;
   color: var(--text-gold);
   border-bottom: 1px solid var(--input-border);
@@ -3858,7 +3859,7 @@ code {
   padding: 10px;
   gap: 12px;
   align-items: center;
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition: opacity 0.3s ease, transform 0.15s ease;
   transform: translateY(20px);
   opacity: 0;
 }
@@ -3998,3 +3999,81 @@ code {
 
 
 /* --- FIN: CORRECCIÓN PARA TOKEN EDITOR HEADER STICKY --- */
+
+/* ===== ESTILOS PARA LA NUEVA BRÚJULA CARDINAL ===== */
+#cardinalRoseContainer {
+  width: 120px; /* Ancho deseado para la brújula */
+  margin: 15px auto; /* Espaciado vertical y centrado horizontal */
+  pointer-events: none; /* Para que no interfiera con los clics en el mapa */
+  filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5)); /* Sombra sutil */
+}
+
+#cardinalRoseContainer img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+
+/* ===== AJUSTES PARA EL PANEL DE DETALLES DE FICHA SELECCIONADA ===== */
+#selectedTokenDetails {
+  /* Eliminamos el posicionamiento fijo, ya que ahora es un elemento normal
+     dentro de #playerControlsContainer */
+  position: relative; /* O static, pero relative es seguro */
+  bottom: auto;
+  left: auto;
+  
+}.player-controls-container {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: left 0.15s ease-in-out, right 0.15s ease-in-out;
+    /* Por defecto, alinea los elementos al inicio (izquierda) */
+    align-items: flex-start; 
+}
+
+/* Cuando los controles están a la derecha, alinea todo su contenido a la derecha (flex-end) */
+.player-controls-container.controls-right {
+    left: auto;
+    right: 20px;
+    align-items: flex-end; /* ¡ESTA ES LA MAGIA PARA LA ALINEACIÓN DERECHA! */
+}
+
+/* Nuevo div que agrupa solo los botones y el separador */
+.player-main-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* El separador ahora está dentro de un contenedor más pequeño y se comportará bien */
+.control-separator {
+    height: 2px;
+    background: var(--input-border);
+    margin: 10px 5px;
+    border-radius: 1px;
+}
+
+/* Los botones no necesitan cambios, ya están en su .control-group */
+
+
+/* ===== ESTILOS PARA LA BRÚJULA (CORREGIDO) ===== */
+#cardinalRoseContainer {
+    width: 120px;
+    /* Eliminamos el centrado 'auto' y dejamos que flexbox lo alinee */
+    margin: 15px 0; 
+    pointer-events: none;
+    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5));
+}
+
+#cardinalRoseContainer img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+

@@ -44,44 +44,89 @@
             <canvas id="aoeCanvas"></canvas>
         </div>
 
-        <!-- El tracker de turnos también se muestra aquí -->
+        <!-- El tracker de turnos se mantiene por separado, ya que tiene su propia lógica de posición -->
         <div id="playerTurnTracker"></div>
     </div>
+
+    <!-- 
+      CONTENEDOR PRINCIPAL DE LA INTERFAZ FLOTANTE.
+      Ahora contiene los controles, la brújula y el panel de detalles.
+    -->
     <div id="playerControlsContainer" class="player-controls-container">
-        <!-- Grupo de Controles de Interfaz -->
-        <div class="control-group">
-            <button id="multiSelectBtn" title="Activar/Desactivar Selección Múltiple">
-                <span class="btn-icon icon-multi-select"></span>
-            </button>
-            <button id="toggleTrackerPosBtn" title="Cambiar Posición del Panel de Turnos">
-                <span class="btn-icon icon-swap-position"></span>
-            </button>
-            <button id="toggleVisionUpdateBtn" title="Alternar actualización de visión (Dinámica / Al soltar)">
-                <span class="btn-icon icon-vision-toggle"></span>
-            </button>
-        </div>
+        <!-- ===== INICIO: NUEVO DIV AGRUPADOR PARA CONTROLES ===== -->
+        <!-- Este div resolverá el problema del ancho del separador. -->
+        <div class="player-main-controls">
+            <!-- Grupo de Controles de Interfaz (sin cambios) -->
+            <div class="control-group">
+                <button id="multiSelectBtn" title="Activar/Desactivar Selección Múltiple">
+                    <span class="btn-icon icon-multi-select"></span>
+                </button>
+                <button id="toggleTrackerPosBtn" title="Cambiar Posición del Panel de Turnos">
+                    <span class="btn-icon icon-swap-position"></span>
+                </button>
+                <button id="toggleVisionUpdateBtn" title="Alternar actualización de visión (Dinámica / Al soltar)">
+                    <span class="btn-icon icon-vision-toggle"></span>
+                </button>
+            </div>
 
-        <!-- Separador Visual -->
-        <div class="control-separator"></div>
+            <!-- Separador Visual (ahora dentro del nuevo div) -->
+            <div class="control-separator"></div>
 
-        <!-- Grupo de Controles de Dibujo -->
-        <div id="drawingControls" class="control-group">
-            <button id="drawWallBtn" class="draw-tool-btn" title="Dibujar Muro">
-                <span class="btn-icon icon-wall-draw"></span>
-            </button>
-            <button id="drawDoorBtn" class="draw-tool-btn" title="Dibujar Puerta">
-                <span class="btn-icon icon-door-draw"></span>
-            </button>
-            <button id="undoDrawBtn" class="draw-tool-btn" title="Deshacer último trazo">
-                <span class="btn-icon icon-undo"></span>
-            </button>
-            <button id="clearWallsBtnPlayer" class="draw-tool-btn" title="Limpiar todos los muros y puertas">
-                <span class="btn-icon icon-clear-all"></span>
-            </button>
+            <!-- Grupo de Controles de Dibujo (ahora dentro del nuevo div) -->
+            <div id="drawingControls" class="control-group">
+                <button id="drawWallBtn" class="draw-tool-btn" title="Dibujar Muro">
+                    <span class="btn-icon icon-wall-draw"></span>
+                </button>
+                <button id="drawDoorBtn" class="draw-tool-btn" title="Dibujar Puerta">
+                    <span class="btn-icon icon-door-draw"></span>
+                </button>
+                <button id="undoDrawBtn" class="draw-tool-btn" title="Deshacer último trazo">
+                    <span class="btn-icon icon-undo"></span>
+                </button>
+                <button id="clearWallsBtnPlayer" class="draw-tool-btn" title="Limpiar todos los muros y puertas">
+                    <span class="btn-icon icon-clear-all"></span>
+                </button>
+            </div>
         </div>
+        <!-- ===== FIN: NUEVO DIV AGRUPADOR PARA CONTROLES ===== -->
+
+        <!-- ===== INICIO: NUEVA BRÚJULA CARDINAL ===== -->
+        <div id="cardinalRoseContainer">
+            <!-- Asegúrate de que la ruta a tu imagen sea correcta -->
+            <img src="assets/images/icons/cardinal-rose2.webp" alt="Brújula Cardinal"
+                style="   pointer-events: none;">
+        </div>
+        <!-- ===== FIN: NUEVA BRÚJULA CARDINAL ===== -->
+
+
+        <!-- ===== INICIO: PANEL DE DETALLES (MOVIDO AQUÍ) ===== -->
+        <div id="selectedTokenDetails" style="display: none;">
+            <div id="detailsPreview" class="details-preview">
+                <!-- La imagen o la letra irán aquí -->
+            </div>
+            <div class="details-info">
+                <div class="details-row-1">
+                    <span id="detailsClassLevel" class="details-badge"></span>
+                    <div id="detailsStates" class="details-states">
+                        <!-- Los iconos de estado irán aquí -->
+                    </div>
+                </div>
+                <div class="details-row-2">
+                    <p id="detailsNameRace" class="details-name-race"></p>
+                </div>
+                <div class="details-row-3" id="detailsHealthContainer">
+                    <div class="details-health-bar-container">
+                        <div id="detailsHealthBarFill" class="details-health-bar-fill"></div>
+                        <span id="detailsHealthText" class="details-health-text"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ===== FIN: PANEL DE DETALLES (MOVIDO AQUÍ) ===== -->
+
     </div>
 
-    <!-- MODAL PARA NOMBRAR PUERTA (EN VISTA DE JUGADOR) -->
+    <!-- MODAL PARA NOMBRAR PUERTA (sin cambios) -->
     <div id="playerDoorNameModal" class="modal-overlay">
         <div class="modal-content">
             <h3>Nombrar Nuevo Acceso</h3>
@@ -94,30 +139,6 @@
         </div>
     </div>
 
-    <!-- ===== INICIO: NUEVO PANEL DE DETALLES DE FICHA SELECCIONADA ===== -->
-    <div id="selectedTokenDetails" style="display: none;">
-        <div id="detailsPreview" class="details-preview">
-            <!-- La imagen o la letra irán aquí -->
-        </div>
-        <div class="details-info">
-            <div class="details-row-1">
-                <span id="detailsClassLevel" class="details-badge"></span>
-                <div id="detailsStates" class="details-states">
-                    <!-- Los iconos de estado irán aquí -->
-                </div>
-            </div>
-            <div class="details-row-2">
-                <p id="detailsNameRace" class="details-name-race"></p>
-            </div>
-            <div class="details-row-3" id="detailsHealthContainer">
-                <div class="details-health-bar-container">
-                    <div id="detailsHealthBarFill" class="details-health-bar-fill"></div>
-                    <span id="detailsHealthText" class="details-health-text"></span>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- ===== FIN: NUEVO PANEL DE DETALLES DE FICHA SELECCIONADA ===== -->
 
     <script src="player.js"></script>
 </body>
