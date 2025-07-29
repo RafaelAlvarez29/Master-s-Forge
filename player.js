@@ -1224,5 +1224,6 @@ document.addEventListener('DOMContentLoaded', () => {
             detailsHealthBarFill.style.width = '0%'; // La barra estará vacía
             detailsHealthText.textContent = '?? / ??'; // Texto estático
         }
+        
     }
 });
