@@ -161,6 +161,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let brushSize = 50, drawType = 'wall', gridOffsetX = 0, gridOffsetY = 0;
     let pendingExportData = null;
     let pendingSceneSave = null;
+    let isSceneDirty = false;
+    let isProgrammaticClose = false;
+
 
 
     function broadcast(type, payload) {
@@ -250,6 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'EVENT_TOKEN_MOVED':
                 const movedToken = tokens.find(t => t.id === payload.id);
                 if (movedToken) { movedToken.position.x = payload.x; movedToken.position.y = payload.y; if (visionModeActive) broadcast('CMD_DRAW_VISION', { tokens, walls, cellSize }); }
+                isSceneDirty = true;
                 break;
             case 'EVENT_TOKEN_CLICKED': selectToken(payload.id); break;
             case 'EVENT_MAP_CLICKED': deselectToken(); break;
@@ -571,6 +575,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 type: 'error'
             });
         }
+        isSceneDirty = false;
+
     }
 
     async function loadSceneById(sceneId) {
@@ -654,6 +660,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 type: 'error'
             });
         }
+        isSceneDirty = false;
     }
 
     async function renderSavedScenesList() {
@@ -1697,6 +1704,27 @@ document.addEventListener('DOMContentLoaded', () => {
             broadcast('CMD_UPDATE_TOKEN_DATA', { tokenData: token });
         });
     }
+
+    // --- INICIO: LÓGICA DE CIERRE SIMPLIFICADA ---
+
+    window.addEventListener('beforeunload', (event) => {
+        // Si no hay cambios o si estamos cerrando la ventana a propósito (aún útil si añades esa función después),
+        // no mostramos ninguna advertencia.
+        if (!isSceneDirty || isProgrammaticClose) {
+            return;
+        }
+
+        // Mensaje estándar que los navegadores mostrarán al usuario.
+        const confirmationMessage = 'Tienes cambios sin guardar en la escena. Si sales ahora, se perderá todo el progreso. ¿Estás seguro de que quieres salir?';
+
+        // Estándar moderno para la mayoría de los navegadores.
+        event.preventDefault();
+
+        // Estándar antiguo, necesario para la compatibilidad con navegadores más viejos.
+        event.returnValue = confirmationMessage;
+
+        return confirmationMessage;
+    });
 
     setupPanelNavigation();
     renderCharacterLibrary();

@@ -284,7 +284,7 @@ body {
   padding: 0px 15px 15px 15px;
   position: relative;
 }
-#dmNotes{
+#dmNotes {
   margin-top: 15px;
 }
 .panel-view {
@@ -3804,7 +3804,7 @@ code {
   align-items: center; /* Centra verticalmente los elementos */
   gap: 15px; /* Espacio entre la nav y el botón */
   margin-bottom: -1px; /* Solapa el borde inferior para un look integrado */
-  position: sticky ;
+  position: sticky;
 }
 
 /* Hacemos que la navegación ocupe todo el espacio disponible */
@@ -3969,9 +3969,9 @@ code {
 /* 1. Hacemos que el formulario del editor sea un contenedor flex que ocupe toda la altura. */
 /*    Esto es crucial para que sus hijos puedan gestionarse verticalmente. */
 #main-view-selected-token .token-editor-form {
-    display: flex;
-    flex-direction: column;
-    height: 100%; /* Ocupa toda la altura de su contenedor padre (.panel-content) */
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Ocupa toda la altura de su contenedor padre (.panel-content) */
 }
 
 /* 2. Convertimos el header del editor en el elemento "sticky". */
@@ -3979,24 +3979,23 @@ code {
 /*    - z-index: 10; se asegura de que se muestre por encima del contenido que se desplaza. */
 /*    - background-color: es VITAL para que el contenido no se transparente al pasar por debajo. */
 .token-editor-header {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    background-color: var(--panel-bg); /* Usa el color de fondo del panel */
-    padding-top: 10px; /* Un poco de espacio para que no se vea tan pegado arriba */
-    padding-bottom: 5px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: var(--panel-bg); /* Usa el color de fondo del panel */
+  padding-top: 10px; /* Un poco de espacio para que no se vea tan pegado arriba */
+  padding-bottom: 5px;
 }
 
 /* 3. Hacemos que el contenido de las pestañas sea el área que se desplace (scroll). */
 /*    - flex-grow: 1; hace que ocupe todo el espacio vertical sobrante. */
 /*    - overflow-y: auto; le añade la barra de scroll vertical cuando sea necesario. */
 .token-editor-content {
-    flex-grow: 1;
-    overflow-y: auto;
-    /* Un pequeño ajuste para que el scrollbar no se pegue al borde */
-    padding-right: 5px; 
+  flex-grow: 1;
+  overflow-y: auto;
+  /* Un pequeño ajuste para que el scrollbar no se pegue al borde */
+  padding-right: 5px;
 }
-
 
 /* --- FIN: CORRECCIÓN PARA TOKEN EDITOR HEADER STICKY --- */
 
@@ -4005,15 +4004,15 @@ code {
   width: 120px; /* Ancho deseado para la brújula */
   margin: 15px auto; /* Espaciado vertical y centrado horizontal */
   pointer-events: none; /* Para que no interfiera con los clics en el mapa */
-  filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5)); /* Sombra sutil */
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.5)); /* Sombra sutil */
 }
 
 #cardinalRoseContainer img {
   width: 100%;
   height: auto;
   display: block;
+  pointer-events: none;
 }
-
 
 /* ===== AJUSTES PARA EL PANEL DE DETALLES DE FICHA SELECCIONADA ===== */
 #selectedTokenDetails {
@@ -4022,58 +4021,56 @@ code {
   position: relative; /* O static, pero relative es seguro */
   bottom: auto;
   left: auto;
-  
-}.player-controls-container {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 20;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    transition: left 0.15s ease-in-out, right 0.15s ease-in-out;
-    /* Por defecto, alinea los elementos al inicio (izquierda) */
-    align-items: flex-start; 
+  pointer-events: none;
+}
+.player-controls-container {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: left 0.15s ease-in-out, right 0.15s ease-in-out;
+  /* Por defecto, alinea los elementos al inicio (izquierda) */
+  align-items: flex-start;
 }
 
 /* Cuando los controles están a la derecha, alinea todo su contenido a la derecha (flex-end) */
 .player-controls-container.controls-right {
-    left: auto;
-    right: 20px;
-    align-items: flex-end; /* ¡ESTA ES LA MAGIA PARA LA ALINEACIÓN DERECHA! */
+  left: auto;
+  right: 20px;
+  align-items: flex-end; /* ¡ESTA ES LA MAGIA PARA LA ALINEACIÓN DERECHA! */
 }
 
 /* Nuevo div que agrupa solo los botones y el separador */
 .player-main-controls {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 /* El separador ahora está dentro de un contenedor más pequeño y se comportará bien */
 .control-separator {
-    height: 2px;
-    background: var(--input-border);
-    margin: 10px 5px;
-    border-radius: 1px;
+  height: 2px;
+  background: var(--input-border);
+  margin: 10px 5px;
+  border-radius: 1px;
 }
 
 /* Los botones no necesitan cambios, ya están en su .control-group */
 
-
 /* ===== ESTILOS PARA LA BRÚJULA (CORREGIDO) ===== */
 #cardinalRoseContainer {
-    width: 120px;
-    /* Eliminamos el centrado 'auto' y dejamos que flexbox lo alinee */
-    margin: 15px 0; 
-    pointer-events: none;
-    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5));
+  width: 120px;
+  /* Eliminamos el centrado 'auto' y dejamos que flexbox lo alinee */
+  margin: 15px 0;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.5));
 }
 
 #cardinalRoseContainer img {
-    width: 100%;
-    height: auto;
-    display: block;
+  width: 100%;
+  height: auto;
+  display: block;
 }
-
-

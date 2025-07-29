@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let dragOffsets = new Map();
 
     let isDynamicVision = true; // true = actualiza al mover, false = actualiza al soltar
-
+    let visionUpdateQueued = false;
 
 
     // --- MANEJO DE COMANDOS DEL DM ---
@@ -439,6 +439,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const mouseCoords = getMapCoordinates(e);
             const deltaX = mouseCoords.x - dragInitialMouseX;
             const deltaY = mouseCoords.y - dragInitialMouseY;
+
             if (dragOffsets.size > 0) {
                 selectedGroup.forEach(id => {
                     const memberToken = localTokens.find(t => t.id === id);
@@ -446,18 +447,33 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (memberToken && initialPos) {
                         memberToken.position.x = initialPos.x + deltaX;
                         memberToken.position.y = initialPos.y + deltaY;
-                        updateTokenElement(memberToken);
+                        updateTokenElement(memberToken); // Actualiza la posición visual del token
                     }
                 });
             } else {
                 currentDraggedToken.position.x = dragInitialTokenX + deltaX;
                 currentDraggedToken.position.y = dragInitialTokenY + deltaY;
-                updateTokenElement(currentDraggedToken);
+                updateTokenElement(currentDraggedToken); // Actualiza la posición visual del token
             }
-            if (isVisionActive && isDynamicVision) {
-                drawVision(localTokens, localWalls);
-            } return;
+
+            // --- LA LÓGICA OPTIMIZADA ---
+            // 1. Comprobamos si la visión dinámica está activa y si no hemos pedido ya una actualización
+            if (isVisionActive && isDynamicVision && !visionUpdateQueued) {
+                // 2. Si es así, ponemos nuestra bandera a 'true' para no volver a entrar aquí en este frame
+                visionUpdateQueued = true;
+
+                // 3. Solicitamos al navegador que ejecute drawVision() justo antes del próximo repintado
+                requestAnimationFrame(() => {
+                    drawVision(localTokens, localWalls);
+
+                    // 4. Una vez que la visión se ha dibujado, reseteamos la bandera para permitir
+                    //    que se solicite una nueva actualización en el siguiente frame.
+                    visionUpdateQueued = false;
+                });
+            }
+            return;
         }
+
         if (isPanning) {
             const dx = e.clientX - panStartX;
             const dy = e.clientY - panStartY;
@@ -1224,6 +1240,6 @@ document.addEventListener('DOMContentLoaded', () => {
             detailsHealthBarFill.style.width = '0%'; // La barra estará vacía
             detailsHealthText.textContent = '?? / ??'; // Texto estático
         }
-        
+
     }
 });
