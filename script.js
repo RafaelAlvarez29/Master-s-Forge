@@ -95,14 +95,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const aoeShapeButtons = document.querySelectorAll('#aoeShapeSelector button');
     const aoeParamsContainer = document.getElementById('aoeParamsContainer');
     const aoeColorInput = document.getElementById('aoeColor');
-    const featureInventoryModal = document.getElementById('featureInventoryModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const modalNameInput = document.getElementById('modalNameInput');
-    const modalDescriptionInput = document.getElementById('modalDescriptionInput');
-    const confirmModalBtn = document.getElementById('confirmModalBtn');
-    const cancelModalBtn = document.getElementById('cancelModalBtn');
     const addAbilityBtn = document.getElementById('addAbilityBtn');
+    const abilityModal = document.getElementById('abilityModal');
+    const abilityModalTitle = document.getElementById('abilityModalTitle');
+    const abilityNameInput = document.getElementById('abilityNameInput');
+    const abilityDescriptionInput = document.getElementById('abilityDescriptionInput');
+    const confirmAbilityBtn = document.getElementById('confirmAbilityBtn');
+    const cancelAbilityBtn = document.getElementById('cancelAbilityBtn');
+    let editingAbilityIndex = null;
     const addInventoryItemBtn = document.getElementById('addInventoryItemBtn');
+    // Selectores para el nuevo modal de inventario
+    const inventoryItemModal = document.getElementById('inventoryItemModal');
+    const inventoryModalTitle = document.getElementById('inventoryModalTitle');
+    const inventoryItemName = document.getElementById('inventoryItemName');
+    const inventoryItemType = document.getElementById('inventoryItemType');
+    const inventoryItemDescription = document.getElementById('inventoryItemDescription');
+    const inventoryItemPrice = document.getElementById('inventoryItemPrice');
+    const inventoryItemWeight = document.getElementById('inventoryItemWeight');
+    const inventoryItemImage = document.getElementById('inventoryItemImage');
+    const inventoryItemPlaceholder = document.getElementById('inventoryItemPlaceholder');
+    const inventoryItemIsMagical = document.getElementById('inventoryItemIsMagical');
+    const confirmInventoryItemBtn = document.getElementById('confirmInventoryItemBtn');
+    const cancelInventoryItemBtn = document.getElementById('cancelInventoryItemBtn');
+    let editingItemIndex = null; // Para saber si estamos añadiendo o editando
     const editAbilitiesList = document.getElementById('editAbilitiesList');
     const editInventoryList = document.getElementById('editInventoryList');
     const searchAbilitiesInput = document.getElementById('searchAbilitiesInput');
@@ -129,23 +144,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const importLibraryInput = document.getElementById('importLibraryInput');
     const characterLibraryActions = document.getElementById('characterLibraryActions');
     const addTransparentBgCheckbox = document.getElementById('addTransparentBgCheckbox');
-    const editCardModal = document.getElementById('editCardModal');
-    const editCardModalTitle = document.getElementById('editCardModalTitle');
-    const editCardViewMode = document.getElementById('editCardViewMode');
-    const editCardEditMode = document.getElementById('editCardEditMode');
-    const viewCardName = document.getElementById('viewCardName');
-    const viewCardDescription = document.getElementById('viewCardDescription');
-    const editCardNameInput = document.getElementById('editCardNameInput');
-    const editCardDescriptionInput = document.getElementById('editCardDescriptionInput');
-    const editCardViewButtons = document.getElementById('editCardViewButtons');
-    const editCardEditButtons = document.getElementById('editCardEditButtons');
-    const editCardBtn = document.getElementById('editCardBtn');
-    const closeCardBtn = document.getElementById('closeCardBtn');
-    const updateCardBtn = document.getElementById('updateCardBtn');
-    const cancelEditCardBtn = document.getElementById('cancelEditCardBtn');
     const openCreditsLink = document.getElementById('openCreditsLink');
     const creditsModal = document.getElementById('creditsModal');
     const closeCreditsBtn = document.getElementById('closeCreditsBtn');
+
+    document.querySelectorAll('#deathSavesTracker input[type="checkbox"]').forEach(checkbox => {
+        checkbox.addEventListener('change', updateSelectedToken);
+    });
 
     addTransparentBgCheckbox.addEventListener('change', () => {
         document.getElementById('tokenColor').disabled = addTransparentBgCheckbox.checked;
@@ -156,7 +161,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let activeLoopingSound = null, activeAoeType = null;
     let isAligningGrid = false;
     let currentModalContext = null;
-    let editingCardContext = null;
     let cellSize = 50, gridVisible = false, gridColor = '#000000', gridOpacity = 0.5;
     let brushSize = 50, drawType = 'wall', gridOffsetX = 0, gridOffsetY = 0;
     let pendingExportData = null;
@@ -349,10 +353,8 @@ document.addEventListener('DOMContentLoaded', () => {
     confirmSaveSceneBtn.addEventListener('click', () => saveCurrentScene());
     closeSavedScenesBtn.addEventListener('click', () => savedScenesModal.classList.remove('open'));
     openPlayerViewBtn.addEventListener('click', () => { if (playerViewWindow && !playerViewWindow.closed) { playerViewWindow.focus(); return; } playerViewWindow = window.open('player.html', '_blank', 'width=1280,height=720'); setTimeout(() => { if (isMapLoaded) { const mapSrc = document.getElementById('mapImageInput')._dataUrl; broadcast('CMD_LOAD_NEW_MAP', { src: mapSrc }); setTimeout(() => { broadcast('CMD_LOAD_SCENE_DATA', { tokens: tokens, walls: walls, gridSettings: { visible: gridVisible, color: gridColor, opacity: gridOpacity, offsetX: gridOffsetX, offsetY: gridOffsetY, cellSize: cellSize } }); if (visionModeActive) { broadcast('CMD_SET_VISION_MODE', { active: true, tokens, walls, cellSize }); } }, 500); } }, 1500); });
-    addAbilityBtn.addEventListener('click', () => openFeatureModal('ability'));
-    addInventoryItemBtn.addEventListener('click', () => openFeatureModal('inventory'));
-    cancelModalBtn.addEventListener('click', () => featureInventoryModal.classList.remove('open'));
-    confirmModalBtn.addEventListener('click', saveFeatureOrItem);
+    addAbilityBtn.addEventListener('click', () => openAbilityModal());
+    addInventoryItemBtn.addEventListener('click', () => openInventoryItemModal());
     gridToggle.addEventListener('change', e => { gridVisible = e.target.checked; broadcastGridSettings(); });
     gridColorInput.addEventListener('input', e => { gridColor = e.target.value; broadcastGridSettings(); });
     gridOpacityInput.addEventListener('input', e => { gridOpacity = parseFloat(e.target.value); broadcastGridSettings(); });
@@ -441,6 +443,18 @@ document.addEventListener('DOMContentLoaded', () => {
         healthDisplay.textContent = token.stats.health.current;
         healthDisplay.className = `health-display ${getHealthColorClass(token.stats.health.current, token.stats.health.max)}`;
         renderTokenStatesEditor(token);
+        // --- LÓGICA PARA SALVACIONES CONTRA MUERTE ---
+        const deathSavesTracker = document.getElementById('deathSavesTracker');
+        if (token.identity.type === 'player') {
+            deathSavesTracker.style.display = 'block';
+            const saves = token.info.deathSaves || { successes: [false, false, false], failures: [false, false, false] };
+            saves.successes.forEach((val, i) => { document.getElementById(`d-save-s${i + 1}`).checked = val; });
+            saves.failures.forEach((val, i) => { document.getElementById(`d-save-f${i + 1}`).checked = val; });
+        } else {
+            deathSavesTracker.style.display = 'none';
+        }
+
+
 
         const enemyControls = document.getElementById('enemyDefeatedControls');
 
@@ -634,6 +648,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 const migratedTokenData = migrateTokenData(tokenData);
                 const asset = tokenAssets[index];
                 if (asset) migratedTokenData.identity.image = asset.data;
+
+                // --- ¡NUEVO BLOQUE DE MIGRACIÓN DE INVENTARIO! ---
+                if (migratedTokenData.info && Array.isArray(migratedTokenData.info.inventory)) {
+                    migratedTokenData.info.inventory = migratedTokenData.info.inventory.map(migrateInventoryItem);
+                }
+                // --- FIN DEL NUEVO BLOQUE ---
+
                 return migratedTokenData;
             });
 
@@ -797,7 +818,47 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function migrateTokenData(oldToken) { if (oldToken.stats && oldToken.stats.characteristics && oldToken.info && oldToken.info.abilities) { return oldToken; } const existingInfo = oldToken.info || {}; return { id: oldToken.id, isDiscovered: oldToken.isDiscovered, identity: oldToken.identity || { name: oldToken.name, type: oldToken.type, letter: oldToken.letter, image: null, imageAssetId: oldToken.imageAssetId }, position: oldToken.position || { x: oldToken.x, y: oldToken.y, sizeMultiplier: oldToken.sizeMultiplier || 1 }, stats: { initiative: oldToken.stats?.initiative ?? oldToken.turn ?? 0, vision: { radius: oldToken.stats?.vision?.radius ?? oldToken.visionRadius ?? 0 }, health: { current: oldToken.stats?.health?.current ?? oldToken.health_current ?? 0, max: oldToken.stats?.health?.max ?? oldToken.health_max ?? 0 }, proficiencyBonus: oldToken.stats?.proficiencyBonus ?? 2, speed: oldToken.stats?.speed ?? 30, armorClass: oldToken.stats?.armorClass ?? 10, characteristics: oldToken.stats?.characteristics || { str: { score: 10, proficient: false }, dex: { score: 10, proficient: false }, con: { score: 10, proficient: false }, int: { score: 10, proficient: false }, wis: { score: 10, proficient: false }, car: { score: 10, proficient: false } } }, appearance: oldToken.appearance || { color: oldToken.color, borderColor: oldToken.borderColor }, info: { notes: existingInfo.notes || oldToken.notes || '', states: existingInfo.states || oldToken.states || [], abilities: existingInfo.abilities || [], inventory: existingInfo.inventory || [] } }; }
+    function migrateTokenData(oldToken) {
+        if (oldToken.stats && oldToken.stats.characteristics && oldToken.info && oldToken.info.abilities) {
+            return oldToken;
+
+        } const existingInfo = oldToken.info || {};
+        return {
+            id: oldToken.id,
+            isDiscovered: oldToken.isDiscovered,
+            identity: oldToken.identity || {
+                name: oldToken.name,
+                type: oldToken.type, letter: oldToken.letter,
+                image: null,
+                imageAssetId: oldToken.imageAssetId
+            },
+            position: oldToken.position || {
+                x: oldToken.x, y: oldToken.y,
+                sizeMultiplier: oldToken.sizeMultiplier || 1
+            },
+            stats: {
+                initiative: oldToken.stats?.initiative ?? oldToken.turn ?? 0, vision: { radius: oldToken.stats?.vision?.radius ?? oldToken.visionRadius ?? 0 },
+                health: {
+                    current: oldToken.stats?.health?.current ?? oldToken.health_current ?? 0,
+                    max: oldToken.stats?.health?.max ?? oldToken.health_max ?? 0
+                }, proficiencyBonus: oldToken.stats?.proficiencyBonus ?? 2,
+                speed: oldToken.stats?.speed ?? 30,
+                armorClass: oldToken.stats?.armorClass ?? 10,
+                characteristics: oldToken.stats?.characteristics || {
+                    str: { score: 10, proficient: false },
+                    dex: { score: 10, proficient: false }, con: { score: 10, proficient: false }, int: { score: 10, proficient: false }, wis: { score: 10, proficient: false }, car: { score: 10, proficient: false }
+                }
+            }, appearance: oldToken.appearance || {
+                color: oldToken.color,
+                borderColor: oldToken.borderColor
+            },
+            info: {
+                notes: existingInfo.notes || oldToken.notes || '', states: existingInfo.states || oldToken.states || [],
+                abilities: existingInfo.abilities || [], inventory: existingInfo.inventory || [],
+                deathSaves: existingInfo.deathSaves || { successes: [false, false, false], failures: [false, false, false] }
+            }
+        };
+    }
     function handleImageUpload(event) { const file = event.target.files[0]; if (!file) { fileNameDisplay.textContent = 'Ningún archivo'; return; } fileNameDisplay.textContent = file.name; const reader = new FileReader(); reader.onload = e => { const src = e.target.result; document.getElementById('mapImageInput')._dataUrl = src; loadNewMap(src); }; reader.readAsDataURL(file); }
     function loadNewMap(src) { isMapLoaded = true; tokens = []; walls = []; selectedTokenId = null; visionModeActive = false; toggleVisionBtn.textContent = 'Iniciar Visión'; updateTokenList(); updateDoorList(); broadcast('CMD_LOAD_NEW_MAP', { src }); broadcastGridSettings(); }
     function updateCellSize() { const newSize = parseFloat(cellSizeInput.value); if (isNaN(newSize) || newSize < 10) { cellSizeInput.value = cellSize; return; } cellSize = newSize; broadcastGridSettings(); } async function addToken(existingCharacter = null, fromLibrary = false) {
@@ -883,7 +944,24 @@ document.addEventListener('DOMContentLoaded', () => {
         if (token.stats.health.current > token.stats.health.max) {
             token.stats.health.current = token.stats.health.max;
 
-        } updateTokenInUI(token);
+        }
+        // --- GUARDAR ESTADO DE SALVACIONES CONTRA MUERTE ---
+        if (token.identity.type === 'player') {
+            if (!token.info.deathSaves) {
+                token.info.deathSaves = { successes: [], failures: [] };
+            }
+            token.info.deathSaves.successes = [
+                document.getElementById('d-save-s1').checked,
+                document.getElementById('d-save-s2').checked,
+                document.getElementById('d-save-s3').checked
+            ];
+            token.info.deathSaves.failures = [
+                document.getElementById('d-save-f1').checked,
+                document.getElementById('d-save-f2').checked,
+                document.getElementById('d-save-f3').checked
+            ];
+        }
+        updateTokenInUI(token);
         updateTokenList();
 
         broadcast('CMD_UPDATE_TOKEN_DATA', { tokenData: token });
@@ -905,6 +983,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function toggleAlignGridMode(forceState) { isAligningGrid = typeof forceState === 'boolean' ? forceState : !isAligningGrid; alignGridModeBtn.classList.toggle('active', isAligningGrid); alignGridModeBtn.textContent = isAligningGrid ? 'Cancelar Alineación' : 'Activar Modo Alineación'; broadcast('CMD_SET_GRID_ALIGN_MODE', { active: isAligningGrid }); }
     function broadcastGridSettings() { broadcast('CMD_SET_GRID_SETTINGS', { gridSettings: { visible: gridVisible, color: gridColor, opacity: gridOpacity, offsetX: gridOffsetX, offsetY: gridOffsetY, cellSize: cellSize } }); }
+    function resetGridOffset() {
+        if (confirm("¿Restablecer la alineación de la rejilla?")) {
+            gridOffsetX = 0;
+            gridOffsetY = 0;
+            broadcastGridSettings();
+            if (isAligningGrid) toggleAlignGridMode(false);
+        }
+    }
     const calculateModifier = (score) => { const mod = Math.floor((score - 10) / 2); return mod >= 0 ? `+${mod}` : `${mod}`; };
     const updateCharStatUI = (prefix, stat) => { const scoreInput = document.getElementById(`${prefix}_${stat}_score`); const modDisplay = document.getElementById(`${prefix}_${stat}_mod`); if (!scoreInput || !modDisplay) return; const score = parseInt(scoreInput.value) || 10; modDisplay.textContent = calculateModifier(score); updateSavingThrowsUI(prefix); };
     const updateSavingThrowsUI = (prefix) => { const stats = ['str', 'dex', 'con', 'int', 'wis', 'car']; const profBonus = parseInt(document.getElementById(`${prefix}_proficiency_bonus`).value) || 0; stats.forEach(stat => { const score = parseInt(document.getElementById(`${prefix}_${stat}_score`).value) || 10; const baseMod = Math.floor((score - 10) / 2); const isProficient = document.getElementById(`${prefix}_${stat}_save_prof`).checked; const total = baseMod + (isProficient ? profBonus : 0); const totalDisplay = document.getElementById(`${prefix}_${stat}_save_total`); if (totalDisplay) { totalDisplay.textContent = total >= 0 ? `+${total}` : `${total}`; } }); };
@@ -981,17 +1067,62 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="token-list-details"> <span>Iniciativa: ${token.stats.initiative || 0}</span> <span>♥️ ${token.stats.health.current}/${token.stats.health.max}</span> <span>👁️ ${token.stats.vision.radius}</span> </div> <button class="delete-token-btn" data-id="${token.id}" title="Eliminar Ficha">X</button>`; tokenListUl.appendChild(li);
         }); tokenListUl.querySelectorAll('.delete-token-btn').forEach(btn => btn.addEventListener('click', e => { e.stopPropagation(); deleteToken(parseInt(e.target.dataset.id)); })); tokenListUl.querySelectorAll('li').forEach(li => li.addEventListener('click', e => selectToken(parseInt(e.currentTarget.dataset.id)))); if (selectedTokenId) { const selectedLi = tokenListUl.querySelector(`li[data-id="${selectedTokenId}"]`); if (selectedLi) selectedLi.classList.add('selected-in-list'); }
     }
-    function resetGridOffset() { if (confirm("¿Restablecer la alineación de la rejilla?")) { gridOffsetX = 0; gridOffsetY = 0; broadcastGridSettings(); if (isAligningGrid) toggleAlignGridMode(false); } }
-    function openFeatureModal(context) { if (!selectedTokenId) return; currentModalContext = context; if (context === 'ability') { modalTitle.textContent = 'Añadir Habilidad Destacada'; modalNameInput.placeholder = 'Ej: Ataque Furtivo'; modalDescriptionInput.placeholder = 'Describe la habilidad, dados de daño, etc.'; } else if (context === 'inventory') { modalTitle.textContent = 'Añadir Objeto al Inventario'; modalNameInput.placeholder = 'Ej: Poción de Curación Mayor'; modalDescriptionInput.placeholder = 'Cantidad, descripción del objeto, etc.'; } modalNameInput.value = ''; modalDescriptionInput.value = ''; featureInventoryModal.classList.add('open'); modalNameInput.focus(); }
-    function saveFeatureOrItem() {
-        if (!selectedTokenId || !currentModalContext) return; const token = tokens.find(t => t.id === selectedTokenId); if (!token) return; const name = modalNameInput.value.trim(); const description = modalDescriptionInput.value.trim(); if (!name) {
-            showCustomModal({
-                title: 'Atención',
-                message: 'El nombre no puede estar vacío.',
-                type: 'warning'
-            });
+    function openAbilityModal(index = null) {
+        if (!selectedTokenId) return;
+
+        editingAbilityIndex = index;
+
+        if (index !== null) {
+            // -- MODO EDICIÓN --
+            const token = tokens.find(t => t.id === selectedTokenId);
+            const ability = token.info.abilities[index];
+            if (!ability) return;
+
+            abilityModalTitle.textContent = 'Editar Habilidad';
+            abilityNameInput.value = ability.name || '';
+            abilityDescriptionInput.value = ability.description || '';
+
+        } else {
+            // -- MODO AÑADIR --
+            abilityModalTitle.textContent = 'Añadir Habilidad';
+            abilityNameInput.value = '';
+            abilityDescriptionInput.value = '';
+        }
+
+        abilityModal.classList.add('open');
+        abilityNameInput.focus();
+    }
+
+    function saveAbility() {
+        if (!selectedTokenId) return;
+        const token = tokens.find(t => t.id === selectedTokenId);
+        if (!token) return;
+
+        const name = abilityNameInput.value.trim();
+        if (!name) {
+            showCustomModal({ title: 'Error', message: 'El nombre de la habilidad es obligatorio.', type: 'warning' });
             return;
-        } const newItem = { id: Date.now(), name, description }; if (currentModalContext === 'ability') { if (!token.info.abilities) token.info.abilities = []; token.info.abilities.push(newItem); renderAbilitiesList(token); } else if (currentModalContext === 'inventory') { if (!token.info.inventory) token.info.inventory = []; token.info.inventory.push(newItem); renderInventoryList(token); } featureInventoryModal.classList.remove('open'); broadcast('CMD_UPDATE_TOKEN_DATA', { tokenData: token });
+        }
+
+        const newAbility = {
+            id: editingAbilityIndex !== null ? token.info.abilities[editingAbilityIndex].id : Date.now(),
+            name: name,
+            description: abilityDescriptionInput.value.trim(),
+        };
+
+        if (editingAbilityIndex !== null) {
+            // Actualizar habilidad existente
+            token.info.abilities[editingAbilityIndex] = newAbility;
+        } else {
+            // Añadir nueva habilidad
+            if (!token.info.abilities) token.info.abilities = [];
+            token.info.abilities.push(newAbility);
+        }
+
+        renderAbilitiesList(token);
+        broadcast('CMD_UPDATE_TOKEN_DATA', { tokenData: token });
+        abilityModal.classList.remove('open');
+        editingAbilityIndex = null; // Resetear el índice
     }
     function renderAbilitiesList(token) {
         editAbilitiesList.innerHTML = '';
@@ -999,14 +1130,19 @@ document.addEventListener('DOMContentLoaded', () => {
         token.info.abilities.forEach((ability, index) => {
             const card = document.createElement('div');
             card.className = 'info-card';
+            // Ahora la tarjeta completa es un botón para editar
             card.innerHTML = `<h5 class="info-card-title">${ability.name}</h5><p class="info-card-desc">${ability.description}</p><button class="delete-info-btn" data-index="${index}" data-type="ability">×</button>`;
-            editAbilitiesList.appendChild(card);
 
             card.addEventListener('click', (e) => {
-                if (e.target.classList.contains('delete-info-btn')) return; // No abrir modal si se borra
-                openEditCardModal('ability', index);
+                // Solo abre el modal si no se hizo clic en el botón de borrar
+                if (!e.target.classList.contains('delete-info-btn')) {
+                    openAbilityModal(index); // Llama a la nueva función para editar habilidades
+                }
             });
+
+            editAbilitiesList.appendChild(card);
         });
+
         editAbilitiesList.querySelectorAll('.delete-info-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -1018,25 +1154,77 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     function renderInventoryList(token) {
         editInventoryList.innerHTML = '';
+        // Aseguramos que el contenedor tenga la clase correcta para el grid
+        editInventoryList.className = 'inventory-grid';
+
         if (!token || !token.info.inventory) return;
+
         token.info.inventory.forEach((item, index) => {
             const card = document.createElement('div');
-            card.className = 'info-card';
-            card.innerHTML = `<h5 class="info-card-title">${item.name}</h5><p class="info-card-desc">${item.description}</p><button class="delete-info-btn" data-index="${index}" data-type="inventory">×</button>`;
-            editInventoryList.appendChild(card);
+            card.className = 'inventory-item-card';
+            if (item.isMagical) {
+                card.classList.add('item-magical');
+            }
 
+            const itemTypeClass = `item-type-${item.itemType || 'other'}`;
+            const itemTypeText = (item.itemType === 'weapon') ? 'Arma' : (item.itemType === 'armor') ? 'Armadura' : 'Otro';
+
+            const imageContent = item.image
+                ? `<img src="${item.image}" alt="${item.name}" class="item-image">`
+                : `<div class="item-image-placeholder">${item.placeholder || '❔'}</div>`;
+
+            card.innerHTML = `
+                <div class="item-badges">
+                    <span class="item-badge item-price">${item.price || ''}</span>
+                    <span class="item-badge item-weight">${item.weight || ''}</span>
+                </div>
+                
+                <div class="item-image-container">
+                    ${imageContent}
+                </div>
+                
+                <div class="item-info">
+                    <div class="item-type-indicator ${itemTypeClass}">${itemTypeText}</div>
+                    <h3 class="item-name">${item.name}</h3>
+                    <p class="item-description">${item.description || 'Sin descripción.'}</p>
+                </div>
+                
+                <div class="item-actions">
+                    <button class="item-action-btn edit" data-index="${index}" title="Editar Objeto">✏️</button>
+                    <button class="item-action-btn delete" data-index="${index}" title="Eliminar Objeto">🗑️</button>
+                </div>
+            `;
+
+            // Evento para editar (clic en cualquier parte de la tarjeta excepto en los botones de acción)
             card.addEventListener('click', (e) => {
-                if (e.target.classList.contains('delete-info-btn')) return;
-                openEditCardModal('inventory', index);
+                if (!e.target.closest('.item-actions')) {
+                    openInventoryItemModal(index);
+                }
             });
-        });
-        editInventoryList.querySelectorAll('.delete-info-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
+
+            // Eventos para los botones de acción
+            card.querySelector('.item-action-btn.edit').addEventListener('click', (e) => {
                 e.stopPropagation();
-                token.info.inventory.splice(parseInt(btn.dataset.index), 1);
-                renderInventoryList(token);
-                broadcast('CMD_UPDATE_TOKEN_DATA', { tokenData: token });
+                openInventoryItemModal(index);
             });
+
+            card.querySelector('.item-action-btn.delete').addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const confirmed = await showCustomModal({
+                    title: 'Eliminar Objeto',
+                    message: `¿Estás seguro de que quieres eliminar "${item.name}" del inventario?`,
+                    type: 'confirm',
+                    confirmText: 'Sí, eliminar',
+                    cancelText: 'Cancelar'
+                });
+                if (confirmed) {
+                    token.info.inventory.splice(index, 1);
+                    renderInventoryList(token);
+                    broadcast('CMD_UPDATE_TOKEN_DATA', { tokenData: token });
+                }
+            });
+
+            editInventoryList.appendChild(card);
         });
     }
     function renderTokenStatesEditor(token) {
@@ -1155,6 +1343,9 @@ document.addEventListener('DOMContentLoaded', () => {
             </div> <button class="delete-saved-char-btn" title="Eliminar de la biblioteca">×</button> `;
             card.addEventListener('click', () => {
                 const characterToAdd = getCharacterLibrary()[index];
+                if (characterToAdd.info && Array.isArray(characterToAdd.info.inventory)) {
+                    characterToAdd.info.inventory = characterToAdd.info.inventory.map(migrateInventoryItem);
+                }
                 if (characterToAdd) {
                     const newInstance = JSON.parse(JSON.stringify(characterToAdd));
                     newInstance.id = Date.now();
@@ -1231,7 +1422,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 notes: document.getElementById('tokenNotes').value,
                 states: [],
                 abilities: [],
-                inventory: []
+                inventory: [],
+                deathSaves: { successes: [false, false, false], failures: [false, false, false] }
             }
         };
 
@@ -1249,7 +1441,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const DM_NOTES_KEY = 'dmArsenalDmNotes';
     function loadDmNotes() { const savedNotes = localStorage.getItem(DM_NOTES_KEY); if (savedNotes) { dmNotesTextarea.value = savedNotes; } }
     dmNotesTextarea.addEventListener('input', () => { localStorage.setItem(DM_NOTES_KEY, dmNotesTextarea.value); });
-    function filterList(inputElement, listContainer) { const filterText = inputElement.value.toLowerCase(); const items = listContainer.querySelectorAll('.info-card'); items.forEach(item => { const title = item.querySelector('.info-card-title')?.textContent.toLowerCase() || ''; const description = item.querySelector('.info-card-desc')?.textContent.toLowerCase() || ''; const isVisible = title.includes(filterText) || description.includes(filterText); item.style.display = isVisible ? 'block' : 'none'; }); }
+    function filterList(inputElement, listContainer) {
+        const filterText = inputElement.value.toLowerCase();
+        // Usamos el selector de la nueva tarjeta
+        const items = listContainer.querySelectorAll('.inventory-item-card');
+        items.forEach(item => {
+            // Usamos los selectores de nombre y descripción de la nueva tarjeta
+            const title = item.querySelector('.item-name')?.textContent.toLowerCase() || '';
+            const description = item.querySelector('.item-description')?.textContent.toLowerCase() || '';
+            const isVisible = title.includes(filterText) || description.includes(filterText);
+            item.style.display = isVisible ? 'block' : 'none';
+        });
+    }
     searchAbilitiesInput.addEventListener('input', () => { filterList(searchAbilitiesInput, editAbilitiesList); });
     searchInventoryInput.addEventListener('input', () => { filterList(searchInventoryInput, editInventoryList); });
     function handleExportScene() {
@@ -1289,7 +1492,34 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleImportScene(event) {
         const file = event.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (e) => {
             try {
-                const sceneData = JSON.parse(e.target.result); if (!sceneData.mapImageDataUrl || !sceneData.tokens || !sceneData.walls || !sceneData.gridSettings) { throw new Error("El archivo no parece ser una escena válida de DM Arsenal."); } isMapLoaded = true; document.getElementById('mapImageInput')._dataUrl = sceneData.mapImageDataUrl; const gs = sceneData.gridSettings; gridVisible = gs.visible; gridColor = gs.color; gridOpacity = gs.opacity; gridOffsetX = gs.offsetX; gridOffsetY = gs.offsetY; cellSize = gs.cellSize; walls = sceneData.walls; tokens = sceneData.tokens; broadcast('CMD_LOAD_NEW_MAP', { src: sceneData.mapImageDataUrl }); setTimeout(() => { broadcast('CMD_LOAD_SCENE_DATA', { tokens: sceneData.tokens, walls: sceneData.walls, gridSettings: sceneData.gridSettings, fogDataUrl: sceneData.fogImageDataUrl }); if (visionModeActive) { broadcast('CMD_SET_VISION_MODE', { active: true, tokens, walls, cellSize }); } }, 500); updateTokenList(); updateDoorList(); deselectToken(); gridToggle.checked = gs.visible; gridColorInput.value = gs.color; gridOpacityInput.value = gs.opacity; cellSizeInput.value = gs.cellSize; cellSizeSlider.value = gs.cellSize;
+                const sceneData = JSON.parse(e.target.result);
+                if (!sceneData.mapImageDataUrl || !sceneData.tokens || !sceneData.walls || !sceneData.gridSettings) {
+                    throw new Error("El archivo no parece ser una escena válida de DM Arsenal.");
+                } isMapLoaded = true; document.getElementById('mapImageInput')._dataUrl = sceneData.mapImageDataUrl;
+                const gs = sceneData.gridSettings; gridVisible = gs.visible; gridColor = gs.color; gridOpacity = gs.opacity;
+                gridOffsetX = gs.offsetX; gridOffsetY = gs.offsetY; cellSize = gs.cellSize;
+                tokens = sceneData.tokens.map(token => {
+                    const migratedToken = migrateTokenData(token);
+                    if (migratedToken.info && Array.isArray(migratedToken.info.inventory)) {
+                        migratedToken.info.inventory = migratedToken.info.inventory.map(migrateInventoryItem);
+                    }
+                    return migratedToken;
+                });
+                tokens = sceneData.tokens;
+                broadcast('CMD_LOAD_NEW_MAP', {
+                    src: sceneData.mapImageDataUrl
+                });
+
+                setTimeout(() => {
+                    broadcast('CMD_LOAD_SCENE_DATA', {
+                        tokens: sceneData.tokens, walls: sceneData.walls, gridSettings: sceneData.gridSettings, fogDataUrl: sceneData.fogImageDataUrl
+                    });
+                    if (visionModeActive) { broadcast('CMD_SET_VISION_MODE', { active: true, tokens, walls, cellSize }); }
+                }, 500); updateTokenList();
+                updateDoorList(); deselectToken(); gridToggle.checked = gs.visible; gridColorInput.value = gs.color;
+                gridOpacityInput.value = gs.opacity;
+                cellSizeInput.value = gs.cellSize;
+                cellSizeSlider.value = gs.cellSize;
                 showCustomModal({
                     title: 'Éxito',
                     message: 'Escena importada con éxito!',
@@ -1334,6 +1564,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 const importedCharacters = importedData;
+                importedCharacters.forEach(character => {
+                    if (character.info && Array.isArray(character.info.inventory)) {
+                        character.info.inventory = character.info.inventory.map(migrateInventoryItem);
+                    }
+                });
 
                 if (importedCharacters.length === 0) {
                     await showCustomModal({
@@ -1434,7 +1669,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 // También lo registramos en la consola para depuración.
-                originalConsoleError("Error al importar la biblioteca:", error);
+                console.error("Error al importar la biblioteca:", error);
 
             } finally {
                 // Quitamos la limpieza del input de aquí para tener más control
@@ -1447,97 +1682,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function setupTokenEditorNavigation() { const editor = document.getElementById('tokenEditor'); const navButtons = editor.querySelectorAll('.token-nav-button'); const views = editor.querySelectorAll('.token-view-panel'); navButtons.forEach(button => { button.addEventListener('click', () => { const viewIdToShow = button.dataset.view; views.forEach(view => view.classList.remove('active')); navButtons.forEach(btn => btn.classList.remove('active')); const viewToShow = editor.querySelector('#' + viewIdToShow); if (viewToShow) { viewToShow.classList.add('active'); } button.classList.add('active'); }); }); }
 
 
-    // ===============================================
-    // --- LÓGICA PARA EL NUEVO MODAL DE EDICIÓN ---
-    // ===============================================
-    function openEditCardModal(type, index) {
-        if (!selectedTokenId) return;
-        const token = tokens.find(t => t.id === selectedTokenId);
-        if (!token) return;
 
-        const item = type === 'ability' ? token.info.abilities[index] : token.info.inventory[index];
-        if (!item) return;
-
-        // Guardar el contexto
-        editingCardContext = { type, index };
-
-        // Poblar el modal y ponerlo en modo vista
-        editCardModalTitle.textContent = `Editar ${type === 'ability' ? 'Habilidad' : 'Objeto'}`;
-        viewCardName.textContent = item.name;
-        viewCardDescription.textContent = item.description;
-
-        editCardViewMode.style.display = 'block';
-        editCardEditMode.style.display = 'none';
-        editCardViewButtons.style.display = 'flex';
-        editCardEditButtons.style.display = 'none';
-
-        editCardModal.classList.add('open');
-    }
-
-    editCardBtn.addEventListener('click', () => {
-        if (!editingCardContext) return;
-        const { type, index } = editingCardContext;
-        const token = tokens.find(t => t.id === selectedTokenId);
-        const item = type === 'ability' ? token.info.abilities[index] : token.info.inventory[index];
-
-        // Poblar los inputs con los datos actuales
-        editCardNameInput.value = item.name;
-        editCardDescriptionInput.value = item.description;
-
-        // Cambiar a modo edición
-        editCardViewMode.style.display = 'none';
-        editCardEditMode.style.display = 'block';
-        editCardViewButtons.style.display = 'none';
-        editCardEditButtons.style.display = 'flex';
-        editCardNameInput.focus();
-    });
-
-    updateCardBtn.addEventListener('click', () => {
-        if (!editingCardContext) return;
-        const { type, index } = editingCardContext;
-        const token = tokens.find(t => t.id === selectedTokenId);
-
-        const newName = editCardNameInput.value.trim();
-        const newDescription = editCardDescriptionInput.value.trim();
-
-        if (!newName) {
-            showCustomModal({
-                title: 'Atención',
-                message: `El nombre no puede estar vacío.`,
-                type: 'warning'
-            });
-            return;
-        }
-
-        // Actualizar el objeto en el array de tokens
-        if (type === 'ability') {
-            token.info.abilities[index].name = newName;
-            token.info.abilities[index].description = newDescription;
-            renderAbilitiesList(token); // Volver a renderizar la lista
-        } else {
-            token.info.inventory[index].name = newName;
-            token.info.inventory[index].description = newDescription;
-            renderInventoryList(token); // Volver a renderizar la lista
-        }
-
-        // Notificar al jugador y cerrar el modal
-        broadcast('CMD_UPDATE_TOKEN_DATA', { tokenData: token });
-        editCardModal.classList.remove('open');
-        editingCardContext = null;
-    });
-
-    closeCardBtn.addEventListener('click', () => {
-        editCardModal.classList.remove('open');
-        editingCardContext = null;
-    });
-
-    cancelEditCardBtn.addEventListener('click', () => {
-        // Simplemente volvemos al modo vista sin guardar
-        editCardViewMode.style.display = 'block';
-        editCardEditMode.style.display = 'none';
-        editCardViewButtons.style.display = 'flex';
-        editCardEditButtons.style.display = 'none';
-    });
     function resetAddTokenForm() {
         // Resetear inputs de texto y número
         document.getElementById('tokenName').value = '';
@@ -1725,6 +1870,110 @@ document.addEventListener('DOMContentLoaded', () => {
 
         return confirmationMessage;
     });
+
+    function openInventoryItemModal(index = null) {
+        if (!selectedTokenId) return;
+
+        editingItemIndex = index;
+
+        if (index !== null) {
+            // -- MODO EDICIÓN --
+            const token = tokens.find(t => t.id === selectedTokenId);
+            const item = token.info.inventory[index];
+            if (!item) return;
+
+            inventoryModalTitle.textContent = 'Editar Objeto del Inventario';
+            inventoryItemName.value = item.name || '';
+            inventoryItemType.value = item.itemType || 'other';
+            inventoryItemDescription.value = item.description || '';
+            inventoryItemPrice.value = item.price || '';
+            inventoryItemWeight.value = item.weight || '';
+            inventoryItemImage.value = item.image || '';
+            inventoryItemPlaceholder.value = item.placeholder || '';
+            inventoryItemIsMagical.checked = item.isMagical || false;
+
+        } else {
+            // -- MODO AÑADIR --
+            inventoryModalTitle.textContent = 'Añadir Objeto al Inventario';
+            inventoryItemName.value = '';
+            inventoryItemType.value = 'other';
+            inventoryItemDescription.value = '';
+            inventoryItemPrice.value = '';
+            inventoryItemWeight.value = '';
+            inventoryItemImage.value = '';
+            inventoryItemPlaceholder.value = '';
+            inventoryItemIsMagical.checked = false;
+        }
+
+        inventoryItemModal.classList.add('open');
+        inventoryItemName.focus();
+    }
+
+    function saveInventoryItem() {
+        if (!selectedTokenId) return;
+        const token = tokens.find(t => t.id === selectedTokenId);
+        if (!token) return;
+
+        const name = inventoryItemName.value.trim();
+        if (!name) {
+            showCustomModal({ title: 'Error', message: 'El nombre del objeto es obligatorio.', type: 'warning' });
+            return;
+        }
+
+        const newItem = {
+            id: editingItemIndex !== null ? token.info.inventory[editingItemIndex].id : Date.now(),
+            name: name,
+            itemType: inventoryItemType.value,
+            description: inventoryItemDescription.value.trim(),
+            price: inventoryItemPrice.value.trim(),
+            weight: inventoryItemWeight.value.trim(),
+            image: inventoryItemImage.value.trim(),
+            placeholder: inventoryItemPlaceholder.value.trim(),
+            isMagical: inventoryItemIsMagical.checked
+        };
+
+        if (editingItemIndex !== null) {
+            // Actualizar objeto existente
+            token.info.inventory[editingItemIndex] = newItem;
+        } else {
+            // Añadir nuevo objeto
+            if (!token.info.inventory) token.info.inventory = [];
+            token.info.inventory.push(newItem);
+        }
+
+        renderInventoryList(token);
+        broadcast('CMD_UPDATE_TOKEN_DATA', { tokenData: token });
+        inventoryItemModal.classList.remove('open');
+        editingItemIndex = null; // Resetear el índice
+    }
+
+    function migrateInventoryItem(item) {
+        // Si el objeto ya tiene una propiedad del nuevo formato (como 'itemType'),
+        // significa que ya está actualizado, así que lo devolvemos sin cambios.
+        if (item.hasOwnProperty('itemType')) {
+            return item;
+        }
+
+        // Si no, es un objeto antiguo. Creamos uno nuevo con los datos antiguos
+        // y rellenamos los campos nuevos con valores por defecto.
+        console.log(`Migrando objeto de inventario antiguo: ${item.name}`);
+        return {
+            id: item.id,
+            name: item.name,
+            description: item.description,
+            itemType: 'other', // Valor por defecto
+            price: '',
+            weight: '',
+            image: '',
+            placeholder: '❔', // Un emoji genérico como respaldo
+            isMagical: false
+        };
+    }
+    confirmInventoryItemBtn.addEventListener('click', saveInventoryItem);
+    cancelInventoryItemBtn.addEventListener('click', () => inventoryItemModal.classList.remove('open'));
+    // Listeners para el nuevo modal de habilidades
+    confirmAbilityBtn.addEventListener('click', saveAbility);
+    cancelAbilityBtn.addEventListener('click', () => abilityModal.classList.remove('open'));
 
     setupPanelNavigation();
     renderCharacterLibrary();

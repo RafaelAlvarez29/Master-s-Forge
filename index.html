@@ -432,6 +432,45 @@
                                                 data-amount="10">+10</button>
                                         </div>
                                     </div>
+                                    <!-- ===== INICIO: TRACKER DE SALVACIONES CONTRA MUERTE ===== -->
+                                    <div id="deathSavesTracker" style="display: none;">
+                                        <h4 class="death-save-title">SALVACIONES CONTRA MUERTE</h4>
+                                        <div class="death-save-row">
+                                            <span class="death-save-label">Éxitos</span>
+                                            <div class="death-save-bubbles">
+                                                <div class="checkbox-container circle-check">
+                                                    <input type="checkbox" id="d-save-s1"><label
+                                                        for="d-save-s1"></label>
+                                                </div>
+                                                <div class="checkbox-container circle-check">
+                                                    <input type="checkbox" id="d-save-s2"><label
+                                                        for="d-save-s2"></label>
+                                                </div>
+                                                <div class="checkbox-container circle-check">
+                                                    <input type="checkbox" id="d-save-s3"><label
+                                                        for="d-save-s3"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="death-save-row">
+                                            <span class="death-save-label">Fallos</span>
+                                            <div class="death-save-bubbles">
+                                                <div class="checkbox-container circle-check">
+                                                    <input type="checkbox" id="d-save-f1"><label
+                                                        for="d-save-f1"></label>
+                                                </div>
+                                                <div class="checkbox-container circle-check">
+                                                    <input type="checkbox" id="d-save-f2"><label
+                                                        for="d-save-f2"></label>
+                                                </div>
+                                                <div class="checkbox-container circle-check">
+                                                    <input type="checkbox" id="d-save-f3"><label
+                                                        for="d-save-f3"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- ===== FIN: TRACKER DE SALVACIONES CONTRA MUERTE ===== -->
                                     <div id="enemyDefeatedControls" style="display: none;">
                                         <button id="toggleDefeatedBtn" class="secondary">Abatir Enemigo</button>
                                     </div>
@@ -444,8 +483,9 @@
                                                     id="newStateEmoji" placeholder="🔥" maxlength="2"></div>
                                             <div class="form-group" style="flex-grow:3;"><label
                                                     for="newStateDesc">Descripción</label><input type="text"
-                                                    id="newStateDesc" placeholder="En llamas..." ></div>
-                                                    <button id="addStateBtn" class="add-item-btn" title="Añadir Estado" style="margin-top: 22px; margin-right: 5px;">+</button>
+                                                    id="newStateDesc" placeholder="En llamas..."></div>
+                                            <button id="addStateBtn" class="add-item-btn" title="Añadir Estado"
+                                                style="margin-top: 22px; margin-right: 5px;">+</button>
                                         </div>
                                         <ul id="editTokenStatesList"></ul>
                                     </div>
@@ -1158,52 +1198,91 @@
             </div>
         </div>
     </div>
-    <div id="featureInventoryModal" class="modal-overlay">
-        <div class="modal-content">
-            <h3 id="modalTitle"></h3>
-            <div class="form-group"><label for="modalNameInput">Nombre:</label><input type="text" id="modalNameInput">
-            </div>
-            <div class="form-group"><label for="modalDescriptionInput">Descripción:</label><textarea
-                    id="modalDescriptionInput" rows="4"></textarea></div>
-            <div class="button-group"><button id="confirmModalBtn">Guardar</button><button id="cancelModalBtn"
-                    class="secondary">Cancelar</button></div>
-        </div>
-    </div>
 
-    <div id="editCardModal" class="modal-overlay">
-        <div class="modal-content">
-            <h3 id="editCardModalTitle">Editar Elemento</h3>
 
-            <!-- Vista de Lectura -->
-            <div id="editCardViewMode">
-                <h4 id="viewCardName" class="info-card-title-modal"></h4>
-                <p id="viewCardDescription" class="info-card-desc-modal"></p>
-            </div>
 
-            <!-- Vista de Edición -->
-            <div id="editCardEditMode" style="display: none;">
-                <div class="form-group">
-                    <label for="editCardNameInput">Nombre:</label>
-                    <input type="text" id="editCardNameInput">
+    <!-- ================================== -->
+    <!-- === MODAL DE OBJETO DE INVENTARIO (NUEVO) === -->
+    <!-- ================================== -->
+    <div id="inventoryItemModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 600px;">
+            <h3 id="inventoryModalTitle">Añadir Objeto al Inventario</h3>
+
+            <div class="form-row">
+                <div class="form-group" style="flex-grow: 2;">
+                    <label for="inventoryItemName">Nombre del Objeto:*</label>
+                    <input type="text" id="inventoryItemName" placeholder="Ej: Espada Flamígera +1">
                 </div>
-                <div class="form-group">
-                    <label for="editCardDescriptionInput">Descripción:</label>
-                    <textarea id="editCardDescriptionInput" rows="8"></textarea>
+                <div class="form-group" style="flex-grow: 1;">
+                    <label for="inventoryItemType">Tipo de Objeto:</label>
+                    <select id="inventoryItemType" style="padding: 9px; margin-bottom: 0;">
+                        <option value="other">Otro</option>
+                        <option value="weapon">Arma</option>
+                        <option value="armor">Armadura</option>
+                    </select>
                 </div>
             </div>
 
-            <!-- Botones del Modal -->
-            <div class="button-group" id="editCardViewButtons">
-                <button id="editCardBtn">Editar</button>
-                <button id="closeCardBtn" class="secondary">Cerrar</button>
+            <div class="form-group">
+                <label for="inventoryItemDescription">Descripción:</label>
+                <textarea id="inventoryItemDescription" rows="4"
+                    placeholder="Describe el objeto, sus efectos, etc."></textarea>
             </div>
-            <div class="button-group" id="editCardEditButtons" style="display: none;">
-                <button id="updateCardBtn">Actualizar</button>
-                <button id="cancelEditCardBtn" class="secondary">Cancelar</button>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="inventoryItemPrice">Precio (Ej: 150 PO)</label>
+                    <input type="text" id="inventoryItemPrice" placeholder="150 PO">
+                </div>
+                <div class="form-group">
+                    <label for="inventoryItemWeight">Peso (Ej: 3 lb)</label>
+                    <input type="text" id="inventoryItemWeight" placeholder="3 lb">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group" style="flex-grow: 2;">
+                    <label for="inventoryItemImage">URL de la Imagen (Opcional)</label>
+                    <input type="text" id="inventoryItemImage" placeholder="https://...">
+                </div>
+                <div class="form-group" style="flex-grow: 1;">
+                    <label for="inventoryItemPlaceholder">Emoji (si no hay imagen)</label>
+                    <input type="text" id="inventoryItemPlaceholder" placeholder="⚔️" maxlength="2">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="checkbox-container"><input type="checkbox" id="inventoryItemIsMagical"><label
+                        for="inventoryItemIsMagical">Es un objeto mágico</label></div>
+            </div>
+
+            <div class="button-group">
+                <button id="confirmInventoryItemBtn">Guardar Objeto</button>
+                <button id="cancelInventoryItemBtn" class="secondary">Cancelar</button>
             </div>
         </div>
     </div>
 
+    <!-- ================================== -->
+    <!-- === MODAL DE EDICIÓN DE HABILIDAD (NUEVO) === -->
+    <!-- ================================== -->
+    <div id="abilityModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="abilityModalTitle">Editar Habilidad</h3>
+            <div class="form-group">
+                <label for="abilityNameInput">Nombre:</label>
+                <input type="text" id="abilityNameInput">
+            </div>
+            <div class="form-group">
+                <label for="abilityDescriptionInput">Descripción:</label>
+                <textarea id="abilityDescriptionInput" rows="6"></textarea>
+            </div>
+            <div class="button-group">
+                <button id="confirmAbilityBtn">Actualizar</button>
+                <button id="cancelAbilityBtn" class="secondary">Cancelar</button>
+            </div>
+        </div>
+    </div>
     <!-- ================================== -->
     <!-- ===== MODAL DE CRÉDITOS (NUEVO) ===== -->
     <!-- ================================== -->
