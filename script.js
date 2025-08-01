@@ -1705,7 +1705,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- INICIO: LÓGICA DE CIERRE SIMPLIFICADA ---
+    // --- INICIO: LÓGICA DE CIERRE SIMPLIFICADA ---creo que no se usa o no se llama
 
     window.addEventListener('beforeunload', (event) => {
         // Si no hay cambios o si estamos cerrando la ventana a propósito (aún útil si añades esa función después),

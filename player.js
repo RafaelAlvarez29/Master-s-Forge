@@ -64,6 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
         panY = 0;
     let isPanning = false,
         panStartX, panStartY;
+    let isSpacebarPressed = false;
     const MIN_SCALE = 0.1,
         MAX_SCALE = 5;
 
@@ -427,10 +428,15 @@ document.addEventListener('DOMContentLoaded', () => {
             paintFog(e);
             return;
         }
-        isPanning = true;
-        panStartX = e.clientX;
-        panStartY = e.clientY;
-        mapContainer.style.cursor = 'grabbing';
+        // El paneo ahora solo se activa si se mantiene la barra espaciadora
+        // O si se hace clic con el botón central del ratón (e.button === 1)
+        if (isSpacebarPressed || e.button === 1) {
+            isPanning = true;
+            panStartX = e.clientX;
+            panStartY = e.clientY;
+            mapContainer.style.cursor = 'grabbing';
+        }
+
     });
 
     document.addEventListener('mousemove', e => {
@@ -563,8 +569,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (isPanning) {
             isPanning = false;
-            mapContainer.style.cursor = 'grab';
+            // Si la barra espaciadora sigue presionada, el cursor debe ser 'grab'
+            // Si no, vuelve a 'default' (o 'crosshair' si una herramienta de dibujo está activa)
+            mapContainer.style.cursor = isSpacebarPressed ? 'grab' : (activeDrawTool ? 'crosshair' : 'default');
         }
+
         if (isPaintingFog) {
             isPaintingFog = false;
         }
@@ -582,9 +591,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         } else {
-            clearSelectedGroup();
-            channel.postMessage({
-                type: 'EVENT_MAP_CLICKED'
+            //clearSelectedGroup();
+            channel.postMessage({ type: 'EVENT_MAP_CLICKED'
             });
         }
     });
@@ -1173,6 +1181,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Simulamos un clic en el botón de confirmar
             confirmPlayerDoorNameBtn.click();
+        }
+    });
+    document.addEventListener('keydown', (e) => {
+        // Si la tecla es la barra espaciadora y no estamos escribiendo en un input
+        if (e.code === 'Space' && document.activeElement.tagName !== 'INPUT') {
+            e.preventDefault(); // Evita que la página haga scroll
+            isSpacebarPressed = true;
+            // Cambiamos el cursor para indicar que el modo paneo está disponible
+            if (!isPanning) {
+                mapContainer.style.cursor = 'grab';
+            }
+        }
+    });
+
+    document.addEventListener('keyup', (e) => {
+        if (e.code === 'Space') {
+            isSpacebarPressed = false;
+            // Volvemos al cursor por defecto si no estamos en medio de un paneo
+            if (!isPanning) {
+                // Si hay una herramienta de dibujo activa, el cursor debe ser crosshair
+                mapContainer.style.cursor = activeDrawTool ? 'crosshair' : 'default';
+            }
         }
     });
     function updateTokenDetailsPanel(token) {
