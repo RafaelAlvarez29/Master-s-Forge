@@ -135,9 +135,9 @@
                         <h3 class="view-title">Añadir Ficha Nueva</h3>
                         <!-- Contenido del formulario de añadir ficha -->
                         <div class="token-editor-form">
-                            <h4>Información Básica</h4>
+                            <h4  style="display: none;">Información Básica</h4>
                             <div class="form-group">
-                                <label>Tipo:</label>
+                                <label  style="display: none;">Tipo:</label>
                                 <div class="radio-tile-group">
                                     <div class="input-container"><input id="add_typePlayer" class="radio-button"
                                             type="radio" name="add_tokenType" value="player" checked>
@@ -177,8 +177,8 @@
                                             id="tokenImageName" class="file-name-display">Ningún archivo...</span></div>
                                 </div>
                             </div>
-                            <h4>Estadísticas</h4>
-                            <div class="char-stats-grid" id="add_char_stats_grid">
+                            <h4  style="display: none;">Estadísticas</h4>
+                            <div class="char-stats-grid" id="add_char_stats_grid" style="display: none;">
                                 <div class="char-stat-card"><label>FUE</label><span class="char-mod"
                                         id="add_str_mod">+0</span>
                                     <div class="char-score-capsule"><input type="number" id="add_str_score"
@@ -210,7 +210,7 @@
                                             class="char-score-input nobackgrund" value="10"></div>
                                 </div>
                             </div>
-                            <div class="combat-stats-grid">
+                            <div class="combat-stats-grid"  style="display: none;">
                                 <div class="combat-stat-card"><label class="combat-label-top">BONIF.</label><input
                                         type="number" class="combat-value-input nobackgrund" id="add_proficiency_bonus"
                                         value="2"><label class="combat-label-bottom">💪COMPETENCIA</label></div>
@@ -230,8 +230,8 @@
                                 <div class="form-group"><label>♥️Vida Inicial:</label><input type="number"
                                         id="tokenHealth" value=""></div>
                             </div>
-                            <h4>Tiradas de Salvación</h4>
-                            <div class="saving-throws-list" id="add_saving_throws_list">
+                            <h4  style="display: none;"> Tiradas de Salvación</h4>
+                            <div class="saving-throws-list" id="add_saving_throws_list"  style="display: none;">
                                 <div class="save-throw-row">
                                     <div class="checkbox-container"><input type="checkbox" id="add_str_save_prof"
                                             class="save-prof-check"><label for="add_str_save_prof"></label></div>
@@ -292,8 +292,8 @@
                                         for="tokenSizeMultiplier">Tamaño:</label><input type="number"
                                         id="tokenSizeMultiplier" value="1" min="0.5" step="0.5"></div>
                             </div>
-                            <h4>Notas</h4>
-                            <div class="form-group"><textarea id="tokenNotes" rows="3" placeholder="..."></textarea>
+                            <h4  style="display: none;">Notas</h4>
+                            <div class="form-group"  style="display: none;"><textarea id="tokenNotes" rows="3" placeholder="..."></textarea>
                             </div>
                             <button id="addTokenBtn">Añadir Ficha</button>
                         </div>
@@ -1040,8 +1040,8 @@
                         <label for="gridOpacity">Opacidad:</label><input type="range" class="range1" id="gridOpacity"
                             min="0" max="1" step="0.1" value="0.5">
                         <label for="cellSize">Tamaño de Casilla (px):</label><input type="number" id="cellSize"
-                            value="50" min="10" step="0.1"><input type="range" id="cellSizeSlider" min="10" max="150"
-                            value="50" step="0.1" aria-label="Ajustar tamaño de casilla">
+                            value="50" min="10"><input type="range" id="cellSizeSlider" min="10" max="150"
+                            value="50" aria-label="Ajustar tamaño de casilla">
                         <h4 class="top-margin"><span class="header-icon icon-align-grid"></span> Alinear Rejilla</h4>
                         <p class="help-text">Activa este modo y luego haz clic en la esquina de una casilla en la
                             ventana del Jugador.</p>
@@ -1062,7 +1062,7 @@
                                             class="checkbox-tile-label">Ocultar</span></label></div>
                             </div>
                             <div class="brush-size-container"><label for="brushSize">Tamaño Pincel:</label><input
-                                    type="range" id="brushSize" min="10" max="300" step="5" value="50"></div>
+                                    type="range" id="brushSize" min="10" max="300" value="50"></div>
                         </div>
                     </div>
 

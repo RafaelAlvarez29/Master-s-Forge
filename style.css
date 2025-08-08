@@ -1772,10 +1772,10 @@ input[type="range"]::-webkit-slider-thumb {
   background-color: #1f1614d9;
   background: linear-gradient(
     to right,
-    rgba(0, 0, 0, 0.8),
-    rgba(0, 0, 0, 0.6),
-    rgba(0, 0, 0, 0.4),
-    rgba(0, 0, 0, 0.2)
+    rgba(0, 0, 0, 0.7),
+    rgba(0, 0, 0, 0.5),
+    rgba(0, 0, 0, 0.3),
+    rgba(0, 0, 0, 0.0)
   );
   clip-path: polygon(5% 0%, 100% 0%, 100% 100%, 0% 100%);
   margin: 10px;

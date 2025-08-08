@@ -1453,7 +1453,21 @@ document.addEventListener('DOMContentLoaded', () => {
             item.style.display = isVisible ? 'block' : 'none';
         });
     }
-    searchAbilitiesInput.addEventListener('input', () => { filterList(searchAbilitiesInput, editAbilitiesList); });
+    function filterInfoList(inputElement, listContainer) {
+        const filterText = inputElement.value.toLowerCase();
+        // Las tarjetas de habilidad usan la clase '.info-card'
+        const items = listContainer.querySelectorAll('.info-card');
+        items.forEach(item => {
+            // Los selectores dentro de la tarjeta de habilidad son diferentes
+            const title = item.querySelector('.info-card-title')?.textContent.toLowerCase() || '';
+            const description = item.querySelector('.info-card-desc')?.textContent.toLowerCase() || '';
+            const isVisible = title.includes(filterText) || description.includes(filterText);
+
+            // Usamos 'flex' porque es un buen display por defecto para estas tarjetas
+            item.style.display = isVisible ? 'black' : 'none';
+        });
+    }
+    searchAbilitiesInput.addEventListener('input', () => filterInfoList(searchAbilitiesInput, editAbilitiesList));
     searchInventoryInput.addEventListener('input', () => { filterList(searchInventoryInput, editInventoryList); });
     function handleExportScene() {
         if (!isMapLoaded) {
