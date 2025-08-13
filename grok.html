@@ -1,0 +1,155 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créditos</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .creditos-container {
+            width: 100%;
+            height: 100vh;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            animation: deslizar-creditos 60s linear forwards;
+        }
+
+        .creditos {
+            width: 80%;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            top: 100%;
+            padding-bottom: 100vh;
+        }
+
+        .credito-item {
+            margin-bottom: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .credito-item h1, .credito-item h2, .credito-item p {
+            margin: 5px 0;
+            padding: 0 20px;
+        }
+
+        .credito-item img {
+            width: 150px;
+            height: auto;
+            position: absolute;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .imagen-izquierda {
+            left: -200px;
+        }
+
+        .imagen-derecha {
+            right: -200px;
+        }
+        
+        @keyframes deslizar-creditos {
+            from {
+                transform: translateY(0);
+            }
+            to {
+                transform: translateY(-100%);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="musicaDeFondo" loop autoplay>
+        <source src="tu-musica.mp3" type="audio/mpeg">
+        Tu navegador no soporta el elemento de audio.
+    </audio>
+
+    <div class="creditos-container">
+        <div class="creditos">
+            <div class="credito-item" data-delay="0">
+                <img src="imagen1.jpg" alt="Imagen 1" class="imagen-izquierda">
+                <h1>Director</h1>
+                <p>Juan Pérez</p>
+                <img src="imagen2.jpg" alt="Imagen 2" class="imagen-derecha">
+            </div>
+            <div class="credito-item" data-delay="3000">
+                <img src="imagen3.jpg" alt="Imagen 3" class="imagen-izquierda">
+                <h2>Productores</h2>
+                <p>Ana Gómez</p>
+                <p>Luis Ramos</p>
+                <img src="imagen4.jpg" alt="Imagen 4" class="imagen-derecha">
+            </div>
+            <div class="credito-item" data-delay="6000">
+                <img src="imagen5.jpg" alt="Imagen 5" class="imagen-izquierda">
+                <h2>Guion</h2>
+                <p>Sofía Reyes</p>
+                <p>Carlos Mendoza</p>
+                <img src="imagen6.jpg" alt="Imagen 6" class="imagen-derecha">
+            </div>
+            <div class="credito-item" data-delay="9000">
+                <img src="imagen7.jpg" alt="Imagen 7" class="imagen-izquierda">
+                <h2>Música Original</h2>
+                <p>Daniela Soto</p>
+                <img src="imagen8.jpg" alt="Imagen 8" class="imagen-derecha">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const musica = document.getElementById('musicaDeFondo');
+            musica.volume = 0.5;
+
+            const creditosContainer = document.querySelector('.creditos-container');
+            const items = document.querySelectorAll('.credito-item');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        const imagenes = entry.target.querySelectorAll('img');
+                        imagenes.forEach(img => {
+                            img.style.opacity = '1';
+                        });
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                root: creditosContainer,
+                threshold: 0.1
+            });
+
+            items.forEach(item => {
+                observer.observe(item);
+            });
+
+            creditosContainer.addEventListener('animationend', () => {
+                musica.pause();
+                // Puedes agregar aquí un redireccionamiento o cualquier otra acción al finalizar
+            });
+        });
+    </script>
+
+</body>
+</html>

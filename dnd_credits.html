@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créditos - El Fin de Nuestra Aventura</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Uncial+Antiqua&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(45deg, #0a0a0a, #1a1a2e, #16213e);
+            color: #d4af37;
+            font-family: 'Cinzel', serif;
+            overflow: hidden;
+            position: relative;
+            height: 100vh;
+        }
+
+        /* Efectos de partículas mágicas */
+        .magic-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: radial-gradient(circle, #d4af37, transparent);
+            border-radius: 50%;
+            animation: float 8s infinite linear;
+            opacity: 0.7;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 0.7;
+            }
+
+            90% {
+                opacity: 0.7;
+            }
+
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Contenedor principal de créditos */
+        .credits-container {
+            position: relative;
+            z-index: 10;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .credits-scroll {
+            position: absolute;
+            width: 100%;
+            animation: scroll-up 60s linear infinite;
+            /* CAMBIAR ESTE NÚMERO PARA VELOCIDAD */
+            padding: 50px 20px;
+        }
+
+        @keyframes scroll-up {
+            0% {
+                transform: translateY(100vh);
+            }
+
+            100% {
+                transform: translateY(-150%);
+            }
+        }
+
+        /* Estilos de secciones */
+        .credits-section {
+            margin: 80px 0;
+            text-align: center;
+            opacity: 0;
+            animation: fade-in 2s ease-in-out forwards;
+        }
+
+        .credits-section:nth-child(1) {
+            animation-delay: 2s;
+        }
+
+        .credits-section:nth-child(2) {
+            animation-delay: 5s;
+        }
+
+        .credits-section:nth-child(3) {
+            animation-delay: 8s;
+        }
+
+        .credits-section:nth-child(4) {
+            animation-delay: 11s;
+        }
+
+        .credits-section:nth-child(5) {
+            animation-delay: 14s;
+        }
+
+        .credits-section:nth-child(6) {
+            animation-delay: 17s;
+        }
+
+        .credits-section:nth-child(7) {
+            animation-delay: 20s;
+        }
+
+        .credits-section:nth-child(8) {
+            animation-delay: 23s;
+        }
+
+        .credits-section:nth-child(9) {
+            animation-delay: 26s;
+        }
+
+        @keyframes fade-in {
+            0% {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-title {
+            font-family: "Cinzel", serif;
+            font-size: 2.5em;
+            color: #ff6b35;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .section-title::before,
+        .section-title::after {
+            content: '⚔️';
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.6em;
+        }
+
+        .section-title::before {
+            left: -60px;
+        }
+
+        .section-title::after {
+            right: -60px;
+        }
+
+        .credits-item {
+            font-size: 1.4em;
+            margin: 15px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            position: relative;
+        }
+
+        .role {
+            color: #c0392b;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .name {
+            color: #f4d03f;
+            font-weight: 400;
+            margin-left: 20px;
+        }
+
+        /* Sección especial para el título */
+        .main-title {
+            font-family: "Cinzel", serif;
+            font-size: 4em;
+            color: #ff6b35;
+            text-align: center;
+            margin: 100px 0;
+            text-shadow: 5px 5px 10px rgba(0, 0, 0, 0.9);
+            animation: glow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            0% {
+                text-shadow: 5px 5px 10px rgba(0, 0, 0, 0.9), 0 0 20px #ff6b35;
+            }
+
+            100% {
+                text-shadow: 5px 5px 10px rgba(0, 0, 0, 0.9), 0 0 40px #ff6b35, 0 0 60px #ff6b35;
+            }
+        }
+
+        .subtitle {
+            font-size: 1.8em;
+            color: #d4af37;
+            text-align: center;
+            margin-top: -50px;
+            margin-bottom: 50px;
+            font-style: italic;
+        }
+
+        /* Efectos especiales para elementos importantes */
+        .special-thanks {
+            border: 2px solid #d4af37;
+            border-radius: 15px;
+            padding: 30px;
+            background: rgba(212, 175, 55, 0.1);
+            backdrop-filter: blur(5px);
+            margin: 40px auto;
+            max-width: 600px;
+        }
+
+        /* Sección de imágenes placeholder */
+        .image-section {
+            margin: 50px 0;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .image-placeholder {
+            width: 200px;
+            height: 150px;
+            border: 3px dashed #d4af37;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #d4af37;
+            font-size: 0.9em;
+            text-align: center;
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        /* Estilos para imágenes reales */
+        .character-image,
+        .session-image {
+            width: 200px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 3px solid #d4af37;
+            transition: transform 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .character-image:hover,
+        .session-image:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+        }
+
+        /* Mensaje final épico */
+        .final-message {
+            font-size: 2em;
+            color: #ff6b35;
+            text-align: center;
+            margin: 100px 0;
+            font-weight: 600;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Audio controls */
+        .audio-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        audio {
+            opacity: 0.8;
+        }
+
+        /* Botón para reiniciar */
+        .restart-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #d4af37;
+            color: #1a1a2e;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-family: 'Cinzel', serif;
+            font-weight: 600;
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+
+        .restart-btn:hover {
+            background: #ff6b35;
+            color: white;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="magic-particles" id="particles"></div>
+
+    <button class="restart-btn" onclick="restartCredits()">🎲 Reiniciar</button>
+
+    <div class="audio-controls">
+        <audio controls autoplay loop>
+            <source src="" type="audio/mpeg" id="background-music">
+            Tu navegador no soporta el elemento de audio.
+        </audio>
+    </div>
+
+    <div class="credits-container">
+        <div class="credits-scroll" id="creditsScroll">
+
+            <div class="main-title">El Fin de Nuestra Aventura</div>
+            <div class="subtitle">Una Campaña Épica de Dungeons & Dragons</div>
+
+            <div class="credits-section">
+                <h2 class="section-title">Dungeon Master</h2>
+                <div class="credits-item">
+                    <span class="role">Narrador de Destinos</span>
+                    <span class="name">Juancho - Isrra</span>
+                </div>
+                <p style="font-style: italic; margin-top: 20px; color: #f4d03f;">
+                    Por tejer historias épicas y guiarnos a través de mundos fantásticos
+                </p>
+            </div>
+
+            <div class="image-section">
+                <img src="assets\images\credits\juanchodm.jpeg" alt="Personaje de Juan" class="character-image">
+                <img src="assets\images\credits\ultimasesiondnd.jpeg" alt="Personaje de Juan" class="character-image">
+
+                <!-- <div class="image-placeholder">Foto del DM<br>en acción</div>
+                <div class="image-placeholder">Sesión más<br>épica</div>-->
+            </div>
+
+            <div class="credits-section">
+                <h2 class="section-title">Los Héroes de la Mesa</h2>
+                <div class="credits-item">
+                    <span class="role">Guerrero Valiente</span>
+                    <span class="name">[NOMBRE_JUGADOR_1]</span>
+                </div>
+                <div class="credits-item">
+                    <span class="role">Mago Sabio</span>
+                    <span class="name">[NOMBRE_JUGADOR_2]</span>
+                </div>
+                <div class="credits-item">
+                    <span class="role">Pícaro Astuto</span>
+                    <span class="name">[NOMBRE_JUGADOR_3]</span>
+                </div>
+                <div class="credits-item">
+                    <span class="role">Clérigo Devoto</span>
+                    <span class="name">[NOMBRE_JUGADOR_4]</span>
+                </div>
+                <div class="credits-item">
+                    <span class="role">Bárbaro Feroz</span>
+                    <span class="name">[NOMBRE_JUGADOR_5]</span>
+                </div>
+            </div>
+
+            <div class="image-section">
+                <img src="assets\images\credits\ren.webp" alt="Guerrero de Marcos" class="character-image">
+                <img src="assets\images\credits\tlacua.webp" alt="Guerrero de Marcos" class="character-image">
+                <img src="assets\images\credits\josh.webp" alt="Guerrero de Marcos" class="character-image">
+                <img src="assets\images\credits\draigan.webp" alt="Guerrero de Marcos" class="character-image">
+                <img src="assets\images\credits\allystar.webp" alt="Guerrero de Marcos" class="character-image">
+                <img src="assets\images\credits\melinoe.webp" alt="Guerrero de Marcos" class="character-image">
+                <img src="assets\images\credits\cristal11.jpg" alt="Guerrero de Marcos" class="character-image">
+                <img src="assets\images\credits\luna.webp" alt="Guerrero de Marcos" class="character-image">
+                <img src="assets\images\credits\milo.webp" alt="Guerrero de Marcos" class="character-image">
+                <img src="assets\images\credits\cristal2.webp" alt="Guerrero de Marcos" class="character-image">
+                <img src="assets\images\credits\buitre.png" alt="Guerrero de Marcos" class="character-image">
+                <img src="assets\images\credits\rata.png" alt="Guerrero de Marcos" class="character-image">
+
+
+            </div>
+
+            <div class="credits-section special-thanks">
+                <h2 class="section-title">Anfitrión Legendario</h2>
+                <div class="credits-item">
+                    <span class="role">Guardián del Hogar</span>
+                    <span class="name">[NOMBRE_ANFITRION]</span>
+                </div>
+                <p style="font-style: italic; margin-top: 20px; color: #f4d03f;">
+                    Por abrirnos las puertas de su hogar y crear el espacio perfecto para nuestras aventuras
+                </p>
+            </div>
+
+            <div class="image-section">
+                <img src="assets\images\credits\momentogrupal.jpeg" alt="momento grupal" class="character-image">
+                <img src="assets\images\credits\mesadejuego.png" alt="Guerrero de Marcos" class="character-image">
+
+                <!-- <div class="momentogrupal.jpeg">La mesa de juego</div>
+                <div class="image-placeholder">Momento grupal</div>-->
+            </div>
+
+            <div class="credits-section">
+                <h2 class="section-title">Agradecimientos Especiales</h2>
+                <div class="credits-item">
+                    <span class="role">Proveedor de Snacks</span>
+                    <span class="name">Soledad - Tlacua - Uxyono </span>
+                </div>
+                <div class="credits-item">
+                    <span class="role">Maestro de Miniaturas</span>
+                    <span class="name">[NOMBRE_MINIATURAS]</span>
+                </div>
+                <div class="credits-item">
+                    <span class="role">Cronista de Aventuras</span>
+                    <span class="name">Juancho - DM</span>
+                    <span class="name">Isrra - DM</span>
+
+                </div>
+
+            </div>
+
+            <div class="image-section">
+                <div class="image-placeholder">Dados y accesorios</div>
+                <div class="image-placeholder">Momento divertido</div>
+            </div>
+
+            <div class="credits-section">
+                <h2 class="section-title">Momentos Inolvidables</h2>
+                <div class="credits-item" style="color: #f4d03f; text-align: center;">
+                    "Aquella vez que [JUGADOR] tiró un 20 natural en el momento perfecto"
+                </div>
+                <div class="credits-item" style="color: #f4d03f; text-align: center;">
+                    "Cuando Allystar black arruino una perfecta conversacion con un dragon antiguo, lanzandole un
+                    tlacuacho rabioso... Uxyono 🤦"
+                </div>
+                <div class="credits-item" style="color: #f4d03f; text-align: center;">
+                    "Cuando Uxyono volvio de la muerte en su mejor forma... para segundos despues volver a caer."
+                </div>
+                <div class="credits-item" style="color: #f4d03f; text-align: center;">
+                    "Las risas que duraron toda la noche"
+                </div>
+            </div>
+
+            <div class="image-section">
+                <img src="assets\images\credits\allsitayblacktkacua.jpeg" alt="Guerrero de Marcos" class="character-image">
+
+                <img src="assets\images\credits\tlacuareviviendo.png" alt="Guerrero de Marcos" class="character-image">
+                <div class="image-placeholder">Momento épico 2</div>
+                <div class="image-placeholder">Momento épico 3</div>
+            </div>
+
+            <div class="credits-section">
+                <h2 class="section-title">Estadísticas de Campaña</h2>
+                <div class="credits-item">
+                    <span class="role">Sesiones Jugadas:</span>
+                    <span class="name">[NÚMERO] épicas aventuras</span>
+                </div>
+                <div class="credits-item">
+                    <span class="role">Horas de Diversión:</span>
+                    <span class="name">[NÚMERO] horas de pura magia</span>
+                </div>
+                <div class="credits-item">
+                    <span class="role">Dragones Derrotados:</span>
+                    <span class="name">[NÚMERO] bestias legendarias</span>
+                </div>
+                <div class="credits-item">
+                    <span class="role">Tesoros Encontrados:</span>
+                    <span class="name">Incontables riquezas</span>
+                </div>
+                <div class="credits-item">
+                    <span class="role">Amistades Forjadas:</span>
+                    <span class="name">Para toda la vida</span>
+                </div>
+            </div>
+
+            <div class="final-message">
+                "Aunque esta aventura ha llegado a su fin,<br>
+                las memorias y la amistad perdurarán para siempre.<br><br>
+                Que los dados siempre rueden a nuestro favor<br>
+                en futuras aventuras."
+            </div>
+
+            <div class="credits-section" style="margin-bottom: 200px;">
+                <h2 class="section-title">Hasta la Próxima Aventura</h2>
+                <div class="credits-item" style="font-size: 1.8em; color: #ff6b35;">
+                    ⚔️ 🎲 🐉 ✨
+                </div>
+                <div class="credits-item" style="font-size: 1.2em; color: #f4d03f;">
+                    "Fin de la Campaña"
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Crear partículas mágicas
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 50;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                particle.style.animationDuration = (Math.random() * 4 + 6) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Función para reiniciar los créditos
+        function restartCredits() {
+            const creditsScroll = document.getElementById('creditsScroll');
+            creditsScroll.style.animation = 'none';
+            creditsScroll.offsetHeight; // Trigger reflow
+            creditsScroll.style.animation = 'scroll-up 60s linear infinite'; /* CAMBIAR TAMBIÉN AQUÍ */
+
+            // Reiniciar audio si existe
+            const audio = document.querySelector('audio');
+            if (audio) {
+                audio.currentTime = 0;
+                audio.play();
+            }
+        }
+
+        // Función para cargar imágenes
+        function setupImageLoading() {
+            const placeholders = document.querySelectorAll('.image-placeholder');
+
+            placeholders.forEach((placeholder, index) => {
+                placeholder.style.cursor = 'pointer';
+                placeholder.addEventListener('click', function () {
+                    const fileInput = document.createElement('input');
+                    fileInput.type = 'file';
+                    fileInput.accept = 'image/*';
+                    fileInput.onchange = function (e) {
+                        const file = e.target.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = function (e) {
+                                const img = document.createElement('img');
+                                img.src = e.target.result;
+                                img.className = placeholder.textContent.includes('Personaje') ? 'character-image' : 'session-image';
+                                img.alt = placeholder.textContent;
+                                placeholder.parentNode.replaceChild(img, placeholder);
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    };
+                    fileInput.click();
+                });
+            });
+        }
+
+        // Función para cargar música
+        function loadMusic() {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'audio/*';
+            fileInput.onchange = function (e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const audioElement = document.querySelector('audio');
+                    const audioSource = document.getElementById('background-music');
+                    const url = URL.createObjectURL(file);
+                    audioSource.src = url;
+                    audioElement.load();
+                    audioElement.play();
+                }
+            };
+            fileInput.click();
+        }
+
+        // Inicializar al cargar la página
+        document.addEventListener('DOMContentLoaded', function () {
+            createParticles();
+            setupImageLoading(); // Activar carga de imágenes
+
+            // Agregar botón para cargar música
+            const audioControls = document.querySelector('.audio-controls');
+            const loadMusicBtn = document.createElement('button');
+            loadMusicBtn.textContent = '🎵 Cargar Música';
+            loadMusicBtn.style.marginRight = '10px';
+            loadMusicBtn.style.padding = '5px 10px';
+            loadMusicBtn.style.background = '#d4af37';
+            loadMusicBtn.style.border = 'none';
+            loadMusicBtn.style.borderRadius = '3px';
+            loadMusicBtn.style.color = '#1a1a2e';
+            loadMusicBtn.style.cursor = 'pointer';
+            loadMusicBtn.style.fontSize = '12px';
+            loadMusicBtn.onclick = loadMusic;
+            audioControls.insertBefore(loadMusicBtn, audioControls.firstChild);
+        });
+
+        // Detectar cuando terminan los créditos para reiniciar automáticamente
+        setTimeout(() => {
+            restartCredits();
+        }, 61000); // CAMBIAR ESTE NÚMERO: tiempo en milisegundos (60s = 60000ms)
+    </script>
+</body>
+
+</html>
