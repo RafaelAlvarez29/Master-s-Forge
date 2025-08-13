@@ -399,12 +399,15 @@ document.addEventListener('DOMContentLoaded', () => {
             creditsModal.classList.remove('open');
         }
     });
-
-    function getHealthColorClass(current, max) { if (max === 0) return 'health-mid'; const percentage = (current / max) * 100; if (percentage <= 10) return 'health-critical'; if (percentage <= 40) return 'health-low'; if (percentage <= 70) return 'health-mid'; return 'health-high'; } async function processImage(file) { if (file.type === 'image/gif') return new Promise(resolve => { const reader = new FileReader(); reader.onload = e => resolve(e.target.result); reader.readAsDataURL(file); }); const MAX_WIDTH = 256; return new Promise(resolve => { const reader = new FileReader(); reader.onload = e => { const img = new Image(); img.onload = () => { const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d'); let { width, height } = img; if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; } canvas.width = width; canvas.height = height; ctx.drawImage(img, 0, 0, width, height); resolve(canvas.toDataURL('image/webp', 0.8)); }; img.src = e.target.result; }; reader.readAsDataURL(file); }); }
+//resolucion de imagenes de perfil de personjes en const MAX_WIDTH = 256;
+    function getHealthColorClass(current, max) { if (max === 0) return 'health-mid'; const percentage = (current / max) * 100; if (percentage <= 10) return 'health-critical'; if (percentage <= 40) return 'health-low'; if (percentage <= 70) return 'health-mid'; return 'health-high'; } async function processImage(file) { if (file.type === 'image/gif') return new Promise(resolve => { const reader = new FileReader(); reader.onload = e => resolve(e.target.result); reader.readAsDataURL(file); }); const MAX_WIDTH = 600; return new Promise(resolve => { const reader = new FileReader(); reader.onload = e => { const img = new Image(); img.onload = () => { const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d'); let { width, height } = img; if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; } canvas.width = width; canvas.height = height; ctx.drawImage(img, 0, 0, width, height); resolve(canvas.toDataURL('image/webp', 0.8)); }; img.src = e.target.result; }; reader.readAsDataURL(file); }); }
 
     // --- FUNCIÓN updateTokenInUI CORREGIDA ---
     function updateTokenInUI(token) {
-        if (!token) { deselectToken(); return; }
+        if (!token) {
+            deselectToken();
+            return;
+        }
 
         const listItem = tokenListUl.querySelector(`li[data-id="${token.id}"]`);
         document.querySelectorAll('#tokenList li.selected-in-list').forEach(li => li.classList.remove('selected-in-list'));
@@ -425,11 +428,15 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('tokenInfoEdit').style.display = 'none';
 
         if (token.identity.image) {
-            edit_tokenImagePreview.src = token.identity.image; edit_tokenImagePreview.style.display = 'block';
-            document.getElementById('editTokenLetterPreview').style.display = 'none'; removeTokenImageBtn.style.display = 'block';
+            edit_tokenImagePreview.src = token.identity.image;
+            edit_tokenImagePreview.style.display = 'block';
+            document.getElementById('editTokenLetterPreview').style.display = 'none';
+            removeTokenImageBtn.style.display = 'block';
         } else {
-            edit_tokenImagePreview.style.display = 'none'; document.getElementById('editTokenLetterPreview').style.display = 'flex';
-            removeTokenImageBtn.style.display = 'none'; document.getElementById('editTokenLetterPreview').textContent = token.identity.letter;
+            edit_tokenImagePreview.style.display = 'none';
+            document.getElementById('editTokenLetterPreview').style.display = 'flex';
+            removeTokenImageBtn.style.display = 'none';
+            document.getElementById('editTokenLetterPreview').textContent = token.identity.letter;
             document.getElementById('editTokenLetterPreview').style.backgroundColor = token.appearance.color;
         }
 
@@ -443,6 +450,32 @@ document.addEventListener('DOMContentLoaded', () => {
         healthDisplay.textContent = token.stats.health.current;
         healthDisplay.className = `health-display ${getHealthColorClass(token.stats.health.current, token.stats.health.max)}`;
         renderTokenStatesEditor(token);
+
+        // --- INICIO: LÓGICA CORREGIDA PARA CAMPOS DE JEFE ---
+        const editBossToggleContainer = document.getElementById('editBossToggleContainer');
+        const editBossToggle = document.getElementById('editBossToggle');
+        const editPresentationContainer = document.getElementById('editPresentationContainer');
+        const notesTabPresentationContainer = document.getElementById('editPresentationContainer'); // Referencia al de la pestaña Notas
+
+        if (token.identity.type === 'enemy') {
+            // Muestra el toggle de jefe para TODOS los enemigos
+            editBossToggleContainer.style.display = 'flex'; // Usamos flex para mejor alineación
+            editBossToggle.checked = token.identity.isBoss || false;
+
+            // Muestra u oculta el campo de presentación basado en si es jefe
+            const isBoss = editBossToggle.checked;
+            notesTabPresentationContainer.style.display = isBoss ? 'block' : 'none';
+            if (isBoss) {
+                document.getElementById('editTokenPresentation').value = token.info.presentation || '';
+            }
+
+        } else {
+            // Oculta todo si es un jugador
+            editBossToggleContainer.style.display = 'none';
+            notesTabPresentationContainer.style.display = 'none';
+        }
+        // --- FIN: LÓGICA CORREGIDA PARA CAMPOS DE JEFE ---
+
         // --- LÓGICA PARA SALVACIONES CONTRA MUERTE ---
         const deathSavesTracker = document.getElementById('deathSavesTracker');
         if (token.identity.type === 'player') {
@@ -454,18 +487,13 @@ document.addEventListener('DOMContentLoaded', () => {
             deathSavesTracker.style.display = 'none';
         }
 
-
-
         const enemyControls = document.getElementById('enemyDefeatedControls');
-
-        // Mantenemos SIEMPRE visibles los controles de vida para el DM.
-        // Lo que cambia es si mostramos el botón de "Abatir" o no.
         if (token.identity.type === 'enemy') {
-            enemyControls.style.display = 'block'; // Mostramos el botón de abatir para enemigos.
+            enemyControls.style.display = 'block';
             const defeatedBtn = document.getElementById('toggleDefeatedBtn');
             defeatedBtn.textContent = token.isDefeated ? 'Reanimar Enemigo' : 'Abatir Enemigo';
-        } else { // Si es un jugador
-            enemyControls.style.display = 'none'; // Ocultamos el botón de abatir para jugadores.
+        } else {
+            enemyControls.style.display = 'none';
         }
 
         // --- PESTAÑA ESTADÍSTICAS ---
@@ -490,7 +518,6 @@ document.addEventListener('DOMContentLoaded', () => {
         renderInventoryList(token);
         document.getElementById('editTokenNotes').value = token.info.notes;
     }
-
 
 
     // --- GESTIÓN DE ESCENAS ---
@@ -820,42 +847,54 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function migrateTokenData(oldToken) {
         if (oldToken.stats && oldToken.stats.characteristics && oldToken.info && oldToken.info.abilities) {
+            // Si el token ya tiene la estructura moderna, solo nos aseguramos de que los nuevos campos existan
+            if (!oldToken.identity.hasOwnProperty('isBoss')) oldToken.identity.isBoss = false;
+            if (!oldToken.info.hasOwnProperty('presentation')) oldToken.info.presentation = '';
             return oldToken;
+        }
 
-        } const existingInfo = oldToken.info || {};
+        const existingInfo = oldToken.info || {};
         return {
             id: oldToken.id,
             isDiscovered: oldToken.isDiscovered,
             identity: oldToken.identity || {
                 name: oldToken.name,
-                type: oldToken.type, letter: oldToken.letter,
+                type: oldToken.type,
+                letter: oldToken.letter,
                 image: null,
-                imageAssetId: oldToken.imageAssetId
+                imageAssetId: oldToken.imageAssetId,
+                isBoss: false // NUEVO: Valor por defecto para isBoss
             },
             position: oldToken.position || {
                 x: oldToken.x, y: oldToken.y,
                 sizeMultiplier: oldToken.sizeMultiplier || 1
             },
             stats: {
-                initiative: oldToken.stats?.initiative ?? oldToken.turn ?? 0, vision: { radius: oldToken.stats?.vision?.radius ?? oldToken.visionRadius ?? 0 },
+                initiative: oldToken.stats?.initiative ?? oldToken.turn ?? 0,
+                vision: { radius: oldToken.stats?.vision?.radius ?? oldToken.visionRadius ?? 0 },
                 health: {
                     current: oldToken.stats?.health?.current ?? oldToken.health_current ?? 0,
                     max: oldToken.stats?.health?.max ?? oldToken.health_max ?? 0
-                }, proficiencyBonus: oldToken.stats?.proficiencyBonus ?? 2,
+                },
+                proficiencyBonus: oldToken.stats?.proficiencyBonus ?? 2,
                 speed: oldToken.stats?.speed ?? 30,
                 armorClass: oldToken.stats?.armorClass ?? 10,
                 characteristics: oldToken.stats?.characteristics || {
                     str: { score: 10, proficient: false },
                     dex: { score: 10, proficient: false }, con: { score: 10, proficient: false }, int: { score: 10, proficient: false }, wis: { score: 10, proficient: false }, car: { score: 10, proficient: false }
                 }
-            }, appearance: oldToken.appearance || {
+            },
+            appearance: oldToken.appearance || {
                 color: oldToken.color,
                 borderColor: oldToken.borderColor
             },
             info: {
-                notes: existingInfo.notes || oldToken.notes || '', states: existingInfo.states || oldToken.states || [],
-                abilities: existingInfo.abilities || [], inventory: existingInfo.inventory || [],
-                deathSaves: existingInfo.deathSaves || { successes: [false, false, false], failures: [false, false, false] }
+                notes: existingInfo.notes || oldToken.notes || '',
+                states: existingInfo.states || oldToken.states || [],
+                abilities: existingInfo.abilities || [],
+                inventory: existingInfo.inventory || [],
+                deathSaves: existingInfo.deathSaves || { successes: [false, false, false], failures: [false, false, false] },
+                presentation: '' // NUEVO: Valor por defecto para presentation
             }
         };
     }
@@ -924,28 +963,39 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateSelectedToken() {
         if (!selectedTokenId) return;
         const token = tokens.find(t => t.id === selectedTokenId);
-        if (!token) return; token.identity.name = document.getElementById('editTokenName').value.trim();
+        if (!token) return;
+
+        token.identity.name = document.getElementById('editTokenName').value.trim();
         token.identity.char_class = document.getElementById('editTokenClass').value.trim() || 'Clase';
         token.identity.level = parseInt(document.getElementById('editTokenLevel').value) || 1;
         token.identity.race = document.getElementById('editTokenRace').value.trim() || 'Raza';
+
+        // --- INICIO: GUARDADO DE NUEVOS CAMPOS ---
+        token.identity.isBoss = document.getElementById('editBossToggle').checked;
+        token.info.presentation = document.getElementById('editTokenPresentation').value;
+        // --- FIN: GUARDADO DE NUEVOS CAMPOS ---
+
         token.stats.initiative = parseInt(document.getElementById('editTokenTurn').value) || 0;
         token.stats.vision.radius = parseInt(document.getElementById('editTokenVision').value) || 0;
         token.stats.health.max = parseInt(document.getElementById('editTokenHealthMax').value) || 0;
         token.stats.proficiencyBonus = parseInt(document.getElementById('edit_proficiency_bonus').value) || 0;
         token.stats.speed = parseInt(document.getElementById('edit_speed').value) || 0;
         token.stats.armorClass = parseInt(document.getElementById('edit_armor_class').value) || 0;
+
         ['str', 'dex', 'con', 'int', 'wis', 'car'].forEach(stat => {
             token.stats.characteristics[stat].score = parseInt(document.getElementById(`edit_${stat}_score`).value) || 10;
             token.stats.characteristics[stat].proficient = document.getElementById(`edit_${stat}_save_prof`).checked;
-        }); token.appearance.color = document.getElementById('editTransparentBgCheckbox').checked ? 'transparent' : document.getElementById('editTokenColor').value;
+        });
+
+        token.appearance.color = document.getElementById('editTransparentBgCheckbox').checked ? 'transparent' : document.getElementById('editTokenColor').value;
         token.appearance.borderColor = editBorderCheckbox.checked ? document.getElementById('editTokenBorderColor').value : null;
         token.info.notes = document.getElementById('editTokenNotes').value;
         token.position.sizeMultiplier = parseFloat(document.getElementById('editTokenSizeMultiplier').value) || 1;
+
         if (token.stats.health.current > token.stats.health.max) {
             token.stats.health.current = token.stats.health.max;
-
         }
-        // --- GUARDAR ESTADO DE SALVACIONES CONTRA MUERTE ---
+
         if (token.identity.type === 'player') {
             if (!token.info.deathSaves) {
                 token.info.deathSaves = { successes: [], failures: [] };
@@ -961,24 +1011,44 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('d-save-f3').checked
             ];
         }
+
         updateTokenInUI(token);
         updateTokenList();
 
         broadcast('CMD_UPDATE_TOKEN_DATA', { tokenData: token });
         broadcast('CMD_SHOW_TOKEN_DETAILS', { tokenData: token });
 
-        // Si la visión está activa, enviamos el comando pesado dentro de un setTimeout.
         if (visionModeActive) {
-            // Esto pone el comando pesado al final de la cola de eventos del navegador,
-            // permitiendo que las actualizaciones de la UI se rendericen primero.
             setTimeout(() => {
                 broadcast('CMD_DRAW_VISION', { tokens, walls, cellSize });
-            }, 0); // Un delay de 0 es suficiente para ceder el hilo.
+            }, 0);
         }
     }
     function toggleVisionMode() { visionModeActive = !visionModeActive; toggleVisionBtn.textContent = visionModeActive ? 'Detener Visión' : 'Iniciar Visión'; broadcast('CMD_SET_VISION_MODE', { active: visionModeActive, tokens, walls, cellSize }); }
     function resetFog() { if (!confirm("¿Reiniciar toda la niebla de guerra?")) return; tokens.forEach(t => { if (t.identity.type === 'enemy') t.isDiscovered = false; }); broadcast('CMD_RESET_FOG'); if (visionModeActive) broadcast('CMD_DRAW_VISION', { tokens, walls, cellSize }); updateTokenList(); }
-    function checkEnemyDiscovery(visibleEnemies) { let trackerNeedsUpdate = false; visibleEnemies.forEach(enemyId => { const enemy = tokens.find(t => t.id === enemyId && !t.isDiscovered); if (enemy) { enemy.isDiscovered = true; trackerNeedsUpdate = true; } }); if (trackerNeedsUpdate) { updateTokenList(); broadcast('CMD_UPDATE_TURN_TRACKER', { tokens }); } }
+    function checkEnemyDiscovery(visibleEnemies) {
+        let discoveredIds = [];
+        let needsUiUpdate = false;
+
+        visibleEnemies.forEach(enemyId => {
+            const enemy = tokens.find(t => t.id === enemyId && !t.isDiscovered);
+            if (enemy) {
+                enemy.isDiscovered = true; // Actualiza el estado en el DM
+                discoveredIds.push(enemy.id);
+                needsUiUpdate = true;
+            }
+        });
+
+        if (needsUiUpdate) {
+            updateTokenList(); // Actualiza la UI del DM como siempre
+
+            // --- INICIO DE LA CORRECCIÓN ---
+            // Enviamos un comando específico al jugador para confirmar los descubrimientos.
+            // Esto es más limpio y evita sobrescribir toda la lista de tokens del jugador.
+            broadcast('CMD_CONFIRM_DISCOVERY', { discoveredIds: discoveredIds });
+            // --- FIN DE LA CORRECCIÓN ---
+        }
+    }
     function handleBrushModeChange(event) { const checkbox = event.target; const otherCheckbox = checkbox.id === 'brushReveal' ? brushHideCheckbox : brushRevealCheckbox; if (checkbox.checked) { otherCheckbox.checked = false; activeBrushMode = checkbox.value; } else { activeBrushMode = null; } broadcast('CMD_SET_BRUSH_MODE', { mode: activeBrushMode }); }
 
     function toggleAlignGridMode(forceState) { isAligningGrid = typeof forceState === 'boolean' ? forceState : !isAligningGrid; alignGridModeBtn.classList.toggle('active', isAligningGrid); alignGridModeBtn.textContent = isAligningGrid ? 'Cancelar Alineación' : 'Activar Modo Alineación'; broadcast('CMD_SET_GRID_ALIGN_MODE', { active: isAligningGrid }); }
@@ -1343,27 +1413,37 @@ document.addEventListener('DOMContentLoaded', () => {
             </div> <button class="delete-saved-char-btn" title="Eliminar de la biblioteca">×</button> `;
             card.addEventListener('click', () => {
                 const characterToAdd = getCharacterLibrary()[index];
+
                 if (characterToAdd.info && Array.isArray(characterToAdd.info.inventory)) {
                     characterToAdd.info.inventory = characterToAdd.info.inventory.map(migrateInventoryItem);
                 }
+
                 if (characterToAdd) {
                     const newInstance = JSON.parse(JSON.stringify(characterToAdd));
                     newInstance.id = Date.now();
                     newInstance.position.x = 20;
                     newInstance.position.y = 20;
-                    // =======================================================
 
-                    addTokenToBoard(newInstance); // Ahora se añade con las coordenadas reseteadas                    //notificacion
-                    // Llamada Mejorada para el toast
+                    // --- INICIO DE LA CORRECCIÓN ---
+                    // Forzamos que los enemigos añadidos desde la biblioteca
+                    // siempre comiencen como no descubiertos.
+                    if (newInstance.identity.type === 'enemy') {
+                        newInstance.isDiscovered = false;
+                    }
+                    // --- FIN DE LA CORRECCIÓN ---
+
+                    addTokenToBoard(newInstance);
                     showNotification(`¡<strong style="color: var(--text-gold);">${characterToAdd.identity.name}</strong> ha regresado al tablero!`);
                 }
-            }); card.querySelector('.delete-saved-char-btn').addEventListener('click', (e) => {
+            });
+            card.querySelector('.delete-saved-char-btn').addEventListener('click', (e) => {
                 e.stopPropagation(); if (confirm(`¿Eliminar a "${char.identity.name}" de la biblioteca? Esta acción no se puede deshacer.`)) {
                     let currentLibrary = getCharacterLibrary(); currentLibrary.splice(index, 1); localStorage.setItem(CHAR_LIB_STORE, JSON.stringify(currentLibrary)); renderCharacterLibrary();
                 }
             }); savedCharactersGrid.appendChild(card);
         });
     }
+
     async function createTokenFromForm() {
         // 1. Validar y recolectar datos del formulario
         const letter = add_tokenLetter.value.trim();
@@ -1373,7 +1453,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 title: 'Atención',
                 message: 'Nombre y Letra son obligatorios.',
                 type: 'warning'
-            }); return;
+            });
+            return;
         }
 
         let imageBase64 = null;
@@ -1400,22 +1481,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 image: imageBase64,
                 char_class: document.getElementById('tokenClass').value || 'Aventurero',
                 level: parseInt(document.getElementById('tokenLevel').value) || 1,
-                race: document.getElementById('tokenRace').value || 'Desconocida'
+                race: document.getElementById('tokenRace').value || 'Desconocida',
+                // --- LÍNEA CORREGIDA/VERIFICADA ---
+                isBoss: document.getElementById('addBossToggle').checked
             },
-            position: { x: 20, y: 20, sizeMultiplier: parseFloat(add_tokenSizeMultiplier.value) || 1 },
+            position: {
+                x: 20,
+                y: 20,
+                sizeMultiplier: parseFloat(add_tokenSizeMultiplier.value) || 1
+            },
             stats: {
                 initiative: 0,
-                vision: { radius: parseInt(add_tokenVision.value) || 0 },
-                health: { current: parseInt(add_tokenHealth.value) || 0, max: parseInt(add_tokenHealth.value) || 0 },
+                vision: {
+                    radius: parseInt(add_tokenVision.value) || 0
+                },
+                health: {
+                    current: parseInt(add_tokenHealth.value) || 0,
+                    max: parseInt(add_tokenHealth.value) || 0
+                },
                 proficiencyBonus: parseInt(document.getElementById('add_proficiency_bonus').value) || 2,
                 speed: parseInt(document.getElementById('add_speed').value) || 30,
                 armorClass: parseInt(document.getElementById('add_armor_class').value) || 10,
                 characteristics
             },
             appearance: {
-                color: document.getElementById('addTransparentBgCheckbox').checked
-                    ? 'transparent'
-                    : document.getElementById('tokenColor').value,
+                color: document.getElementById('addTransparentBgCheckbox').checked ?
+                    'transparent' :
+                    document.getElementById('tokenColor').value,
                 borderColor: document.getElementById('addBorderCheckbox').checked ? document.getElementById('tokenBorderColor').value : null
             },
             info: {
@@ -1423,19 +1515,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 states: [],
                 abilities: [],
                 inventory: [],
-                deathSaves: { successes: [false, false, false], failures: [false, false, false] }
-            }
+                deathSaves: {
+                    successes: [false, false, false],
+                    failures: [false, false, false]
+                },
+                // --- LÍNEA CORREGIDA/VERIFICADA ---
+                presentation: document.getElementById('tokenPresentation').value || ''
+            },
+            // --- CAMPO AÑADIDO PARA ENEMIGOS ---
+            isDefeated: false
         };
 
         // 3. Añadir el token al tablero
         addTokenToBoard(tokenData);
-        //notificacion
         showNotification(`¡<strong style="color: var(--text-gold);">${tokenData.identity.name}</strong> se ha unido a la aventura!`);
 
         // 4. Limpiar el formulario para la siguiente entrada
         resetAddTokenForm();
     }
-
     function addTokenToBoard(tokenData) { tokens.push(tokenData); updateTokenList(); broadcast('CMD_CREATE_TOKEN', { tokenData }); if (visionModeActive) { broadcast('CMD_DRAW_VISION', { tokens, walls, cellSize }); } }
     const dmNotesTextarea = document.getElementById('dmNotes');
     const DM_NOTES_KEY = 'dmArsenalDmNotes';
@@ -1512,31 +1609,54 @@ document.addEventListener('DOMContentLoaded', () => {
                 } isMapLoaded = true; document.getElementById('mapImageInput')._dataUrl = sceneData.mapImageDataUrl;
                 const gs = sceneData.gridSettings; gridVisible = gs.visible; gridColor = gs.color; gridOpacity = gs.opacity;
                 gridOffsetX = gs.offsetX; gridOffsetY = gs.offsetY; cellSize = gs.cellSize;
-                tokens = sceneData.tokens.map(token => {
-                    const migratedToken = migrateTokenData(token);
+
+                // Este bloque .map() procesa correctamente los tokens
+                tokens = sceneData.tokens.map(tokenData => {
+                    const migratedToken = migrateTokenData(tokenData);
+
+                    // Forzamos que todos los enemigos importados en una escena
+                    // comiencen como no descubiertos, sin importar cómo se guardaron.
+                    if (migratedToken.identity.type === 'enemy') {
+                        migratedToken.isDiscovered = false;
+                    }
+
                     if (migratedToken.info && Array.isArray(migratedToken.info.inventory)) {
                         migratedToken.info.inventory = migratedToken.info.inventory.map(migrateInventoryItem);
                     }
                     return migratedToken;
                 });
-                tokens = sceneData.tokens;
+
+                // ***** LA LÍNEA PROBLEMÁTICA "tokens = sceneData.tokens;" HA SIDO ELIMINADA DE AQUÍ *****
+
                 broadcast('CMD_LOAD_NEW_MAP', {
                     src: sceneData.mapImageDataUrl
                 });
 
                 setTimeout(() => {
+                    // Ahora se envía la lista de 'tokens' procesada y corregida
                     broadcast('CMD_LOAD_SCENE_DATA', {
-                        tokens: sceneData.tokens, walls: sceneData.walls, gridSettings: sceneData.gridSettings, fogDataUrl: sceneData.fogImageDataUrl
+                        tokens: tokens,
+                        walls: sceneData.walls,
+                        gridSettings: sceneData.gridSettings,
+                        fogDataUrl: sceneData.fogImageDataUrl
                     });
-                    if (visionModeActive) { broadcast('CMD_SET_VISION_MODE', { active: true, tokens, walls, cellSize }); }
-                }, 500); updateTokenList();
-                updateDoorList(); deselectToken(); gridToggle.checked = gs.visible; gridColorInput.value = gs.color;
+                    if (visionModeActive) {
+                        broadcast('CMD_SET_VISION_MODE', { active: true, tokens, walls, cellSize });
+                    }
+                }, 500);
+
+                updateTokenList();
+                updateDoorList();
+                deselectToken();
+                gridToggle.checked = gs.visible;
+                gridColorInput.value = gs.color;
                 gridOpacityInput.value = gs.opacity;
                 cellSizeInput.value = gs.cellSize;
                 cellSizeSlider.value = gs.cellSize;
+
                 showCustomModal({
                     title: 'Éxito',
-                    message: 'Escena importada con éxito!',
+                    message: '¡Escena importada con éxito!',
                     type: 'success'
                 });
 
@@ -1546,7 +1666,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error("Error al importar la escena:", error);
                 showCustomModal({
                     title: 'Error',
-                    message: 'Error al importar el archivo: ${error.message}',
+                    message: `Error al importar el archivo: ${error.message}`,
                     type: 'warning'
                 });
             }
@@ -1706,6 +1826,12 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('tokenRace').value = '';
         document.getElementById('tokenImageInput').value = ''; // Limpia el input de archivo
         document.getElementById('tokenImageName').textContent = 'Ningún archivo...';
+
+        // NUEVO: Resetear y ocultar campos de jefe
+        document.getElementById('addBossToggle').checked = false;
+        document.getElementById('addBossToggleContainer').style.display = 'none';
+        document.getElementById('tokenPresentation').value = '';
+        document.getElementById('addPresentationContainer').style.display = 'none';
 
         // Resetear stats
         ['str', 'dex', 'con', 'int', 'wis', 'car'].forEach(stat => {
@@ -1993,4 +2119,33 @@ document.addEventListener('DOMContentLoaded', () => {
     renderCharacterLibrary();
     loadDmNotes();
     setupTokenEditorNavigation();
+
+    // Para el formulario de AÑADIR FICHA
+    const addPlayerRadio = document.getElementById('add_typePlayer');
+    const addEnemyRadio = document.getElementById('add_typeEnemy');
+    const addBossContainer = document.getElementById('addBossToggleContainer');
+    const addBossToggle = document.getElementById('addBossToggle');
+    const addPresentationContainer = document.getElementById('addPresentationContainer');
+
+    const toggleAddBossFields = () => {
+        const isEnemy = addEnemyRadio.checked;
+        addBossContainer.style.display = isEnemy ? 'block' : 'none';
+
+        const isBoss = addBossToggle.checked;
+        addPresentationContainer.style.display = (isEnemy && isBoss) ? 'block' : 'none';
+    };
+
+    addPlayerRadio.addEventListener('change', toggleAddBossFields);
+    addEnemyRadio.addEventListener('change', toggleAddBossFields);
+    addBossToggle.addEventListener('change', toggleAddBossFields);
+
+    // Para el formulario de EDITAR FICHA
+    const editBossToggle = document.getElementById('editBossToggle');
+    const editPresentationContainer = document.getElementById('editPresentationContainer');
+
+    editBossToggle.addEventListener('change', () => {
+        editPresentationContainer.style.display = editBossToggle.checked ? 'block' : 'none';
+        // También llamamos a updateSelectedToken para guardar el cambio inmediatamente
+        updateSelectedToken();
+    });
 });

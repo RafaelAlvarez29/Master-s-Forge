@@ -81,25 +81,30 @@ body {
   margin: 0;
   width: auto;
 }
+
 /*boton borrar de estados*/
 .state-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  padding: 10px 15px; /* Increased padding for better spacing */
-  margin-bottom: 5px; /* Added margin between list items */
-  background-color: #333; /* Dark background color */
-  color: #fff; /* White text color */
-  border-radius: 8px; /* Rounded corners */
+  padding: 10px 15px;
+  /* Increased padding for better spacing */
+  margin-bottom: 5px;
+  /* Added margin between list items */
+  background-color: #333;
+  /* Dark background color */
+  color: #fff;
+  /* White text color */
+  border-radius: 8px;
+  /* Rounded corners */
   animation: slideIn 0.3s ease-out;
 }
+
 .state-item:hover {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 215, 0, 0.1) 0%,
-    rgba(255, 215, 0, 0.05) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(255, 215, 0, 0.1) 0%,
+      rgba(255, 215, 0, 0.05) 100%);
   border-color: rgba(255, 215, 0, 0.3);
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
@@ -107,7 +112,8 @@ body {
 
 .state-emoji {
   font-size: 1.2em;
-  margin-right: 8px; /* Add some space between emoji and text */
+  margin-right: 8px;
+  /* Add some space between emoji and text */
 }
 
 .state-desc {
@@ -118,11 +124,10 @@ body {
 }
 
 .delete-state-btn {
-  background: linear-gradient(
-    to bottom,
-    #8c2d2d,
-    #591d1d
-  ); /* Red background for the button */
+  background: linear-gradient(to bottom,
+      #8c2d2d,
+      #591d1d);
+  /* Red background for the button */
   color: var(--text-gold);
   border: none;
   border-radius: 50%;
@@ -132,15 +137,20 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 0.9em; /* Slightly smaller "x" */
-  line-height: 0.9em; /* Adjust line height for better "x" centering */
+  font-size: 0.9em;
+  /* Slightly smaller "x" */
+  line-height: 0.9em;
+  /* Adjust line height for better "x" centering */
   flex-shrink: 0;
-  padding: 0; /* Remove default button padding */
+  padding: 0;
+  /* Remove default button padding */
 }
 
 .delete-state-btn:hover {
-  background-color: #c0392b; /* Darker red on hover */
+  background-color: #c0392b;
+  /* Darker red on hover */
 }
+
 /* .delete-state-btn{
   height: 45px;
   width: 45px;
@@ -284,9 +294,11 @@ body {
   padding: 0px 15px 15px 15px;
   position: relative;
 }
+
 #dmNotes {
   margin-top: 15px;
 }
+
 .panel-view {
   display: none;
   flex-direction: column;
@@ -305,7 +317,7 @@ body {
   border-bottom: 1px solid var(--input-border);
 }
 
-.panel-view > .token-editor-form {
+.panel-view>.token-editor-form {
   padding: 0;
   background: none;
   border: none;
@@ -561,6 +573,7 @@ button.secondary:hover {
 }
 
 @keyframes blink-red {
+
   0%,
   100% {
     color: #ff5d5d;
@@ -842,16 +855,18 @@ button.secondary:hover {
   left: 0;
   width: 100%;
   height: 100%;
-  border-radius: 50%; /* Para que coincida con la forma del token */
-  background-color: rgba(
-    26,
-    26,
-    26,
-    0.75
-  ); /* Negro muy oscuro y semitransparente */
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5); /* Sombra interior sutil */
+  border-radius: 50%;
+  /* Para que coincida con la forma del token */
+  background-color: rgba(26,
+      26,
+      26,
+      0.75);
+  /* Negro muy oscuro y semitransparente */
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+  /* Sombra interior sutil */
   transition: opacity 0.3s ease;
-  opacity: 1; /* Por defecto visible cuando la clase está aplicada */
+  opacity: 1;
+  /* Por defecto visible cuando la clase está aplicada */
 }
 
 /* que rote un poco para un efecto más dramático */
@@ -859,6 +874,7 @@ button.secondary:hover {
   transform: rotate(-15deg);
   transition: transform 0.3s ease;
 }
+
 .token:active {
   cursor: grabbing;
   z-index: 100;
@@ -890,6 +906,7 @@ button.secondary:hover {
 }
 
 @keyframes token-shake {
+
   10%,
   90% {
     transform: translate3d(-1px, 0, 0);
@@ -913,6 +930,7 @@ button.secondary:hover {
 }
 
 @keyframes token-flash-red {
+
   0%,
   100% {
     box-shadow: inherit;
@@ -924,6 +942,7 @@ button.secondary:hover {
 }
 
 @keyframes token-pulse-green {
+
   0%,
   100% {
     box-shadow: inherit;
@@ -1085,8 +1104,8 @@ input[type="radio"] {
   border-radius: 3px;
 }
 
-input[type="checkbox"]:checked + label::before,
-input[type="radio"]:checked + label::before {
+input[type="checkbox"]:checked+label::before,
+input[type="radio"]:checked+label::before {
   border-color: var(--text-gold);
   background-color: #4a3f3c;
 }
@@ -1102,7 +1121,7 @@ input[type="radio"]:checked + label::before {
   transition: all 0.2s ease-in-out;
 }
 
-input[type="radio"] + label::after {
+input[type="radio"]+label::after {
   left: 5px;
   width: 10px;
   height: 10px;
@@ -1110,7 +1129,7 @@ input[type="radio"] + label::after {
   background-color: var(--text-gold);
 }
 
-input[type="checkbox"] + label::after {
+input[type="checkbox"]+label::after {
   left: 7px;
   top: 40%;
   width: 6px;
@@ -1120,18 +1139,18 @@ input[type="checkbox"] + label::after {
   transform: translateY(-50%) rotate(45deg) scale(0);
 }
 
-input[type="checkbox"]:checked + label::after,
-input[type="radio"]:checked + label::after {
+input[type="checkbox"]:checked+label::after,
+input[type="radio"]:checked+label::after {
   opacity: 1;
   transform: translateY(-50%) scale(1);
 }
 
-input[type="checkbox"]:checked + label::after {
+input[type="checkbox"]:checked+label::after {
   transform: translateY(-50%) rotate(45deg) scale(1);
 }
 
-input[type="checkbox"]:focus-visible + label::before,
-input[type="radio"]:focus-visible + label::before {
+input[type="checkbox"]:focus-visible+label::before,
+input[type="radio"]:focus-visible+label::before {
   outline: 2px solid var(--text-gold);
   outline-offset: 2px;
 }
@@ -1139,25 +1158,32 @@ input[type="radio"]:focus-visible + label::before {
 ::-webkit-scrollbar {
   width: 10px;
 }
+
 #playerTurnTracker::-webkit-scrollbar {
-  width: 17px; /* Ejemplo: más delgado */
+  width: 17px;
+  /* Ejemplo: más delgado */
 }
 
 #playerTurnTracker::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.3); /* Ejemplo: más oscuro y transparente */
+  background: rgba(0, 0, 0, 0.3);
+  /* Ejemplo: más oscuro y transparente */
   border-radius: 4px;
 }
 
 #playerTurnTracker::-webkit-scrollbar-thumb {
-  background: var(--text-gold); /* Ejemplo: color dorado */
+  background: var(--text-gold);
+  /* Ejemplo: color dorado */
   border-radius: 4px;
-  border: 2px solid transparent; /* Crea un pequeño padding */
+  border: 2px solid transparent;
+  /* Crea un pequeño padding */
   background-clip: content-box;
 }
 
 #playerTurnTracker::-webkit-scrollbar-thumb:hover {
-  background: #fff; /* Ejemplo: blanco al pasar el ratón */
+  background: #fff;
+  /* Ejemplo: blanco al pasar el ratón */
 }
+
 ::-webkit-scrollbar-track {
   background: var(--header-bg);
 }
@@ -1259,6 +1285,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 @keyframes bounce {
+
   0%,
   20%,
   50%,
@@ -1770,26 +1797,22 @@ input[type="range"]::-webkit-slider-thumb {
   gap: 12px;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
   background-color: #1f1614d9;
-  background: linear-gradient(
-    to right,
-    rgba(0, 0, 0, 0.7),
-    rgba(0, 0, 0, 0.5),
-    rgba(0, 0, 0, 0.3),
-    rgba(0, 0, 0, 0.0)
-  );
+  background: linear-gradient(to right,
+      rgba(0, 0, 0, 0.7),
+      rgba(0, 0, 0, 0.5),
+      rgba(0, 0, 0, 0.3),
+      rgba(0, 0, 0, 0.0));
   clip-path: polygon(5% 0%, 100% 0%, 100% 100%, 0% 100%);
   margin: 10px;
 }
 
 .player-token-card.selected-in-tracker {
   box-shadow: 0 0 12px 2px var(--text-gold);
-  background: linear-gradient(
-    to right,
-    rgba(0, 0, 0, 1),
-    rgba(0, 0, 0, 0.8),
-    rgba(0, 0, 0, 0.6),
-    rgba(0, 0, 0, 0.4)
-  );
+  background: linear-gradient(to right,
+      rgba(0, 0, 0, 1),
+      rgba(0, 0, 0, 0.8),
+      rgba(0, 0, 0, 0.6),
+      rgba(0, 0, 0, 0.4));
   border: 1px solid var(--text-gold);
   border-left: none;
   transform: scale(1.03);
@@ -1920,6 +1943,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 @keyframes card-pulse-scale {
+
   0%,
   100% {
     transform: scale(1);
@@ -1931,6 +1955,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 @keyframes flash-overlay {
+
   0%,
   100% {
     opacity: 0;
@@ -2022,7 +2047,7 @@ input[type="range"]::-webkit-slider-thumb {
   pointer-events: none;
 }
 
-.radio-tile-group .input-container .radio-button:checked + .radio-tile {
+.radio-tile-group .input-container .radio-button:checked+.radio-tile {
   background-color: var(--header-hover);
   border: 2px solid var(--text-gold);
   color: var(--text-gold);
@@ -2030,11 +2055,7 @@ input[type="range"]::-webkit-slider-thumb {
   box-shadow: 0 0 10px rgba(230, 194, 83, 0.3);
 }
 
-.radio-tile-group
-  .input-container
-  .radio-button:checked
-  + .radio-tile
-  .radio-tile-label {
+.radio-tile-group .input-container .radio-button:checked+.radio-tile .radio-tile-label {
   color: var(--text-gold);
 }
 
@@ -2167,15 +2188,12 @@ input[type="range"]::-webkit-slider-thumb {
   pointer-events: none;
 }
 
-.checkbox-tile-group .checkbox-button:checked + .checkbox-tile {
+.checkbox-tile-group .checkbox-button:checked+.checkbox-tile {
   background-color: var(--header-hover);
   border-color: var(--text-gold);
 }
 
-.checkbox-tile-group
-  .checkbox-button:checked
-  + .checkbox-tile
-  .checkbox-tile-label {
+.checkbox-tile-group .checkbox-button:checked+.checkbox-tile .checkbox-tile-label {
   color: var(--text-gold);
 }
 
@@ -2265,9 +2283,11 @@ input[type="range"]::-webkit-slider-thumb {
 .icon-ambiance {
   background-image: url("assets/images/icons/ambiente_icon.png");
 }
+
 .icon-boock {
   background-image: url("assets/images/icons/icon-boock.png");
 }
+
 .char-stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
@@ -2410,10 +2430,14 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .save-throw-row .save-name {
-  white-space: nowrap; /* Evita que el nombre se parta en varias líneas */
-  overflow: hidden; /* Oculta el texto que se desborda */
-  text-overflow: ellipsis; /* Añade "..." si el texto se corta (opcional, pero elegante) */
-  flex-shrink: 1; /* Permite que el elemento se encoja si es necesario */
+  white-space: nowrap;
+  /* Evita que el nombre se parta en varias líneas */
+  overflow: hidden;
+  /* Oculta el texto que se desborda */
+  text-overflow: ellipsis;
+  /* Añade "..." si el texto se corta (opcional, pero elegante) */
+  flex-shrink: 1;
+  /* Permite que el elemento se encoja si es necesario */
 }
 
 .save-throw-row:hover {
@@ -2437,12 +2461,12 @@ input[type="range"]::-webkit-slider-thumb {
   top: 45%;
 }
 
-input.save-prof-check:checked + label::before {
+input.save-prof-check:checked+label::before {
   background-color: var(--text-gold);
   border-color: var(--text-gold);
 }
 
-input.save-prof-check:checked + label::after {
+input.save-prof-check:checked+label::after {
   border-color: var(--panel-bg);
 }
 
@@ -2814,9 +2838,12 @@ input.save-prof-check:checked + label::after {
 
 .title-with-button h3,
 .title-with-button span {
-  flex-grow: 1; /* Hacemos que el título ocupe el espacio disponible */
-  flex-shrink: 0; /* Evitamos que se encoja */
-  margin: 0; /* Quitamos márgenes por si acaso */
+  flex-grow: 1;
+  /* Hacemos que el título ocupe el espacio disponible */
+  flex-shrink: 0;
+  /* Evitamos que se encoja */
+  margin: 0;
+  /* Quitamos márgenes por si acaso */
 }
 
 /* Nuevo estilo para el input de búsqueda */
@@ -2978,15 +3005,20 @@ input.save-prof-check:checked + label::after {
   outline: 2px dashed #4a90e2;
   outline-offset: 2px;
 }
+
 .player-controls-container {
   position: fixed;
   top: 20px;
-  left: 20px; /* Posición inicial a la izquierda */
+  left: 20px;
+  /* Posición inicial a la izquierda */
   z-index: 20;
   display: flex;
-  flex-direction: column; /* Apila los botones verticalmente */
-  gap: 10px; /* Espacio entre los botones */
-  transition: left 0.4s ease-in-out, right 0.4s ease-in-out; /* Transición suave */
+  flex-direction: column;
+  /* Apila los botones verticalmente */
+  gap: 10px;
+  /* Espacio entre los botones */
+  transition: left 0.4s ease-in-out, right 0.4s ease-in-out;
+  /* Transición suave */
 }
 
 /* Estilo para el botón de cambio de posición */
@@ -3029,32 +3061,42 @@ input.save-prof-check:checked + label::after {
   position: fixed;
   top: 20px;
   right: 20px;
-  left: auto; /* Nos aseguramos que 'left' no interfiera */
+  left: auto;
+  /* Nos aseguramos que 'left' no interfiera */
   transition: left 0.4s ease-in-out, right 0.4s ease-in-out;
   /* ... otros estilos del tracker se mantienen */
 }
 
 /* Cuando el tracker tiene la clase .tracker-left, se mueve a la izquierda */
 #playerTurnTracker.tracker-left {
-  right: auto; /* Anulamos 'right' */
-  left: 20px; /* Activamos 'left' */
+  right: auto;
+  /* Anulamos 'right' */
+  left: 20px;
+  /* Activamos 'left' */
 }
 
 /* Cuando los controles tienen la clase .controls-right, se mueven a la derecha */
 .player-controls-container {
   position: fixed;
   top: 20px;
-  left: 20px; /* Posición inicial a la izquierda */
+  left: 20px;
+  /* Posición inicial a la izquierda */
   z-index: 20;
   display: flex;
-  flex-direction: column; /* Apila los botones verticalmente */
-  gap: 10px; /* Espacio entre los botones */
+  flex-direction: column;
+  /* Apila los botones verticalmente */
+  gap: 10px;
+  /* Espacio entre los botones */
   transition: left 0.4s ease-in-out, right 0.4s ease-in-out;
 }
+
 .player-controls-container.controls-right {
-  left: auto; /* Anulamos 'left' */
-  right: 20px; /* Activamos 'right' */
+  left: auto;
+  /* Anulamos 'left' */
+  right: 20px;
+  /* Activamos 'right' */
 }
+
 .control-group {
   display: flex;
   flex-direction: column;
@@ -3065,7 +3107,8 @@ input.save-prof-check:checked + label::after {
 .control-separator {
   height: 2px;
   background: var(--input-border);
-  margin: 10px 5px; /* Margen vertical y un poco horizontal */
+  margin: 10px 5px;
+  /* Margen vertical y un poco horizontal */
   border-radius: 1px;
 }
 
@@ -3098,6 +3141,7 @@ input.save-prof-check:checked + label::after {
 #drawingControls.controls-hidden {
   display: none;
 }
+
 .token-editor-nav {
   margin-bottom: 15px;
   border-bottom: 2px solid var(--input-border);
@@ -3145,12 +3189,15 @@ input.save-prof-check:checked + label::after {
 }
 
 .token-view-panel {
-  display: none; /* Ocultos por defecto */
+  display: none;
+  /* Ocultos por defecto */
 }
 
 .token-view-panel.active {
-  display: block; /* Visible el activo */
+  display: block;
+  /* Visible el activo */
 }
+
 /* ===== ESTILOS PARA TARJETAS EDITABLES Y MODAL ===== */
 
 /* Hacer que las tarjetas parezcan clickables */
@@ -3172,9 +3219,11 @@ input.save-prof-check:checked + label::after {
 .info-card-desc-modal {
   font-size: 1.1em;
   color: var(--text-light);
-  white-space: pre-wrap; /* Respeta saltos de línea y espacios */
+  white-space: pre-wrap;
+  /* Respeta saltos de línea y espacios */
   line-height: 1.6;
-  max-height: 50vh; /* Evita que el modal sea gigante */
+  max-height: 50vh;
+  /* Evita que el modal sea gigante */
   overflow-y: auto;
   background-color: var(--input-bg);
   padding: 10px;
@@ -3187,13 +3236,18 @@ input.save-prof-check:checked + label::after {
   font-size: 1.1em;
   line-height: 1.5;
 }
+
 .credits {
   color: var(--text-gold);
   writing-mode: vertical-rl;
-  position: absolute; /* Lo sacamos del flujo normal */
-  bottom: 65px; /* Lo pegamos abajo (respetando el padding vertical) */
-  left: 0px; /* Lo pegamos a la derecha (respetando el padding horizontal) */
+  position: absolute;
+  /* Lo sacamos del flujo normal */
+  bottom: 65px;
+  /* Lo pegamos abajo (respetando el padding vertical) */
+  left: 0px;
+  /* Lo pegamos a la derecha (respetando el padding horizontal) */
 }
+
 .r_dev_logo {
   background-image: url("assets/images/icons/r_dev_logo.png");
   width: 24px;
@@ -3202,11 +3256,14 @@ input.save-prof-check:checked + label::after {
   background-position: center;
   background-repeat: no-repeat;
   position: absolute;
-  margin-top: 10px; /* Un poco de espacio por si acaso */
+  margin-top: 10px;
+  /* Un poco de espacio por si acaso */
   transform: translateX(50%);
-  bottom: 30px; /* Lo pegamos abajo (respetando el padding vertical) */
+  bottom: 30px;
+  /* Lo pegamos abajo (respetando el padding vertical) */
   cursor: pointer;
 }
+
 .credits-modal-content {
   max-width: 800px !important;
   padding: 30px 35px !important;
@@ -3236,7 +3293,8 @@ input.save-prof-check:checked + label::after {
   color: var(--text-gold);
   margin: 0;
   padding: 0;
-  border: none; /* Sobrescribe estilos de h2 genéricos */
+  border: none;
+  /* Sobrescribe estilos de h2 genéricos */
   text-shadow: 1px 1px 3px #000;
 }
 
@@ -3251,12 +3309,10 @@ input.save-prof-check:checked + label::after {
 
 .separator-line {
   height: 1px;
-  background: linear-gradient(
-    to right,
-    transparent,
-    var(--panel-border),
-    transparent
-  );
+  background: linear-gradient(to right,
+      transparent,
+      var(--panel-border),
+      transparent);
   margin: 25px 0;
   border: none;
 }
@@ -3331,9 +3387,11 @@ input.save-prof-check:checked + label::after {
 #portfolio-card:hover {
   border-color: #e6c253;
 }
+
 #github-card:hover {
   border-color: #e6c253;
 }
+
 #linkedin-card:hover {
   border-color: #e6c253;
 }
@@ -3342,6 +3400,7 @@ input.save-prof-check:checked + label::after {
 .icon-portfolio {
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23e0e0e0"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>');
 }
+
 #portfolio-card:hover .icon-portfolio {
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23e6c253"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>');
 }
@@ -3349,6 +3408,7 @@ input.save-prof-check:checked + label::after {
 .icon-github {
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23e0e0e0"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1-1 .1-1 .1-1 1.1.1 1.7 1.2 1.7 1.2.9 1.6 2.5 1.2 3.1.9.1-.7.4-1.2.8-1.5-2.4-.3-4.9-1.2-4.9-5.3 0-1.2.4-2.1 1.1-2.9-.1-.3-.5-1.4.1-2.8 0 0 .9-.3 3.1 1.2a10.4 10.4 0 0 1 5.6 0c2.2-1.5 3.1-1.2 3.1-1.2.6 1.4.2 2.5.1 2.8.7.7 1.1 1.7 1.1 2.9 0 4.1-2.5 5-4.9 5.3.4.3.8 1 .8 1.9v2.8c0 .3.2.7.8.6A12 12 0 0 0 12 .3Z"/></svg>');
 }
+
 #github-card:hover .icon-github {
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23a0a0a0"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1-1 .1-1 .1-1 1.1.1 1.7 1.2 1.7 1.2.9 1.6 2.5 1.2 3.1.9.1-.7.4-1.2.8-1.5-2.4-.3-4.9-1.2-4.9-5.3 0-1.2.4-2.1 1.1-2.9-.1-.3-.5-1.4.1-2.8 0 0 .9-.3 3.1 1.2a10.4 10.4 0 0 1 5.6 0c2.2-1.5 3.1-1.2 3.1-1.2.6 1.4.2 2.5.1 2.8.7.7 1.1 1.7 1.1 2.9 0 4.1-2.5 5-4.9 5.3.4.3.8 1 .8 1.9v2.8c0 .3.2.7.8.6A12 12 0 0 0 12 .3Z"/></svg>');
 }
@@ -3356,6 +3416,7 @@ input.save-prof-check:checked + label::after {
 .icon-linkedin {
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23e0e0e0"><path d="M22.23 0H1.77C.8 0 0 .77 0 1.72v20.56C0 23.23.8 24 1.77 24h20.46c.98 0 1.77-.77 1.77-1.72V1.72C24 .77 23.2 0 22.23 0zM7.12 20.45H3.54V9h3.58v11.45zM5.33 7.42c-1.14 0-2.07-.93-2.07-2.07s.93-2.07 2.07-2.07 2.07.93 2.07 2.07c0 1.14-.93 2.07-2.07 2.07zm15.12 13.03h-3.58V14.6c0-1.39-.03-3.18-1.94-3.18-1.94 0-2.24 1.51-2.24 3.08v5.95h-3.58V9h3.44v1.57h.05c.48-.9 1.65-1.85 3.39-1.85 3.63 0 4.29 2.39 4.29 5.49v6.29z"/></svg>');
 }
+
 #linkedin-card:hover .icon-linkedin {
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%232867B2"><path d="M22.23 0H1.77C.8 0 0 .77 0 1.72v20.56C0 23.23.8 24 1.77 24h20.46c.98 0 1.77-.77 1.77-1.72V1.72C24 .77 23.2 0 22.23 0zM7.12 20.45H3.54V9h3.58v11.45zM5.33 7.42c-1.14 0-2.07-.93-2.07-2.07s.93-2.07 2.07-2.07 2.07.93 2.07 2.07c0 1.14-.93 2.07-2.07 2.07zm15.12 13.03h-3.58V14.6c0-1.39-.03-3.18-1.94-3.18-1.94 0-2.24 1.51-2.24 3.08v5.95h-3.58V9h3.44v1.57h.05c.48-.9 1.65-1.85 3.39-1.85 3.63 0 4.29 2.39 4.29 5.49v6.29z"/></svg>');
 }
@@ -3363,25 +3424,30 @@ input.save-prof-check:checked + label::after {
 /* --- ESTILOS PARA NOTIFICACIONES TOAST --- */
 #notification-container {
   position: fixed;
-  top: 80px; /* Debajo del header */
+  top: 80px;
+  /* Debajo del header */
   right: 20px;
-  z-index: 2000; /* Por encima de todo, incluso los modales */
+  z-index: 2000;
+  /* Por encima de todo, incluso los modales */
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 10px;
-  pointer-events: none; /* Para poder hacer clic "a través" del contenedor */
+  pointer-events: none;
+  /* Para poder hacer clic "a través" del contenedor */
 }
 
 .notification-toast {
-  background-color: rgba(31, 22, 20, 0.95); /* var(--panel-bg) con opacidad */
+  background-color: rgba(31, 22, 20, 0.95);
+  /* var(--panel-bg) con opacidad */
   color: var(--text-light);
   padding: 12px 20px;
   border-radius: 8px;
   border: 1px solid var(--panel-border);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
-  pointer-events: auto; /* Los toasts sí se pueden clickear (si tuvieran botones) */
+  pointer-events: auto;
+  /* Los toasts sí se pueden clickear (si tuvieran botones) */
   animation: slideInAndFadeOut 4s ease-in-out forwards;
   display: flex;
   align-items: center;
@@ -3391,7 +3457,8 @@ input.save-prof-check:checked + label::after {
 }
 
 .notification-toast::before {
-  content: "✨"; /* Un icono simple para la notificación */
+  content: "✨";
+  /* Un icono simple para la notificación */
   font-size: 1.2em;
 }
 
@@ -3401,11 +3468,13 @@ input.save-prof-check:checked + label::after {
     opacity: 0;
     transform: translateX(100%);
   }
+
   15%,
   85% {
     opacity: 1;
     transform: translateX(0);
   }
+
   100% {
     opacity: 0;
     transform: translateX(100%);
@@ -3416,7 +3485,8 @@ input.save-prof-check:checked + label::after {
 .custom-modal-content {
   max-width: 450px !important;
   text-align: center;
-  padding-top: 50px !important; /* Espacio para el icono */
+  padding-top: 50px !important;
+  /* Espacio para el icono */
   border-width: 3px !important;
   transition: border-color 0.3s ease;
 }
@@ -3430,7 +3500,8 @@ input.save-prof-check:checked + label::after {
   height: 60px;
   border-radius: 50%;
   background-color: var(--panel-bg);
-  border: 3px solid; /* El color se define por tipo */
+  border: 3px solid;
+  /* El color se define por tipo */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3449,7 +3520,8 @@ input.save-prof-check:checked + label::after {
   line-height: 1.6;
   color: var(--text-light);
   margin-bottom: 25px;
-  white-space: pre-wrap; /* Respeta saltos de línea */
+  white-space: pre-wrap;
+  /* Respeta saltos de línea */
 }
 
 #customModalButtons button {
@@ -3463,9 +3535,11 @@ input.save-prof-check:checked + label::after {
 .modal-type-success .custom-modal-icon {
   border-color: #5dc66f;
 }
+
 .modal-type-success .custom-modal-icon {
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%235dc66f"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>');
 }
+
 .modal-type-success #customModalTitle {
   color: #5dc66f;
 }
@@ -3475,9 +3549,11 @@ input.save-prof-check:checked + label::after {
 .modal-type-warning .custom-modal-icon {
   border-color: var(--text-gold);
 }
+
 .modal-type-warning .custom-modal-icon {
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23e6c253"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>');
 }
+
 .modal-type-warning #customModalTitle {
   color: var(--text-gold);
 }
@@ -3487,9 +3563,11 @@ input.save-prof-check:checked + label::after {
 .modal-type-error .custom-modal-icon {
   border-color: #c65d5d;
 }
+
 .modal-type-error .custom-modal-icon {
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23c65d5d"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>');
 }
+
 .modal-type-error #customModalTitle {
   color: #c65d5d;
 }
@@ -3499,9 +3577,11 @@ input.save-prof-check:checked + label::after {
 .modal-type-confirm .custom-modal-icon {
   border-color: #4a90e2;
 }
+
 .modal-type-confirm .custom-modal-icon {
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%234a90e2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>');
 }
+
 .modal-type-confirm #customModalTitle {
   color: #4a90e2;
 }
@@ -3516,15 +3596,18 @@ input.save-prof-check:checked + label::after {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9999; /* Asegura que esté por encima de todo */
+  z-index: 9999;
+  /* Asegura que esté por encima de todo */
   opacity: 1;
-  transition: opacity 1s ease-out; /* Transición para el desvanecimiento */
+  transition: opacity 1s ease-out;
+  /* Transición para el desvanecimiento */
 }
 
 /* Clase que se añadirá con JS para ocultar la pantalla */
 #splash-screen.hidden {
   opacity: 0;
-  pointer-events: none; /* Impide que intercepte clics cuando está oculta */
+  pointer-events: none;
+  /* Impide que intercepte clics cuando está oculta */
 }
 
 .splash-logo {
@@ -3547,35 +3630,43 @@ input.save-prof-check:checked + label::after {
 
 /* Animación para el pulso de la runa brillante */
 @keyframes pulseRune {
+
   0%,
   100% {
     filter: drop-shadow(0 0 5px rgba(230, 194, 83, 0.4));
     transform: scale(1);
   }
+
   50% {
     filter: drop-shadow(0 0 25px rgba(230, 194, 83, 0.9));
     transform: scale(1.03);
   }
 }
+
 iframe {
-  border: none; /* Quitar el borde predeterminado */
+  border: none;
+  /* Quitar el borde predeterminado */
 }
 
 .emoji-sound {
   margin: 0;
   font-size: 2rem;
 }
+
 /*MANUAL PORTADA HTML WEB*/
 .manual-body {
   background-color: #fdf1db;
   padding: 40px;
 }
+
 .img-portada {
   width: 100%;
 }
+
 .manual-body h1 {
   color: #833b0a;
 }
+
 .manual-body h2 {
   color: #833b0a;
   font-size: 1.3em;
@@ -3583,23 +3674,31 @@ iframe {
   text-shadow: none;
   font-family: "Cinzel", serif;
 }
+
 .manual-body p {
   color: #110d0c;
   font-weight: 400;
 }
+
 .manual-body ol {
   color: #110d0c;
 }
+
 .manual-body li {
   color: #110d0c;
 }
+
 .inline-icon {
-  height: 25px; /* Ajusta el tamaño como necesites */
-  vertical-align: middle; /* Alinea el icono con el texto */
+  height: 25px;
+  /* Ajusta el tamaño como necesites */
+  vertical-align: middle;
+  /* Alinea el icono con el texto */
   margin-left: 8px;
 }
+
 .inline-icon-small {
-  height: 18px; /* Un tamaño más pequeño para sub-listas */
+  height: 18px;
+  /* Un tamaño más pequeño para sub-listas */
   vertical-align: middle;
   margin-right: 5px;
 }
@@ -3620,6 +3719,7 @@ code {
   border-left: 5px solid;
   border-radius: 5px;
 }
+
 .callout-title {
   font-weight: bold;
   font-family: "Cinzel", serif;
@@ -3627,6 +3727,7 @@ code {
   display: flex;
   align-items: center;
 }
+
 .callout-title .icon-warning,
 .callout-title .icon-tip,
 .callout-title .icon-info {
@@ -3640,11 +3741,13 @@ code {
   border-left-color: #ffc107;
   color: #664d03;
 }
+
 .callout.tip {
   background-color: #d1ecf1;
   border-left-color: #0c5460;
   color: #0c5460;
 }
+
 .callout.info {
   background-color: #cce5ff;
   border-left-color: #004085;
@@ -3654,41 +3757,48 @@ code {
 /* Para los saltos de página al imprimir */
 @media print {
   .manual-body {
-    background-color: white; /* Fondo blanco para impresión */
+    background-color: white;
+    /* Fondo blanco para impresión */
   }
 }
+
 .manual-body h3 {
   color: #833b0a;
 }
+
 .manual-body h4 {
   color: #833b0a;
   font-family: "Cinzel", serif;
 }
+
 .button-download {
   /* Copia los estilos de tus otros botones para mantener la coherencia */
-  display: inline-flex; /* Para alinear el icono y el texto */
+  display: inline-flex;
+  /* Para alinear el icono y el texto */
   align-items: center;
   justify-content: center;
   padding: 10px 20px;
-  background-color: var(--button-primary-bg); /* O el color que prefieras */
+  background-color: var(--button-primary-bg);
+  /* O el color que prefieras */
   color: #1d56ac;
   border: 1px solid var(--border-color);
   border-radius: 5px;
   font-family: "Cinzel", serif;
   font-weight: bold;
-  text-decoration: none; /* Quita el subrayado del enlace */
+  text-decoration: none;
+  /* Quita el subrayado del enlace */
   cursor: pointer;
   transition: background-color 0.2s;
 }
+
 .button-download:hover {
   text-decoration: underline;
 }
 
 /* Efecto hover para el botón */
 .button-download:hover {
-  background-color: var(
-    --button-primary-hover-bg
-  ); /* Un color ligeramente más oscuro/claro */
+  background-color: var(--button-primary-hover-bg);
+  /* Un color ligeramente más oscuro/claro */
 }
 
 /* Estilo para el icono dentro del botón (si usas uno) */
@@ -3748,10 +3858,14 @@ code {
   border-radius: 50%;
   border: 2px dashed rgba(255, 255, 255, 0.7);
   background-color: rgba(255, 255, 255, 0.1);
-  pointer-events: none; /* Muy importante para no interferir con otros clics */
-  z-index: 1001; /* Por encima de todo, excepto el cursor */
-  display: none; /* Oculto por defecto */
-  transform: translate(-50%, -50%); /* Para centrar el círculo en el cursor */
+  pointer-events: none;
+  /* Muy importante para no interferir con otros clics */
+  z-index: 1001;
+  /* Por encima de todo, excepto el cursor */
+  display: none;
+  /* Oculto por defecto */
+  transform: translate(-50%, -50%);
+  /* Para centrar el círculo en el cursor */
 }
 
 /* Cambia el borde si estamos en modo "ocultar" niebla */
@@ -3767,11 +3881,13 @@ code {
     opacity: 1;
     border-width: 5px;
   }
+
   80% {
     transform: scale(2);
     opacity: 0;
     border-width: 1px;
   }
+
   100% {
     transform: scale(2);
     opacity: 0;
@@ -3785,7 +3901,8 @@ code {
   border: 5px solid var(--text-gold);
   box-shadow: 0 0 20px var(--text-gold), inset 0 0 15px var(--text-gold);
   pointer-events: none;
-  z-index: 1002; /* Por encima de todo */
+  z-index: 1002;
+  /* Por encima de todo */
   transform-origin: center center;
 
   /* ===== LÍNEA AÑADIDA PARA CENTRAR ===== */
@@ -3801,21 +3918,26 @@ code {
 
 .token-editor-header {
   display: flex;
-  align-items: center; /* Centra verticalmente los elementos */
-  gap: 15px; /* Espacio entre la nav y el botón */
-  margin-bottom: -1px; /* Solapa el borde inferior para un look integrado */
+  align-items: center;
+  /* Centra verticalmente los elementos */
+  gap: 15px;
+  /* Espacio entre la nav y el botón */
+  margin-bottom: -1px;
+  /* Solapa el borde inferior para un look integrado */
   position: sticky;
 }
 
 /* Hacemos que la navegación ocupe todo el espacio disponible */
 .token-editor-nav {
   flex-grow: 1;
-  margin-bottom: 0; /* Quitamos el margen que tenía antes */
+  margin-bottom: 0;
+  /* Quitamos el margen que tenía antes */
 }
 
 /* Estilos para el nuevo botón de "Guardar Rápido" */
 #quickUpdateTokenBtn {
-  flex-shrink: 0; /* Evita que el botón se encoja */
+  flex-shrink: 0;
+  /* Evita que el botón se encoja */
   width: 45px;
   height: 45px;
   padding: 0;
@@ -3845,17 +3967,16 @@ code {
   width: 320px;
   height: 90px;
   z-index: 15;
-  background: linear-gradient(
-    to right,
-    rgba(31, 22, 20, 0.95),
-    rgba(31, 22, 20, 0.8)
-  );
+  background: linear-gradient(to right,
+      rgba(31, 22, 20, 0.95),
+      rgba(31, 22, 20, 0.8));
   border: 1px solid var(--input-border);
   border-left: 4px solid var(--text-gold);
   border-radius: 8px;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
-  display: flex; /* Cambiado a flex desde JS */
+  display: flex;
+  /* Cambiado a flex desde JS */
   padding: 10px;
   gap: 12px;
   align-items: center;
@@ -3892,7 +4013,8 @@ code {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-width: 0; /* Evita que el contenido empuje el layout */
+  min-width: 0;
+  /* Evita que el contenido empuje el layout */
 }
 
 .details-row-1 {
@@ -3946,7 +4068,8 @@ code {
   border-radius: 4px;
   overflow: hidden;
   border: 1px solid #4a3f3c;
-  position: relative; /* Para posicionar el texto dentro */
+  position: relative;
+  /* Para posicionar el texto dentro */
 }
 
 .details-health-bar-fill {
@@ -3964,6 +4087,7 @@ code {
   color: white;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
 }
+
 /* --- INICIO: CORRECCIÓN PARA TOKEN EDITOR HEADER STICKY --- */
 
 /* 1. Hacemos que el formulario del editor sea un contenedor flex que ocupe toda la altura. */
@@ -3971,7 +4095,8 @@ code {
 #main-view-selected-token .token-editor-form {
   display: flex;
   flex-direction: column;
-  height: 100%; /* Ocupa toda la altura de su contenedor padre (.panel-content) */
+  height: 100%;
+  /* Ocupa toda la altura de su contenedor padre (.panel-content) */
 }
 
 /* 2. Convertimos el header del editor en el elemento "sticky". */
@@ -3982,8 +4107,10 @@ code {
   position: sticky;
   top: 0;
   z-index: 10;
-  background-color: var(--panel-bg); /* Usa el color de fondo del panel */
-  padding-top: 10px; /* Un poco de espacio para que no se vea tan pegado arriba */
+  background-color: var(--panel-bg);
+  /* Usa el color de fondo del panel */
+  padding-top: 10px;
+  /* Un poco de espacio para que no se vea tan pegado arriba */
   padding-bottom: 5px;
 }
 
@@ -4001,10 +4128,14 @@ code {
 
 /* ===== ESTILOS PARA LA NUEVA BRÚJULA CARDINAL ===== */
 #cardinalRoseContainer {
-  width: 120px; /* Ancho deseado para la brújula */
-  margin: 15px auto; /* Espaciado vertical y centrado horizontal */
-  pointer-events: none; /* Para que no interfiera con los clics en el mapa */
-  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.5)); /* Sombra sutil */
+  width: 120px;
+  /* Ancho deseado para la brújula */
+  margin: 15px auto;
+  /* Espaciado vertical y centrado horizontal */
+  pointer-events: none;
+  /* Para que no interfiera con los clics en el mapa */
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.5));
+  /* Sombra sutil */
 }
 
 #cardinalRoseContainer img {
@@ -4018,11 +4149,13 @@ code {
 #selectedTokenDetails {
   /* Eliminamos el posicionamiento fijo, ya que ahora es un elemento normal
      dentro de #playerControlsContainer */
-  position: relative; /* O static, pero relative es seguro */
+  position: relative;
+  /* O static, pero relative es seguro */
   bottom: auto;
   left: auto;
   pointer-events: none;
 }
+
 .player-controls-container {
   position: fixed;
   top: 20px;
@@ -4040,7 +4173,8 @@ code {
 .player-controls-container.controls-right {
   left: auto;
   right: 20px;
-  align-items: flex-end; /* ¡ESTA ES LA MAGIA PARA LA ALINEACIÓN DERECHA! */
+  align-items: flex-end;
+  /* ¡ESTA ES LA MAGIA PARA LA ALINEACIÓN DERECHA! */
 }
 
 /* Nuevo div que agrupa solo los botones y el separador */
@@ -4074,6 +4208,7 @@ code {
   height: auto;
   display: block;
 }
+
 /* ===== INICIO: ESTILOS PARA TARJETAS DE INVENTARIO ===== */
 
 /* Contenedor que usa grid para alinear las tarjetas */
@@ -4081,7 +4216,8 @@ code {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 15px;
-  padding: 5px; /* Pequeño padding para que no se peguen a los bordes */
+  padding: 5px;
+  /* Pequeño padding para que no se peguen a los bordes */
 }
 
 .inventory-item-card {
@@ -4110,7 +4246,8 @@ code {
   display: flex;
   justify-content: space-between;
   z-index: 2;
-  pointer-events: none; /* Para que no interfieran con el clic */
+  pointer-events: none;
+  /* Para que no interfieran con el clic */
 }
 
 .item-badge {
@@ -4221,13 +4358,15 @@ code {
   font-size: 0.9em;
   color: #b0b0b0;
   line-height: 1.4;
-  margin: 0 0 20px 0; /* Espacio para los botones de abajo */
+  margin: 0 0 20px 0;
+  /* Espacio para los botones de abajo */
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  min-height: 45px; /* Evita que la tarjeta salte de tamaño si la descripción es corta */
+  min-height: 45px;
+  /* Evita que la tarjeta salte de tamaño si la descripción es corta */
 }
 
 /* Efectos especiales para objetos mágicos */
@@ -4288,6 +4427,7 @@ code {
   border-color: #c65d5d;
   color: #c65d5d;
 }
+
 .item-action-btn.delete:hover {
   background: #c65d5d;
   color: var(--text-light);
@@ -4302,72 +4442,135 @@ code {
   font-family: "Cinzel", serif;
   width: 100%;
 }
+
 /* ===== FIN: ESTILOS PARA TARJETAS DE INVENTARIO ===== */
 
 /* ===== INICIO: ESTILOS PARA SALVACIONES CONTRA MUERTE ===== */
 #deathSavesTracker {
-    background-color: rgba(0, 0, 0, 0.3);
-    border: 1px solid var(--input-border);
-    border-radius: 8px;
-    padding: 15px;
-    margin-top: 15px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 15px;
 }
 
 .death-save-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
 }
 
 .death-save-label {
-    font-family: "IM Fell English SC", serif;
-    font-size: 1.1em;
-    color: var(--text-light);
-    margin-right: 20px;
+  font-family: "IM Fell English SC", serif;
+  font-size: 1.1em;
+  color: var(--text-light);
+  margin-right: 20px;
 }
 
 .death-save-bubbles {
-    display: flex;
-    gap: 15px; /* Espacio entre los círculos */
+  display: flex;
+  gap: 15px;
+  /* Espacio entre los círculos */
 }
 
 .death-save-title {
-    text-align: center;
-    font-family: "IM Fell English SC", serif;
-    color: #a0a0a0;
-    font-size: 0.9em;
-    border: none;
-    margin-top: 15px;
-    margin-bottom: 0;
-    letter-spacing: 1px;
+  text-align: center;
+  font-family: "IM Fell English SC", serif;
+  color: #a0a0a0;
+  font-size: 0.9em;
+  border: none;
+  margin-top: 15px;
+  margin-bottom: 0;
+  letter-spacing: 1px;
 }
 
 /* Estilo para los checkboxes circulares */
 .circle-check label {
-    padding-left: 0; /* Anulamos el padding de otros checkboxes */
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    /*border: 2px solid #a0a0a0;*/
-    border: none;
-    background-color: var(--input-bg);
-    transition: all 0.2s ease;
-    display: block;
-    position: relative;
+  padding-left: 0;
+  /* Anulamos el padding de otros checkboxes */
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  /*border: 2px solid #a0a0a0;*/
+  border: none;
+  background-color: var(--input-bg);
+  transition: all 0.2s ease;
+  display: block;
+  position: relative;
 }
 
-.circle-check input[type="checkbox"]:checked + label {
-    background-color: var(--text-gold);
-    border-color: var(--text-gold);
-    box-shadow: 0 0 8px var(--text-gold);
+.circle-check input[type="checkbox"]:checked+label {
+  background-color: var(--text-gold);
+  border-color: var(--text-gold);
+  box-shadow: 0 0 8px var(--text-gold);
 }
 
 /* Ocultar el checkbox por defecto */
 .circle-check input[type="checkbox"] {
-    opacity: 0;
-    position: absolute;
-    width: 0;
-    height: 0;
+  opacity: 0;
+  position: absolute;
+  width: 0;
+  height: 0;
 }
+
 /* ===== FIN: ESTILOS PARA SALVACIONES CONTRA MUERTE ===== */
+
+
+.toggle-switch {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+}
+
+.toggle-switch-checkbox {
+    display: none;
+}
+
+.toggle-switch-label {
+    display: flex; /* Usamos Flexbox para alinear */
+    align-items: center; /* Centramos verticalmente */
+    justify-content: flex-start; /* Alineamos el contenido al inicio (izquierda) */
+    cursor: pointer;
+    width: 55px;
+    height: 30px;
+    border-radius: 30px;
+    background-color: var(--input-border);
+    border: 2px solid var(--input-border);
+    transition: background-color 0.2s ease-in;
+    position: relative; /* Contenedor de referencia para el switch */
+    padding: 3px; /* Añadimos un padding para el espacio */
+    box-sizing: border-box; /* Aseguramos que el padding no afecte el tamaño total */
+}
+
+/* Eliminamos .toggle-switch-inner por completo, ya no es necesario */
+
+.toggle-switch-switch {
+    display: block;
+    width: 24px; /* Un poco más grande para que se vea mejor */
+    height: 24px;
+    background: #FFFFFF;
+    border-radius: 50%; /* Perfectamente redondo */
+    transition: transform 0.2s ease-in-out;
+    /* No necesitamos position: absolute, margin, top, right, etc. */
+}
+
+.toggle-switch-checkbox:checked + .toggle-switch-label {
+    background-color: var(--text-gold);
+    border-color: var(--text-gold);
+}
+
+.toggle-switch-checkbox:checked + .toggle-switch-label .toggle-switch-switch {
+    background-color: var(--panel-bg);
+    /* Calculamos el desplazamiento: Ancho total - ancho del switch - padding * 2 */
+    transform: translateX(calc(55px - 24px - (3px * 2))); 
+}
+
+.toggle-switch-text {
+    margin-left: 10px;
+    font-family: "Cinzel", serif;
+    font-size: 1.1em;
+    color: var(--text-light);
+}
+/* ===== FIN: ESTILOS PARA EL INTERRUPTOR TOGGLE DE JEFE ===== */

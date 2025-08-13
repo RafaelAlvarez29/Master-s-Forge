@@ -52,6 +52,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const detailsHealthBarFill = document.getElementById('detailsHealthBarFill');
     const detailsHealthText = document.getElementById('detailsHealthText');
 
+
+    // --- Selectores para la Animación de Jefe ---
+    const bossIntroContainer = document.getElementById('bossIntroContainer');
+    const bossIntroTitle = document.getElementById('bossIntroTitle');
+    const bossIntroSubtitle = document.getElementById('bossIntroSubtitle');
+    const bossIntroImage = bossIntroContainer.querySelector('.boss-image');
+
+
     // --- Variables de Estado Locales ---
     let localTokens = [];
     let localWalls = [];
@@ -89,6 +97,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let isDynamicVision = true; // true = actualiza al mover, false = actualiza al soltar
     let visionUpdateQueued = false;
 
+    let bossAnimationQueue = [];
+    let isBossIntroPlaying = false;
+    let isSceneLoading = false;
 
     // --- MANEJO DE COMANDOS DEL DM ---
     channel.onmessage = (event) => {
@@ -101,6 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 loadNewMap(payload.src);
                 break;
             case 'CMD_LOAD_SCENE_DATA':
+                isSceneLoading = true;
                 localTokens = [];
                 tokensLayer.innerHTML = '';
                 if (payload.gridSettings) cellSize = payload.gridSettings.cellSize;
@@ -116,10 +128,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         revealedBufferCtx.clearRect(0, 0, revealedBufferCanvas.width, revealedBufferCanvas.height);
                         revealedBufferCtx.drawImage(fogImg, 0, 0);
                         if (isVisionActive) drawVision(localTokens, localWalls);
+                        isSceneLoading = false;
                     };
                     fogImg.src = payload.fogDataUrl;
                 } else {
                     revealedBufferCtx.clearRect(0, 0, revealedBufferCanvas.width, revealedBufferCanvas.height);
+                    isSceneLoading = false;
                 }
                 break;
             case 'CMD_SET_GRID_SETTINGS':
@@ -286,6 +300,38 @@ document.addEventListener('DOMContentLoaded', () => {
                 selectedTokenDetails.classList.remove('visible');
                 // Ocultamos el elemento después de que la animación termine
                 setTimeout(() => selectedTokenDetails.style.display = 'none', 300);
+                break;
+            case 'CMD_CONFIRM_DISCOVERY':
+                console.log('RECIBIDO CMD_CONFIRM_DISCOVERY:', payload.discoveredIds); // <-- AÑADIDO
+                let needsTrackerUpdate = false;
+                payload.discoveredIds.forEach(id => {
+                    const token = localTokens.find(t => t.id === id);
+                    if (token && !token.isDiscovered) {
+
+                        // ¡LOG DE DIAGNÓSTICO CLAVE!
+                        console.log('Evaluando token:', token.identity.name, token); // <-- AÑADIDO
+
+                        // Primero, verificamos si es un jefe.
+                        if (token.identity.isBoss) {
+                            // Si es un jefe, NO cambiamos su estado todavía.
+                            console.log(token.identity.name + ' es un jefe. Poniendo en cola la animación.'); // <-- AÑADIDO
+                            queueBossIntro(token);
+                        } else {
+                            // Si NO es un jefe, actualizamos su estado y lo hacemos visible.
+                            console.log(token.identity.name + ' es un enemigo normal. Revelando.'); // <-- AÑADIDO
+                            token.isDiscovered = true;
+                            updateTokenVisibility(token);
+                            needsTrackerUpdate = true;
+                        }
+                    } else {
+                        if (!token) console.log('Token con ID ' + id + ' no encontrado en el cliente.');
+                        if (token && token.isDiscovered) console.log('Token ' + token.identity.name + ' ya estaba descubierto.');
+                    }
+                });
+
+                if (needsTrackerUpdate) {
+                    updatePlayerTurnTracker(localTokens);
+                }
                 break;
         }
     };
@@ -592,7 +638,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         } else {
             //clearSelectedGroup();
-            channel.postMessage({ type: 'EVENT_MAP_CLICKED'
+            channel.postMessage({
+                type: 'EVENT_MAP_CLICKED'
             });
         }
     });
@@ -928,30 +975,34 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function checkEnemyDiscoveryInView() {
+        if (isSceneLoading) return;
         if (revealedBufferCanvas.width === 0) return;
+
         const fogImageData = revealedBufferCtx.getImageData(0, 0, revealedBufferCanvas.width, revealedBufferCanvas.height);
         const fogData = fogImageData.data;
         const canvasWidth = revealedBufferCanvas.width;
         const newlyVisibleEnemies = [];
+
+        // Filtra enemigos que AÚN NO han sido descubiertos en la VISTA DEL JUGADOR
         localTokens.filter(t => t.identity.type === 'enemy' && !t.isDiscovered).forEach(enemy => {
             const tokenSize = (enemy.position.sizeMultiplier || 1) * cellSize;
             const centerX = Math.floor(enemy.position.x + tokenSize / 2);
             const centerY = Math.floor(enemy.position.y + tokenSize / 2);
+
             if (centerX >= 0 && centerX < canvasWidth && centerY >= 0 && centerY < revealedBufferCanvas.height) {
                 const pixelIndex = (centerY * canvasWidth + centerX) * 4;
                 if (fogData[pixelIndex + 3] > 0) {
-                    enemy.isDiscovered = true;
-                    updateTokenVisibility(enemy);
+                    // Solo los añade a la lista para notificar al DM.
+                    // NO cambia su estado local ni dispara la animación directamente.
                     newlyVisibleEnemies.push(enemy.id);
                 }
             }
         });
+
+        // Si se vio algún enemigo nuevo, se lo decimos al DM.
         if (newlyVisibleEnemies.length > 0) {
-            channel.postMessage({
-                type: 'EVENT_FOG_PAINTED',
-                payload: {
-                    visibleEnemies: newlyVisibleEnemies
-                }
+            broadcast('EVENT_FOG_PAINTED', {
+                visibleEnemies: newlyVisibleEnemies
             });
         }
     }
@@ -1272,4 +1323,138 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
     }
+    // --- INICIO: LÓGICA DE ANIMACIÓN DE JEFE ---
+
+    function queueBossIntro(bossToken) {
+        // Evita añadir el mismo jefe dos veces a la cola si se redescubre rápido
+        if (!bossAnimationQueue.some(b => b.id === bossToken.id)) {
+            console.log(`Añadiendo a ${bossToken.identity.name} a la cola. Estado de la cola:`, bossAnimationQueue.length); // <-- AÑADIDO
+            bossAnimationQueue.push(bossToken);
+            processBossQueue();
+        } else {
+            console.log(`${bossToken.identity.name} ya estaba en la cola de animación.`); // <-- AÑADIDO
+        }
+    }
+
+    function processBossQueue() {
+        console.log(`Procesando cola. ¿Animación en curso? ${isBossIntroPlaying}. Elementos en cola: ${bossAnimationQueue.length}`); // <-- AÑADIDO
+        // Si ya hay una animación en curso o la cola está vacía, no hacer nada
+        if (isBossIntroPlaying || bossAnimationQueue.length === 0) {
+            return;
+        }
+
+        // Si no, tomar el siguiente jefe y empezar la animación
+        const nextBoss = bossAnimationQueue.shift();
+        console.log(`Iniciando animación para: ${nextBoss.identity.name}`); // <-- AÑADIDO
+        playBossIntro(nextBoss);
+    }
+
+    function playBossIntro(bossData) {
+        isBossIntroPlaying = true;
+
+        // --- INICIO: LÓGICA DE AUDIO DEL JEFE ---
+        const bossMusic = document.getElementById('music-soundsDarkSauls-VordtoftheBorealValley');
+        if (bossMusic) {
+            bossMusic.currentTime = 0; // Reinicia el audio
+            bossMusic.volume = 0.5; // Empieza con un volumen moderado
+            bossMusic.play().catch(e => console.error("Error al reproducir música del jefe:", e));
+        }
+        // --- FIN: LÓGICA DE AUDIO DEL JEFE ---
+
+        try {
+            // 1. Obtener los elementos una vez
+            const overlay = bossIntroContainer.querySelector('.dark-overlay');
+            const epicContent = bossIntroContainer.querySelector('.epic-container');
+
+            // 2. Preparar los datos dinámicos
+            bossIntroTitle.textContent = bossData.identity.name;
+            bossIntroSubtitle.textContent = bossData.info.presentation || "El terror acecha...";
+            bossIntroImage.style.backgroundImage = `url('${bossData.identity.image || ''}')`;
+
+            // 3. SECUENCIA DE ANIMACIÓN (sin cambios)
+            bossIntroContainer.style.opacity = '0';
+            bossIntroContainer.classList.add('active');
+
+            setTimeout(() => {
+                bossIntroContainer.style.opacity = '1';
+                overlay.style.opacity = '1';
+
+                setTimeout(() => { epicContent.style.opacity = '1'; }, 1500);
+                setTimeout(() => {
+                    bossIntroTitle.style.transform = 'translateY(0)';
+                    bossIntroTitle.style.opacity = '1';
+                    bossIntroTitle.style.filter = 'blur(0)';
+                }, 2000);
+                setTimeout(() => {
+                    bossIntroSubtitle.style.transform = 'translateY(0)';
+                    bossIntroSubtitle.style.opacity = '1';
+                    bossIntroSubtitle.style.filter = 'blur(0)';
+                }, 4000);
+                setTimeout(() => { bossIntroImage.style.opacity = '1'; }, 6000);
+
+                // 4. FINALIZAR Y LIMPIAR
+                setTimeout(() => {
+                    bossIntroContainer.style.opacity = '0';
+
+                    // --- INICIO: DETENER AUDIO CON FADE-OUT ---
+                    if (bossMusic) {
+                        let fadeOutInterval = setInterval(() => {
+                            if (bossMusic.volume > 0.1) {
+                                bossMusic.volume -= 0.1;
+                            } else {
+                                bossMusic.pause();
+                                bossMusic.volume = 1; // Resetea el volumen para la próxima vez
+                                clearInterval(fadeOutInterval);
+                            }
+                        }, 200); // Reduce el volumen cada 200ms
+                    }
+                    // --- FIN: DETENER AUDIO CON FADE-OUT ---
+
+                    // Este timeout se ejecuta DESPUÉS de que el fade-out de la pantalla termine (2 segundos)
+                    setTimeout(() => {
+                        // Actualiza la UI del jugador
+                        bossData.isDiscovered = true;
+                        updateTokenVisibility(bossData);
+                        updatePlayerTurnTracker(localTokens);
+
+                        // Resetea los estilos de la animación
+                        bossIntroContainer.classList.remove('active');
+                        overlay.style.opacity = '0';
+                        epicContent.style.opacity = '0';
+                        bossIntroImage.style.opacity = '0';
+                        bossIntroTitle.style.transform = 'translateY(-50px)';
+                        bossIntroTitle.style.opacity = '0';
+                        bossIntroTitle.style.filter = 'blur(10px)';
+                        bossIntroSubtitle.style.transform = 'translateY(50px)';
+                        bossIntroSubtitle.style.opacity = '0';
+                        bossIntroSubtitle.style.filter = 'blur(10px)';
+
+                        // Marca la animación como terminada y procesa la cola
+                        isBossIntroPlaying = false;
+                        processBossQueue();
+                    }, 2000);
+                }, 9000); // 9 segundos después del inicio, comienza el fade-out de la animación visual
+
+            }, 50);
+
+        } catch (error) {
+            console.error("Error durante la animación del jefe:", error);
+            // Si hay un error, también intentamos detener la música
+            const bossMusicOnError = document.getElementById('music-soundsDarkSauls-VordtoftheBorealValley');
+            if (bossMusicOnError) bossMusicOnError.pause();
+        } finally {
+            const totalAnimationTime = 11500;
+            setTimeout(() => {
+                if (isBossIntroPlaying) {
+                    console.warn("Forzando reseteo del estado de la animación del jefe debido a un posible bloqueo.");
+                    // ... (código de reseteo visual) ...
+                    isBossIntroPlaying = false;
+                    processBossQueue();
+                }
+            }, totalAnimationTime);
+        }
+    }
+
+
+    // --- FIN: LÓGICA DE ANIMACIÓN DE JEFE ---
 });

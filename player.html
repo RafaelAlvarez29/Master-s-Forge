@@ -93,8 +93,7 @@
         <!-- ===== INICIO: NUEVA BRÚJULA CARDINAL ===== -->
         <div id="cardinalRoseContainer">
             <!-- Asegúrate de que la ruta a tu imagen sea correcta -->
-            <img src="assets/images/icons/cardinal-rose2.webp" alt="Brújula Cardinal"
-                style="   pointer-events: none;">
+            <img src="assets/images/icons/cardinal-rose2.webp" alt="Brújula Cardinal" style="   pointer-events: none;">
         </div>
         <!-- ===== FIN: NUEVA BRÚJULA CARDINAL ===== -->
 
@@ -138,8 +137,112 @@
             </div>
         </div>
     </div>
+    <!-- ===== INICIO: PLANTILLA DE ANIMACIÓN DE JEFE ===== -->
+    <style>
+        .boss-intro-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            font-family: 'Cinzel', serif;
 
+            /* Por defecto, totalmente invisible e inactivo */
+            display: none;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 2s ease-out;
+            /* Solo para el fade-out final */
+        }
 
+        .boss-intro-container.active {
+            display: block;
+            /* Lo hacemos visible */
+            pointer-events: auto;
+            /* Bloquea clics */
+        }
+
+        .boss-intro-container .dark-overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(0, 0, 0, 0.889) 0%, rgba(0, 0, 0, 1) 100%);
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+
+        .boss-intro-container .boss-image {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            filter: brightness(0.8) contrast(1.1);
+            transition: opacity 2s ease-in-out;
+        }
+
+        .boss-intro-container .epic-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 1s ease-in;
+        }
+
+        .boss-intro-container .epic-title {
+            font-size: clamp(4rem, 12vw, 10rem);
+            font-weight: 900;
+            color: transparent;
+            background: linear-gradient(45deg, #ff0000, #8b0000, #000000);
+            background-clip: text;
+            -webkit-background-clip: text;
+            text-align: center;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+            transform: translateY(-50px);
+            opacity: 0;
+            filter: blur(10px);
+            transition: transform 2s ease-out, opacity 2s ease-out, filter 2s ease-out;
+        }
+
+        .boss-intro-container .epic-subtitle {
+            font-size: clamp(1.5rem, 4vw, 3rem);
+            font-weight: 400;
+            color: transparent;
+            background: linear-gradient(45deg, #cc4125, #8b0000, #000000);
+            background-clip: text;
+            -webkit-background-clip: text;
+            text-align: center;
+            letter-spacing: 4px;
+            font-style: italic;
+            text-shadow: 0 0 20px rgba(204, 65, 37, 0.5);
+            transform: translateY(50px);
+            opacity: 0;
+            filter: blur(10px);
+            transition: transform 2s ease-out, opacity 2s ease-out, filter 2s ease-out;
+        }
+    </style>
+
+    <div id="bossIntroContainer" class="boss-intro-container">
+        <div class="dark-overlay"></div>
+        <div class="boss-image"></div>
+        <div class="epic-container">
+            <h1 id="bossIntroTitle" class="epic-title"></h1>
+            <h2 id="bossIntroSubtitle" class="epic-subtitle"></h2>
+        </div>
+    </div>
+    <!-- ===== FIN: PLANTILLA DE ANIMACIÓN DE JEFE ===== -->
+    <audio id="music-soundsDarkSauls-VordtoftheBorealValley"
+        src="assets\sounds\Dark Souls III OST 10 - Vordt of the Boreal Valley.mp3" preload="auto" loop></audio>
     <script src="player.js"></script>
 </body>
 

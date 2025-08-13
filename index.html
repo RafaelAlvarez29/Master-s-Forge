@@ -135,9 +135,9 @@
                         <h3 class="view-title">Añadir Ficha Nueva</h3>
                         <!-- Contenido del formulario de añadir ficha -->
                         <div class="token-editor-form">
-                            <h4  style="display: none;">Información Básica</h4>
+                            <h4 style="display: none;">Información Básica</h4>
                             <div class="form-group">
-                                <label  style="display: none;">Tipo:</label>
+                                <label style="display: none;">Tipo:</label>
                                 <div class="radio-tile-group">
                                     <div class="input-container"><input id="add_typePlayer" class="radio-button"
                                             type="radio" name="add_tokenType" value="player" checked>
@@ -153,6 +153,18 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="form-group" id="addBossToggleContainer"
+                                style="display: none; margin-top: 15px;">
+                                <div class="toggle-switch">
+                                    <input type="checkbox" id="addBossToggle" class="toggle-switch-checkbox">
+                                    <label class="toggle-switch-label" for="addBossToggle">
+                                        <span class="toggle-switch-inner"></span>
+                                        <span class="toggle-switch-switch"></span>
+                                    </label>
+                                    <span class="toggle-switch-text">Es un Jefe</span>
+                                </div>
+                            </div>
+
                             <div class="form-row">
                                 <div><label for="tokenName">Nombre:*</label><input type="text" id="tokenName"
                                         placeholder="Ej: Grog Strongjaw"></div>
@@ -177,7 +189,7 @@
                                             id="tokenImageName" class="file-name-display">Ningún archivo...</span></div>
                                 </div>
                             </div>
-                            <h4  style="display: none;">Estadísticas</h4>
+                            <h4 style="display: none;">Estadísticas</h4>
                             <div class="char-stats-grid" id="add_char_stats_grid" style="display: none;">
                                 <div class="char-stat-card"><label>FUE</label><span class="char-mod"
                                         id="add_str_mod">+0</span>
@@ -210,7 +222,7 @@
                                             class="char-score-input nobackgrund" value="10"></div>
                                 </div>
                             </div>
-                            <div class="combat-stats-grid"  style="display: none;">
+                            <div class="combat-stats-grid" style="display: none;">
                                 <div class="combat-stat-card"><label class="combat-label-top">BONIF.</label><input
                                         type="number" class="combat-value-input nobackgrund" id="add_proficiency_bonus"
                                         value="2"><label class="combat-label-bottom">💪COMPETENCIA</label></div>
@@ -230,8 +242,8 @@
                                 <div class="form-group"><label>♥️Vida Inicial:</label><input type="number"
                                         id="tokenHealth" value=""></div>
                             </div>
-                            <h4  style="display: none;"> Tiradas de Salvación</h4>
-                            <div class="saving-throws-list" id="add_saving_throws_list"  style="display: none;">
+                            <h4 style="display: none;"> Tiradas de Salvación</h4>
+                            <div class="saving-throws-list" id="add_saving_throws_list" style="display: none;">
                                 <div class="save-throw-row">
                                     <div class="checkbox-container"><input type="checkbox" id="add_str_save_prof"
                                             class="save-prof-check"><label for="add_str_save_prof"></label></div>
@@ -292,8 +304,16 @@
                                         for="tokenSizeMultiplier">Tamaño:</label><input type="number"
                                         id="tokenSizeMultiplier" value="1" min="0.5" step="0.5"></div>
                             </div>
-                            <h4  style="display: none;">Notas</h4>
-                            <div class="form-group"  style="display: none;"><textarea id="tokenNotes" rows="3" placeholder="..."></textarea>
+                            <div id="addPresentationContainer" style="display: none;">
+                                <h4>Presentación del Jefe</h4>
+                                <div class="form-group">
+                                    <textarea id="tokenPresentation" rows="4"
+                                        placeholder="Describe la épica entrada de este jefe..."></textarea>
+                                </div>
+                            </div>
+                            <h4 style="display: none;">Notas</h4>
+                            <div class="form-group" style="display: none;"><textarea id="tokenNotes" rows="3"
+                                    placeholder="..."></textarea>
                             </div>
                             <button id="addTokenBtn">Añadir Ficha</button>
                         </div>
@@ -409,7 +429,20 @@
                                                 class="combat-label-bottom">🛡️ARMADURA</label>
                                         </div>
                                     </div>
+
+                                    <div class="form-group" id="editBossToggleContainer"
+                                        style="display: none; margin-top: 15px;">
+                                        <div class="toggle-switch">
+                                            <input type="checkbox" id="editBossToggle" class="toggle-switch-checkbox">
+                                            <label class="toggle-switch-label" for="editBossToggle">
+                                                <span class="toggle-switch-inner"></span>
+                                                <span class="toggle-switch-switch"></span>
+                                            </label>
+                                            <span class="toggle-switch-text">Es un Jefe</span>
+                                        </div>
+                                    </div>
                                     <div class="form-row">
+
                                         <div class="form-group"><label>👁️Visión (Casillas)*</label><input type="number"
                                                 id="editTokenVision" min="0"></div>
                                         <div class="form-group"><label>♥️Vida Máxima</label><input type="number"
@@ -658,6 +691,13 @@
 
                                 <!-- Pestaña 5: Notas -->
                                 <div id="token-view-notes" class="token-view-panel">
+                                    <div id="editPresentationContainer" style="display: none;">
+                                        <h4>Presentación del Jefe</h4>
+                                        <div class="form-group">
+                                            <textarea id="editTokenPresentation" rows="6"
+                                                placeholder="Describe la épica entrada de este jefe..."></textarea>
+                                        </div>
+                                    </div>
                                     <h4>Notas del Personaje</h4>
                                     <div class="form-group"><textarea id="editTokenNotes" rows="12"></textarea></div>
                                 </div>
@@ -1040,8 +1080,8 @@
                         <label for="gridOpacity">Opacidad:</label><input type="range" class="range1" id="gridOpacity"
                             min="0" max="1" step="0.1" value="0.5">
                         <label for="cellSize">Tamaño de Casilla (px):</label><input type="number" id="cellSize"
-                            value="50" min="10"><input type="range" id="cellSizeSlider" min="10" max="150"
-                            value="50" aria-label="Ajustar tamaño de casilla">
+                            value="50" min="10"><input type="range" id="cellSizeSlider" min="10" max="150" value="50"
+                            aria-label="Ajustar tamaño de casilla">
                         <h4 class="top-margin"><span class="header-icon icon-align-grid"></span> Alinear Rejilla</h4>
                         <p class="help-text">Activa este modo y luego haz clic en la esquina de una casilla en la
                             ventana del Jugador.</p>
@@ -1094,11 +1134,12 @@
                                         <p class="emoji-sound">⛈️</p>
                                         Lluvia
                                     </div>
-                                </button><button class="sound-btn" data-sound-id="sound-combat">
+                                </button>
+                                <button class="sound-btn" data-sound-id="sound-combat">
                                     <p class="emoji-sound">⚔️</p>
-                                    <div>
-                                        Combate</div>
-                                </button><button class="sound-btn" data-sound-id="sound-tension">
+                                    <div>Combate</div>
+                                </button>
+                                <button class="sound-btn" data-sound-id="sound-tension">
                                     <p class="emoji-sound">😰</p>
                                     Tensión
                                 </button><button class="sound-btn" data-sound-id="sound-end-battle">
@@ -1107,7 +1148,13 @@
                                 </button><button class="sound-btn" data-sound-id="music-DragonBallZ-capítuloanterior">
                                     <p class="emoji-sound">🐉</p>
                                     Recapitular DBZ
-                                </button></div>
+                                </button>
+                                <button class="sound-btn" data-sound-id="music-soundsDarkSauls-VordtoftheBorealValley">
+                                    <p class="emoji-sound">🏴‍☠️</p>
+                                    sounds DarkSauls - intro
+                                </button>
+                            </div>
+
                             <h4 class="sound-category-header">Acción y Combate</h4>
                             <div class="sound-board-grid"><button class="sound-btn"
                                     data-sound-id="sound-eendigolongroar">
@@ -1381,6 +1428,8 @@
     <audio id="sound-door-open" src="https://www.myinstants.com/media/sounds/dndoor-squeak.mp3" preload="auto"></audio>
     <audio id="sound-door-close" src="https://www.myinstants.com/media/sounds/dnd-aporreando.mp3"
         preload="auto"></audio>
+    <audio id="music-soundsDarkSauls-VordtoftheBorealValley"
+        src="assets\sounds\Dark Souls III OST 10 - Vordt of the Boreal Valley.mp3" preload="auto" loop></audio>
 
 
 
@@ -1390,6 +1439,7 @@
     <div id="notification-container"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/idb@7/build/umd.js"></script>
+
     <script src="script.js"></script>
 </body>
 
