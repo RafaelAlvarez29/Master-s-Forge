@@ -75,7 +75,7 @@
         .credits-scroll {
             position: absolute;
             width: 100%;
-            animation: scroll-up 60s linear infinite;
+            animation: scroll-up 120s linear infinite;
             /* CAMBIAR ESTE NÚMERO PARA VELOCIDAD */
             padding: 50px 20px;
         }
@@ -318,10 +318,55 @@
             color: white;
             transform: scale(1.05);
         }
+
+        /* Controles de velocidad */
+        .speed-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 100;
+            display: flex;
+            gap: 10px;
+            background: rgba(26, 26, 46, 0.5);
+            padding: 10px;
+            border-radius: 8px;
+            backdrop-filter: blur(4px);
+        }
+
+        .speed-btn {
+            background: #d4af37;
+            color: #1a1a2e;
+            border: 2px solid transparent;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-family: 'Cinzel', serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .speed-btn:hover {
+            background: #ff6b35;
+            color: white;
+        }
+
+        /* Estilo para el botón de velocidad activo */
+        .speed-btn.active-speed {
+            background: #ff6b35;
+            color: white;
+            border-color: #f4d03f;
+            box-shadow: 0 0 10px #ff6b35;
+        }
     </style>
 </head>
 
 <body>
+    <div class="speed-controls">
+        <button class="speed-btn" data-speed="80s">Lento</button>
+        <button class="speed-btn active-speed" data-speed="40s">Normal</button>
+        <button class="speed-btn" data-speed="20s">Rápido</button>
+    </div>
+
     <div class="magic-particles" id="particles"></div>
 
     <button class="restart-btn" onclick="restartCredits()">🎲 Reiniciar</button>
@@ -361,25 +406,38 @@
             <div class="credits-section">
                 <h2 class="section-title">Los Héroes de la Mesa</h2>
                 <div class="credits-item">
-                    <span class="role">Guerrero Valiente</span>
-                    <span class="name">[NOMBRE_JUGADOR_1]</span>
+                    <span class="role">Melinoe, clerigo bestia de daño</span>
+                    <span class="name">Edith</span>
                 </div>
                 <div class="credits-item">
-                    <span class="role">Mago Sabio</span>
-                    <span class="name">[NOMBRE_JUGADOR_2]</span>
+                    <span class="role">Luna</span>
+                    <span class="name">Edith</span>
                 </div>
                 <div class="credits-item">
-                    <span class="role">Pícaro Astuto</span>
-                    <span class="name">[NOMBRE_JUGADOR_3]</span>
+                    <span class="role">Ren - La sombra mas negra</span>
+                    <span class="name">Bryan</span>
                 </div>
                 <div class="credits-item">
-                    <span class="role">Clérigo Devoto</span>
-                    <span class="name">[NOMBRE_JUGADOR_4]</span>
+                    <span class="role">josh - Sensual?</span>
+                    <span class="name">Omar</span>
                 </div>
                 <div class="credits-item">
-                    <span class="role">Bárbaro Feroz</span>
-                    <span class="name">[NOMBRE_JUGADOR_5]</span>
+                    <span class="role">Uxyono "El olvidado" - el tlacuache morbido</span>
+                    <span class="name">Soledad</span>
                 </div>
+                <div class="credits-item">
+                    <span class="role">Milo Greenbottle</span>
+                    <span class="name">Isrra</span>
+                </div>
+                <div class="credits-item">
+                    <span class="role">Draigan</span>
+                    <span class="name">Rafa</span>
+                </div>
+                <div class="credits-item">
+                    <span class="name">Una disculpa por los personajes que no aparecen, el tiempo no me dio y estos
+                        tenia a la mano</span>
+                </div>
+
             </div>
 
             <div class="image-section">
@@ -403,7 +461,7 @@
                 <h2 class="section-title">Anfitrión Legendario</h2>
                 <div class="credits-item">
                     <span class="role">Guardián del Hogar</span>
-                    <span class="name">[NOMBRE_ANFITRION]</span>
+                    <span class="name">SOLEDAD!</span>
                 </div>
                 <p style="font-style: italic; margin-top: 20px; color: #f4d03f;">
                     Por abrirnos las puertas de su hogar y crear el espacio perfecto para nuestras aventuras
@@ -412,90 +470,49 @@
 
             <div class="image-section">
                 <img src="assets\images\credits\momentogrupal.jpeg" alt="momento grupal" class="character-image">
-                <img src="assets\images\credits\mesadejuego.png" alt="Guerrero de Marcos" class="character-image">
+                <img src="assets\images\credits\momentogrupoal2.jpeg" alt="Guerrero de Marcos" class="character-image">
 
                 <!-- <div class="momentogrupal.jpeg">La mesa de juego</div>
                 <div class="image-placeholder">Momento grupal</div>-->
             </div>
 
-            <div class="credits-section">
-                <h2 class="section-title">Agradecimientos Especiales</h2>
-                <div class="credits-item">
-                    <span class="role">Proveedor de Snacks</span>
-                    <span class="name">Soledad - Tlacua - Uxyono </span>
-                </div>
-                <div class="credits-item">
-                    <span class="role">Maestro de Miniaturas</span>
-                    <span class="name">[NOMBRE_MINIATURAS]</span>
-                </div>
-                <div class="credits-item">
-                    <span class="role">Cronista de Aventuras</span>
-                    <span class="name">Juancho - DM</span>
-                    <span class="name">Isrra - DM</span>
 
-                </div>
-
-            </div>
-
+            <!-- 
             <div class="image-section">
                 <div class="image-placeholder">Dados y accesorios</div>
                 <div class="image-placeholder">Momento divertido</div>
             </div>
-
+-->
             <div class="credits-section">
                 <h2 class="section-title">Momentos Inolvidables</h2>
                 <div class="credits-item" style="color: #f4d03f; text-align: center;">
-                    "Aquella vez que [JUGADOR] tiró un 20 natural en el momento perfecto"
-                </div>
-                <div class="credits-item" style="color: #f4d03f; text-align: center;">
                     "Cuando Allystar black arruino una perfecta conversacion con un dragon antiguo, lanzandole un
-                    tlacuacho rabioso... Uxyono 🤦"
+                    tlacuacho rabioso... Uxyono."
                 </div>
                 <div class="credits-item" style="color: #f4d03f; text-align: center;">
-                    "Cuando Uxyono volvio de la muerte en su mejor forma... para segundos despues volver a caer."
+                    "Cuando Uxyono volvio de la muerte en su mejor forma... para segundos despues volver a caer. 🤦"
                 </div>
                 <div class="credits-item" style="color: #f4d03f; text-align: center;">
-                    "Las risas que duraron toda la noche"
+                    "Daigan en medio de una lluvia de flechas, sin moverse, solo tuvo fé."
+                </div>
+                <div class="credits-item" style="color: #f4d03f; text-align: center;">
+                    "supongo que hubo mas pero mi meoria no da para mas ."
                 </div>
             </div>
 
             <div class="image-section">
                 <img src="assets\images\credits\allsitayblacktkacua.jpeg" alt="Guerrero de Marcos" class="character-image">
-
                 <img src="assets\images\credits\tlacuareviviendo.png" alt="Guerrero de Marcos" class="character-image">
-                <div class="image-placeholder">Momento épico 2</div>
-                <div class="image-placeholder">Momento épico 3</div>
+                <img src="assets\images\credits\draiganflechas.png" alt="Guerrero de Marcos" class="character-image">
             </div>
 
-            <div class="credits-section">
-                <h2 class="section-title">Estadísticas de Campaña</h2>
-                <div class="credits-item">
-                    <span class="role">Sesiones Jugadas:</span>
-                    <span class="name">[NÚMERO] épicas aventuras</span>
-                </div>
-                <div class="credits-item">
-                    <span class="role">Horas de Diversión:</span>
-                    <span class="name">[NÚMERO] horas de pura magia</span>
-                </div>
-                <div class="credits-item">
-                    <span class="role">Dragones Derrotados:</span>
-                    <span class="name">[NÚMERO] bestias legendarias</span>
-                </div>
-                <div class="credits-item">
-                    <span class="role">Tesoros Encontrados:</span>
-                    <span class="name">Incontables riquezas</span>
-                </div>
-                <div class="credits-item">
-                    <span class="role">Amistades Forjadas:</span>
-                    <span class="name">Para toda la vida</span>
-                </div>
-            </div>
+
 
             <div class="final-message">
-                "Aunque esta aventura ha llegado a su fin,<br>
-                las memorias y la amistad perdurarán para siempre.<br><br>
-                Que los dados siempre rueden a nuestro favor<br>
-                en futuras aventuras."
+                "Aunque esta aventura no ha llegado a su fin,<br>
+                algunos de los jugadores ya no podran acompañarnos.<br><br>
+                No es que se mueran, pero la vida de adulto no es gratis<br>
+                y hay que chambiar...
             </div>
 
             <div class="credits-section" style="margin-bottom: 200px;">
@@ -504,18 +521,89 @@
                     ⚔️ 🎲 🐉 ✨
                 </div>
                 <div class="credits-item" style="font-size: 1.2em; color: #f4d03f;">
-                    "Fin de la Campaña"
+                    "La campaña continuara..."
                 </div>
             </div>
+            <div class="credits-section" style="margin-bottom: 600px;"><img src="assets/images/credits/dragon-ball-dragon-ball-z.gif" ></div>
+
         </div>
     </div>
 
     <script>
-        // Crear partículas mágicas
+        // --- NUEVO: Variable para almacenar la velocidad actual ---
+        let currentSpeed = '40s'; // Empieza en normal (coincide con el botón activo en HTML)
+
+        // Función para cambiar la velocidad
+        function setSpeed(newSpeed, clickedButton) {
+            const creditsScroll = document.getElementById('creditsScroll');
+
+            // Actualiza la variable global
+            currentSpeed = newSpeed;
+
+            // Aplica la nueva duración a la animación
+            creditsScroll.style.animationDuration = currentSpeed;
+
+            // Actualiza el estilo de los botones
+            document.querySelectorAll('.speed-btn').forEach(btn => {
+                btn.classList.remove('active-speed');
+            });
+            clickedButton.classList.add('active-speed');
+        }
+
+        // Función para reiniciar los créditos (MODIFICADA)
+        function restartCredits() {
+            const creditsScroll = document.getElementById('creditsScroll');
+            creditsScroll.style.animation = 'none';
+            creditsScroll.offsetHeight; // Trigger reflow
+
+            // --- MODIFICADO: Usa la variable 'currentSpeed' para reiniciar con la velocidad correcta ---
+            creditsScroll.style.animation = `scroll-up ${currentSpeed} linear infinite`;
+
+            const audio = document.querySelector('audio');
+            if (audio) {
+                audio.currentTime = 0;
+                audio.play();
+            }
+        }
+
+        // Inicializar al cargar la página (MODIFICADA)
+        document.addEventListener('DOMContentLoaded', function () {
+            createParticles();
+            setupImageLoading();
+
+            const audioControls = document.querySelector('.audio-controls');
+            // ... (el código para el botón de cargar música sigue igual)
+            const loadMusicBtn = document.createElement('button');
+            loadMusicBtn.textContent = '🎵 Cargar Música';
+            loadMusicBtn.style.marginRight = '10px';
+            loadMusicBtn.style.padding = '5px 10px';
+            loadMusicBtn.style.background = '#d4af37';
+            loadMusicBtn.style.border = 'none';
+            loadMusicBtn.style.borderRadius = '3px';
+            loadMusicBtn.style.color = '#1a1a2e';
+            loadMusicBtn.style.cursor = 'pointer';
+            loadMusicBtn.style.fontSize = '12px';
+            loadMusicBtn.onclick = loadMusic;
+            audioControls.insertBefore(loadMusicBtn, audioControls.firstChild);
+
+            // --- NUEVO: Añadir listeners a los botones de velocidad ---
+            const speedButtons = document.querySelectorAll('.speed-btn');
+            speedButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const newSpeed = this.dataset.speed;
+                    setSpeed(newSpeed, this);
+                });
+            });
+
+            // Aplicar la velocidad inicial al elemento
+            const creditsScroll = document.getElementById('creditsScroll');
+            creditsScroll.style.animationDuration = currentSpeed;
+        });
+
+        // --- El resto de funciones (createParticles, setupImageLoading, loadMusic) permanecen igual ---
         function createParticles() {
             const particlesContainer = document.getElementById('particles');
             const particleCount = 50;
-
             for (let i = 0; i < particleCount; i++) {
                 const particle = document.createElement('div');
                 particle.classList.add('particle');
@@ -526,25 +614,9 @@
             }
         }
 
-        // Función para reiniciar los créditos
-        function restartCredits() {
-            const creditsScroll = document.getElementById('creditsScroll');
-            creditsScroll.style.animation = 'none';
-            creditsScroll.offsetHeight; // Trigger reflow
-            creditsScroll.style.animation = 'scroll-up 60s linear infinite'; /* CAMBIAR TAMBIÉN AQUÍ */
-
-            // Reiniciar audio si existe
-            const audio = document.querySelector('audio');
-            if (audio) {
-                audio.currentTime = 0;
-                audio.play();
-            }
-        }
-
-        // Función para cargar imágenes
         function setupImageLoading() {
+            // ... (esta función no cambia)
             const placeholders = document.querySelectorAll('.image-placeholder');
-
             placeholders.forEach((placeholder, index) => {
                 placeholder.style.cursor = 'pointer';
                 placeholder.addEventListener('click', function () {
@@ -570,8 +642,8 @@
             });
         }
 
-        // Función para cargar música
         function loadMusic() {
+            // ... (esta función no cambia)
             const fileInput = document.createElement('input');
             fileInput.type = 'file';
             fileInput.accept = 'audio/*';
@@ -589,31 +661,13 @@
             fileInput.click();
         }
 
-        // Inicializar al cargar la página
-        document.addEventListener('DOMContentLoaded', function () {
-            createParticles();
-            setupImageLoading(); // Activar carga de imágenes
-
-            // Agregar botón para cargar música
-            const audioControls = document.querySelector('.audio-controls');
-            const loadMusicBtn = document.createElement('button');
-            loadMusicBtn.textContent = '🎵 Cargar Música';
-            loadMusicBtn.style.marginRight = '10px';
-            loadMusicBtn.style.padding = '5px 10px';
-            loadMusicBtn.style.background = '#d4af37';
-            loadMusicBtn.style.border = 'none';
-            loadMusicBtn.style.borderRadius = '3px';
-            loadMusicBtn.style.color = '#1a1a2e';
-            loadMusicBtn.style.cursor = 'pointer';
-            loadMusicBtn.style.fontSize = '12px';
-            loadMusicBtn.onclick = loadMusic;
-            audioControls.insertBefore(loadMusicBtn, audioControls.firstChild);
-        });
-
-        // Detectar cuando terminan los créditos para reiniciar automáticamente
-        setTimeout(() => {
-            restartCredits();
-        }, 61000); // CAMBIAR ESTE NÚMERO: tiempo en milisegundos (60s = 60000ms)
+        // El reinicio automático con setTimeout puede ser confuso si el usuario cambia la velocidad.
+        // Es mejor dejar que el reinicio sea manual con el botón "🎲 Reiniciar".
+        // Por eso, he comentado la siguiente línea. Si la quieres, ten en cuenta que se reiniciará
+        // a los 61 segundos sin importar la velocidad seleccionada.
+        // setTimeout(() => {
+        //     restartCredits();
+        // }, 61000); 
     </script>
 </body>
 
