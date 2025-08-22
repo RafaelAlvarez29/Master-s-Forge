@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const channel = new BroadcastChannel('dnd_arsenal_channel');
+    channel.postMessage({ type: 'EVENT_PLAYER_WINDOW_READY' });
+
 
     // --- Selectores del DOM ---
     const mapContainer = document.getElementById('mapContainer');

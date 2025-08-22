@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- BROADCAST CHANNEL ---
     const openPlayerViewBtn = document.getElementById('openPlayerViewBtn');
     const channel = new BroadcastChannel('dnd_arsenal_channel');
+
     let playerViewWindow = null;
     let isMapLoaded = false;
 
@@ -131,6 +132,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeSavedScenesBtn = document.getElementById('closeSavedScenesBtn');
     const sceneListContainer = document.getElementById('sceneListContainer');
     const resetInitiativeBtn = document.getElementById('resetInitiativeBtn');
+    const setInitiativeBtn = document.getElementById('setInitiativeBtn');
+    const initiativeModal = document.getElementById('initiativeModal');
+    const initiativeModalList = document.getElementById('initiativeModalList');
+    const confirmInitiativeBtn = document.getElementById('confirmInitiativeBtn');
+    const cancelInitiativeBtn = document.getElementById('cancelInitiativeBtn');
 
     const tokenHeaderInfo = document.querySelector('.token-header-info');
     const tokenInfoView = document.getElementById('tokenInfoView');
@@ -335,6 +341,7 @@ document.addEventListener('DOMContentLoaded', () => {
     addStateBtn.addEventListener('click', addStateToSelectedToken);
     alignGridModeBtn.addEventListener('click', () => toggleAlignGridMode());
     resetGridOffsetBtn.addEventListener('click', resetGridOffset);
+
     saveStateBtn.addEventListener('click', () => {
         if (!isMapLoaded) {
             showCustomModal({
@@ -352,6 +359,9 @@ document.addEventListener('DOMContentLoaded', () => {
     cancelSaveSceneBtn.addEventListener('click', () => saveSceneModal.classList.remove('open'));
     confirmSaveSceneBtn.addEventListener('click', () => saveCurrentScene());
     closeSavedScenesBtn.addEventListener('click', () => savedScenesModal.classList.remove('open'));
+    setInitiativeBtn.addEventListener('click', openInitiativeModal);
+    cancelInitiativeBtn.addEventListener('click', () => initiativeModal.classList.remove('open'));
+    confirmInitiativeBtn.addEventListener('click', confirmInitiativeChanges);
     openPlayerViewBtn.addEventListener('click', () => { if (playerViewWindow && !playerViewWindow.closed) { playerViewWindow.focus(); return; } playerViewWindow = window.open('player.html', '_blank', 'width=1280,height=720'); setTimeout(() => { if (isMapLoaded) { const mapSrc = document.getElementById('mapImageInput')._dataUrl; broadcast('CMD_LOAD_NEW_MAP', { src: mapSrc }); setTimeout(() => { broadcast('CMD_LOAD_SCENE_DATA', { tokens: tokens, walls: walls, gridSettings: { visible: gridVisible, color: gridColor, opacity: gridOpacity, offsetX: gridOffsetX, offsetY: gridOffsetY, cellSize: cellSize } }); if (visionModeActive) { broadcast('CMD_SET_VISION_MODE', { active: true, tokens, walls, cellSize }); } }, 500); } }, 1500); });
     addAbilityBtn.addEventListener('click', () => openAbilityModal());
     addInventoryItemBtn.addEventListener('click', () => openInventoryItemModal());
@@ -399,7 +409,7 @@ document.addEventListener('DOMContentLoaded', () => {
             creditsModal.classList.remove('open');
         }
     });
-//resolucion de imagenes de perfil de personjes en const MAX_WIDTH = 256;
+    //resolucion de imagenes de perfil de personjes en const MAX_WIDTH = 256;
     function getHealthColorClass(current, max) { if (max === 0) return 'health-mid'; const percentage = (current / max) * 100; if (percentage <= 10) return 'health-critical'; if (percentage <= 40) return 'health-low'; if (percentage <= 70) return 'health-mid'; return 'health-high'; } async function processImage(file) { if (file.type === 'image/gif') return new Promise(resolve => { const reader = new FileReader(); reader.onload = e => resolve(e.target.result); reader.readAsDataURL(file); }); const MAX_WIDTH = 600; return new Promise(resolve => { const reader = new FileReader(); reader.onload = e => { const img = new Image(); img.onload = () => { const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d'); let { width, height } = img; if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; } canvas.width = width; canvas.height = height; ctx.drawImage(img, 0, 0, width, height); resolve(canvas.toDataURL('image/webp', 0.8)); }; img.src = e.target.result; }; reader.readAsDataURL(file); }); }
 
     // --- FUNCIÓN updateTokenInUI CORREGIDA ---
@@ -621,20 +631,37 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function loadSceneById(sceneId) {
-        try {
-            // --- ¡AQUÍ ESTÁ LA CORRECCIÓN! ---
-            // Convertimos el ID que viene del 'dataset' (string) a un número.
-            const numericSceneId = parseInt(sceneId, 10);
+        // ======================= INICIO DEL BLOQUE REEMPLAZADO =======================
+        let readyPromise;
 
-            // --- CAMBIO CLAVE: Usamos el ID numérico para buscar en IndexedDB ---
+        if (!playerViewWindow || playerViewWindow.closed) {
+            // Si la ventana no existe, creamos una Promesa que se resolverá
+            // solo cuando recibamos el mensaje 'EVENT_PLAYER_WINDOW_READY'.
+            readyPromise = new Promise(resolve => {
+                const readyListener = (event) => {
+                    if (event.data.type === 'EVENT_PLAYER_WINDOW_READY') {
+                        channel.removeEventListener('message', readyListener); // Limpiamos el listener para no acumularlos.
+                        resolve(); // La promesa se cumple.
+                    }
+                };
+                channel.addEventListener('message', readyListener);
+            });
+            playerViewWindow = window.open('player.html', '_blank', 'width=1280,height=720');
+        } else {
+            // Si la ventana ya está abierta, la enfocamos y asumimos que está lista.
+            playerViewWindow.focus();
+            readyPromise = Promise.resolve(); // La promesa se cumple inmediatamente.
+        }
+
+        try {
+            // Esperamos a que la ventana del jugador esté garantizadamente lista.
+            await readyPromise;
+
+            const numericSceneId = parseInt(sceneId, 10);
             const sceneMetadata = await db.get(SCENES_STORE, numericSceneId);
 
             if (!sceneMetadata) {
-                showCustomModal({
-                    title: 'Error',
-                    message: 'No se encontró la escena.',
-                    type: 'error'
-                });
+                showCustomModal({ title: 'Error', message: 'No se encontró la escena.', type: 'error' });
                 return;
             }
 
@@ -644,7 +671,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const mapAsset = await assetStore.get(sceneMetadata.mapAssetId);
             const fogAsset = sceneMetadata.fogAssetId ? await assetStore.get(sceneMetadata.fogAssetId) : null;
 
-            // El resto de la lógica de carga es idéntica
             document.getElementById('mapImageInput')._dataUrl = mapAsset.data;
             isMapLoaded = true;
             cellSize = sceneMetadata.cellSize;
@@ -675,26 +701,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 const migratedTokenData = migrateTokenData(tokenData);
                 const asset = tokenAssets[index];
                 if (asset) migratedTokenData.identity.image = asset.data;
-
-                // --- ¡NUEVO BLOQUE DE MIGRACIÓN DE INVENTARIO! ---
                 if (migratedTokenData.info && Array.isArray(migratedTokenData.info.inventory)) {
                     migratedTokenData.info.inventory = migratedTokenData.info.inventory.map(migrateInventoryItem);
                 }
-                // --- FIN DEL NUEVO BLOQUE ---
-
                 return migratedTokenData;
             });
 
+            // Ahora que sabemos que la ventana está lista, enviamos los datos sin delay.
             broadcast('CMD_LOAD_NEW_MAP', { src: mapAsset.data });
-
-            setTimeout(() => {
-                broadcast('CMD_LOAD_SCENE_DATA', {
-                    tokens: tokens,
-                    walls: walls,
-                    gridSettings: { visible: gridVisible, color: gridColor, opacity: gridOpacity, offsetX: gridOffsetX, offsetY: gridOffsetY, cellSize: cellSize },
-                    fogDataUrl: fogAsset ? fogAsset.data : null
-                });
-            }, 500);
+            broadcast('CMD_LOAD_SCENE_DATA', {
+                tokens: tokens,
+                walls: walls,
+                gridSettings: { visible: gridVisible, color: gridColor, opacity: gridOpacity, offsetX: gridOffsetX, offsetY: gridOffsetY, cellSize: cellSize },
+                fogDataUrl: fogAsset ? fogAsset.data : null
+            });
 
             updateTokenList();
             deselectToken();
@@ -702,13 +722,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             console.error('Error al cargar la escena:', error);
-            showCustomModal({
-                title: 'Error',
-                message: 'Hubo un error al cargar los datos de la escena.',
-                type: 'error'
-            });
+            showCustomModal({ title: 'Error', message: 'Hubo un error al cargar los datos de la escena.', type: 'error' });
         }
         isSceneDirty = false;
+        // ======================== FIN DEL BLOQUE REEMPLAZADO =========================
     }
 
     async function renderSavedScenesList() {
@@ -2148,4 +2165,68 @@ document.addEventListener('DOMContentLoaded', () => {
         // También llamamos a updateSelectedToken para guardar el cambio inmediatamente
         updateSelectedToken();
     });
+    // ===============================================
+    // --- FUNCIONES PARA EL MODAL DE INICIATIVA (NUEVAS) ---
+    // ===============================================
+
+    function openInitiativeModal() {
+        if (tokens.length === 0) {
+            showNotification('No hay fichas en el tablero para establecer iniciativa.');
+            return;
+        }
+
+        initiativeModalList.innerHTML = ''; // Limpiar la lista anterior
+
+        // Ordenar los tokens alfabéticamente para facilitar la búsqueda
+        const sortedTokens = [...tokens].sort((a, b) => a.identity.name.localeCompare(b.identity.name));
+
+        sortedTokens.forEach(token => {
+            const li = document.createElement('li');
+            li.className = 'initiative-modal-item';
+
+            const imageStyle = token.identity.image ?
+                `background-image: url(${token.identity.image});` :
+                `background-color: ${token.appearance.color};`;
+            const previewContent = token.identity.image ? '' : token.identity.letter;
+
+            li.innerHTML = `
+                <div class="initiative-modal-preview" style="${imageStyle}">${previewContent}</div>
+                <span class="initiative-modal-name">${token.identity.name}</span>
+                <input type="number" class="initiative-modal-input" value="${token.stats.initiative || 0}" data-id="${token.id}" />
+            `;
+            initiativeModalList.appendChild(li);
+        });
+
+        initiativeModal.classList.add('open');
+    }
+
+    function confirmInitiativeChanges() {
+        const inputs = initiativeModalList.querySelectorAll('.initiative-modal-input');
+
+        inputs.forEach(input => {
+            const tokenId = parseInt(input.dataset.id);
+            const newInitiative = parseInt(input.value) || 0;
+
+            const token = tokens.find(t => t.id === tokenId);
+            if (token) {
+                token.stats.initiative = newInitiative;
+            }
+        });
+
+        // Actualizar todas las interfaces relevantes
+        updateTokenList(); // Re-ordena la lista del panel izquierdo
+        broadcast('CMD_UPDATE_TURN_TRACKER', { tokens }); // Re-ordena el tracker del jugador
+
+        // Si hay un token seleccionado, actualiza su ficha para reflejar el cambio
+        if (selectedTokenId) {
+            const selectedToken = tokens.find(t => t.id === selectedTokenId);
+            if (selectedToken) {
+                updateTokenInUI(selectedToken);
+            }
+        }
+
+        initiativeModal.classList.remove('open');
+        showNotification('¡Iniciativas actualizadas con éxito!');
+    }
+
 });

@@ -4574,3 +4574,102 @@ code {
     color: var(--text-light);
 }
 /* ===== FIN: ESTILOS PARA EL INTERRUPTOR TOGGLE DE JEFE ===== */
+
+/* ===== INICIO: Estilos MEJORADOS para Modal de Iniciativa ===== */
+
+/* Icono para el botón de establecer iniciativa (sin cambios) */
+.icon-d20 {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23e6c253"><path d="M12 2L2 8.5V15.5L12 22L22 15.5V8.5L12 2ZM11 12.13L4.93 9.09L11 6.05V12.13ZM13 12.13V6.05L19.07 9.09L13 12.13ZM5.5 10.09L11 13.13V19.95L5.5 14.59V10.09ZM18.5 10.09V14.59L13 19.95V13.13L18.5 10.09Z"/></svg>');
+}
+
+/* Lista dentro del modal con scrollbar personalizado */
+.initiative-modal-list {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+    max-height: 50vh;
+    overflow-y: auto;
+    border-top: 1px solid var(--input-border);
+    border-bottom: 1px solid var(--input-border);
+    padding-right: 5px; /* Espacio para la scrollbar */
+}
+.initiative-modal-list::-webkit-scrollbar { width: 8px; }
+.initiative-modal-list::-webkit-scrollbar-track { background: var(--input-bg); }
+.initiative-modal-list::-webkit-scrollbar-thumb { background: #966331; border-radius: 4px; }
+.initiative-modal-list::-webkit-scrollbar-thumb:hover { background: #c78038; }
+
+
+/* Cada fila de la lista con efecto hover */
+.initiative-modal-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 10px;
+    border-bottom: 1px solid var(--input-border);
+    transition: background-color 0.2s; /* Transición suave */
+}
+.initiative-modal-item:hover {
+    background-color: var(--header-hover);
+}
+.initiative-modal-item:last-child {
+    border-bottom: none;
+}
+
+/* Vista previa del token (sin cambios) */
+.initiative-modal-preview {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.5em;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    border: 2px solid #555;
+}
+
+/* Nombre del token (sin cambios) */
+.initiative-modal-name {
+    flex-grow: 1;
+    font-size: 1.1em;
+    font-family: 'Cinzel', serif;
+    
+    /* ===== LA SOLUCIÓN CLAVE ===== */
+    min-width: 0; /* Permite que el elemento se encoja correctamente en un flex container */
+    white-space: nowrap; /* Evita que el texto salte a la siguiente línea */
+    overflow: hidden; /* Oculta el texto que se desborda */
+    text-overflow: ellipsis; /* Añade los "..." al final del texto cortado */
+}
+
+/* Campo numérico para la iniciativa (MEJORADO) */
+.initiative-modal-input {
+    /* LA CORRECCIÓN CLAVE: min-width asegura un tamaño mínimo fijo */
+  width: 70px !important;
+    min-width: 70px; 
+    flex-shrink: 0;
+    
+    /* MEJORAS VISUALES para integrarlo con el tema */
+    background-color: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: var(--text-light);
+    font-family: "Cinzel", serif;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 1.2em;
+    padding: 6px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+/* Efecto de foco para el input, consistente con el resto de la app */
+.initiative-modal-input:focus {
+    outline: none;
+    border-color: var(--text-gold);
+    box-shadow: 0 0 5px rgba(230, 194, 83, 0.3);
+}
+
+/* ===== FIN: Estilos MEJORADOS para Modal de Iniciativa ===== */
