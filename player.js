@@ -98,6 +98,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let isDynamicVision = true; // true = actualiza al mover, false = actualiza al soltar
     let visionUpdateQueued = false;
+    let highlightedDoorId = null;
+
 
     let bossAnimationQueue = [];
     let isBossIntroPlaying = false;
@@ -333,6 +335,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (needsTrackerUpdate) {
                     updatePlayerTurnTracker(localTokens);
+                }
+                break;
+            case 'CMD_PING_LOCATION':
+                if (payload.x && payload.y) {
+                    pingLocation(payload.x, payload.y);
                 }
                 break;
         }
@@ -809,51 +816,81 @@ document.addEventListener('DOMContentLoaded', () => {
     function drawWalls(wallsData) {
         wallsCtx.clearRect(0, 0, wallsCanvas.width, wallsCanvas.height);
         if (!wallsData) return;
+
         wallsData.forEach(wall => {
             wallsCtx.beginPath();
             wallsCtx.moveTo(wall.x1, wall.y1);
             wallsCtx.lineTo(wall.x2, wall.y2);
-            if (wall.type === 'door') {
-                wallsCtx.strokeStyle = wall.isOpen ? '#5dc66f' : '#c65d5d';
-                wallsCtx.setLineDash([10, 8]);
-                wallsCtx.lineWidth = 5;
+
+            const isHighlighted = (wall.id === highlightedDoorId);
+
+            // ===== LÓGICA DE DIBUJO MEJORADA =====
+            if (isHighlighted) {
+                // Estilos para la puerta resaltada
+                wallsCtx.strokeStyle = '#00ffff'; // Un cian brillante para destacar
+                wallsCtx.lineWidth = 10;
+                wallsCtx.setLineDash([]); // Línea sólida para el resaltado
+                wallsCtx.shadowColor = '#00ffff';
+                wallsCtx.shadowBlur = 15;
             } else {
-                wallsCtx.strokeStyle = '#e6c253';
-                wallsCtx.setLineDash([]);
-                wallsCtx.lineWidth = 4;
+                // Estilos normales (lógica que ya teníamos)
+                if (wall.type === 'door') {
+                    wallsCtx.strokeStyle = wall.isOpen ? '#5dc66f' : '#c65d5d';
+                    wallsCtx.setLineDash([10, 8]);
+                    wallsCtx.lineWidth = 5;
+                } else {
+                    wallsCtx.strokeStyle = '#e6c253';
+                    wallsCtx.setLineDash([]);
+                    wallsCtx.lineWidth = 4;
+                }
             }
+
             wallsCtx.stroke();
+
+            // Limpiar la sombra para que no afecte al siguiente elemento
+            if (isHighlighted) {
+                wallsCtx.shadowColor = 'transparent';
+                wallsCtx.shadowBlur = 0;
+            }
         });
+
+        // Reseteo final por si acaso
         wallsCtx.setLineDash([]);
     }
-    function pingToken(token) {
-        if (!token || !token.element) return;
+    /**
+        * Activa una animación de ping en coordenadas específicas del mapa.
+        * @param {number} x Coordenada X del centro del ping.
+        * @param {number} y Coordenada Y del centro del ping.
+        */
+    function pingLocation(x, y) {
+        const pingSize = 80; // Un tamaño fijo para el ping de ubicación.
 
-        // 1. Calcula el tamaño del token y del ping inicial
-        const tokenSize = (token.position.sizeMultiplier || 1) * cellSize;
+        // Centramos el ping en las coordenadas dadas
+        mapPingCircle.style.left = `${x - pingSize / 2}px`;
+        mapPingCircle.style.top = `${y - pingSize / 2}px`;
 
-        // 2. Calcula el centro del token (esto estaba bien)
-        const tokenCenterX = token.position.x + tokenSize / 2;
-        const tokenCenterY = token.position.y + tokenSize / 2;
+        // Establecemos el tamaño del círculo de ping
+        mapPingCircle.style.width = `${pingSize}px`;
+        mapPingCircle.style.height = `${pingSize}px`;
 
-        // 3. Establece el tamaño del círculo de ping
-        mapPingCircle.style.width = `${tokenSize}px`;
-        mapPingCircle.style.height = `${tokenSize}px`;
-
-        // 4. --- LA CORRECCIÓN CLAVE ---
-        // Calcula la posición de la esquina superior izquierda del ping.
-        // Para centrarlo, restamos la mitad del tamaño del ping a las coordenadas del centro del token.
-        const pingTop = tokenCenterY - (tokenSize / 2);
-        const pingLeft = tokenCenterX - (tokenSize / 2);
-
-        mapPingCircle.style.left = `${pingLeft}px`;
-        mapPingCircle.style.top = `${pingTop}px`;
-
-        // 5. El resto de la función para reiniciar la animación se mantiene igual
+        // Reiniciamos y activamos la animación CSS
         mapPingCircle.classList.remove('pinging');
-        void mapPingCircle.offsetWidth;
+        void mapPingCircle.offsetWidth; // Truco para forzar el reinicio de la animación
         mapPingCircle.classList.add('pinging');
     }
+
+    /**
+     * Busca el centro de un token y llama a la función de ping genérica.
+     * @param {object} token El objeto del token a "pinguear".
+     */
+    function pingToken(token) {
+        if (!token || !token.element) return;
+        const tokenSize = (token.position.sizeMultiplier || 1) * cellSize;
+        const tokenCenterX = token.position.x + tokenSize / 2;
+        const tokenCenterY = token.position.y + tokenSize / 2;
+        pingLocation(tokenCenterX, tokenCenterY); // Reutilizamos la nueva función
+    }
+
     function getIntersection(ray, wall) {
         const r_px = ray.x1,
             r_py = ray.y1,

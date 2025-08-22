@@ -1139,11 +1139,44 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateDoorList() {
-        const doors = walls.filter(w => w.type === 'door'); doorListUl.innerHTML = ''; noDoorsMessage.style.display = doors.length === 0 ? 'block' : 'none'; doors.forEach(door => {
-            const li = document.createElement('li'); li.innerHTML = `<span class="door-name" data-id="${door.id}" title="Haz clic para editar">${door.name}</span>
-            <div class="door-actions"><button class="toggle-door-btn ${door.isOpen ? 'open' : ''}" data-id="${door.id}">${door.isOpen ? 'Cerrar' : 'Abrir'}</button><button class="delete-door-btn" data-id="${door.id}" title="Eliminar Acceso">X</button></div>`; doorListUl.appendChild(li);
-        }); doorListUl.querySelectorAll('.toggle-door-btn').forEach(btn => btn.addEventListener('click', toggleDoorState)); doorListUl.querySelectorAll('.delete-door-btn').forEach(btn => btn.addEventListener('click', deleteDoor)); doorListUl.querySelectorAll('.door-name').forEach(nameSpan => nameSpan.addEventListener('click', makeDoorNameEditable));
+        const doors = walls.filter(w => w.type === 'door');
+        doorListUl.innerHTML = '';
+        noDoorsMessage.style.display = doors.length === 0 ? 'block' : 'none';
+
+        doors.forEach(door => {
+            const li = document.createElement('li');
+            li.dataset.id = door.id;
+            li.innerHTML = `
+                <span class="door-name" data-id="${door.id}" title="Haz clic para editar">${door.name}</span>
+                <div class="door-actions">
+                    <button class="toggle-door-btn ${door.isOpen ? 'open' : ''}" data-id="${door.id}">${door.isOpen ? 'Cerrar' : 'Abrir'}</button>
+                    <button class="delete-door-btn" data-id="${door.id}" title="Eliminar Acceso">X</button>
+                </div>`;
+            doorListUl.appendChild(li);
+        });
+
+        // Vincular eventos de acción a los botones
+        doorListUl.querySelectorAll('.toggle-door-btn').forEach(btn => btn.addEventListener('click', toggleDoorState));
+        doorListUl.querySelectorAll('.delete-door-btn').forEach(btn => btn.addEventListener('click', deleteDoor));
+        doorListUl.querySelectorAll('.door-name').forEach(nameSpan => nameSpan.addEventListener('click', makeDoorNameEditable));
+
+        // ===== LÓGICA DE PING MEJORADA =====
+        doorListUl.querySelectorAll('li').forEach(li => {
+            li.addEventListener('mouseenter', () => {
+                const doorId = parseInt(li.dataset.id);
+                const door = walls.find(w => w.id === doorId);
+                if (door) {
+                    // Calculamos el punto medio de la puerta
+                    const centerX = (door.x1 + door.x2) / 2;
+                    const centerY = (door.y1 + door.y2) / 2;
+                    // Enviamos el comando de ping con las coordenadas
+                    broadcast('CMD_PING_LOCATION', { x: centerX, y: centerY });
+                }
+            });
+            // Ya no necesitamos 'mouseleave', el ping es una acción de un solo disparo.
+        });
     }
+
     function makeDoorNameEditable(event) { const nameSpan = event.target; const doorId = parseInt(nameSpan.dataset.id); const originalName = nameSpan.textContent; const input = document.createElement('input'); input.type = 'text'; input.value = originalName; input.classList.add('door-name-edit'); nameSpan.replaceWith(input); input.focus(); input.select(); const saveChanges = () => { const door = walls.find(w => w.id === doorId); if (door) { const newName = input.value.trim(); door.name = newName === '' ? originalName : newName; } updateDoorList(); broadcast('CMD_DRAW_WALLS', { walls }); }; input.addEventListener('blur', saveChanges); input.addEventListener('keydown', e => { if (e.key === 'Enter') input.blur(); else if (e.key === 'Escape') { input.value = originalName; input.blur(); } }); }
     function toggleDoorState(event) { const doorId = parseInt(event.target.dataset.id); const door = walls.find(w => w.id === doorId); if (door) { door.isOpen = !door.isOpen; updateDoorList(); broadcast('CMD_DRAW_WALLS', { walls }); if (visionModeActive) { broadcast('CMD_DRAW_VISION', { tokens, walls, cellSize }); } } }
     function deleteDoor(event) { const doorId = parseInt(event.target.dataset.id); walls = walls.filter(w => w.id !== doorId); updateDoorList(); broadcast('CMD_DRAW_WALLS', { walls }); if (visionModeActive) broadcast('CMD_DRAW_VISION', { tokens, walls, cellSize }); }
